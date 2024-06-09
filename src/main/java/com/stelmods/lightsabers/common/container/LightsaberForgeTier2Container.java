@@ -2,6 +2,7 @@ package com.stelmods.lightsabers.common.container;
 
 import com.stelmods.lightsabers.common.block.ModBlocks;
 import com.stelmods.lightsabers.common.block.BlockCrystal;
+import com.stelmods.lightsabers.common.item.ItemFocusingCrystal;
 import com.stelmods.lightsabers.common.item.LightsaberDoubleItem;
 import com.stelmods.lightsabers.common.item.LightsaberItem;
 import com.stelmods.lightsabers.common.item.ModItems;
@@ -46,6 +47,8 @@ public class LightsaberForgeTier2Container extends AbstractContainerMenu  {
     private Slot outputSlot, bodySlot, switchSlot, emitterSlot, pommelSlot, crystalSlot;
     private Slot outputSlot2, bodySlot2, switchSlot2, emitterSlot2, pommelSlot2, crystalSlot2;
     private Slot dualSlot;
+    private Slot focusCrystal1_1, focusCrystal1_2;
+    private Slot focusCrystal2_1, focusCrystal2_2;
     public LightsaberForgeTier2Container(int id, Inventory inventoryPlayer)
     {
         this(id, inventoryPlayer, (LightsaberForgeTier2BlockEntity) null);
@@ -89,7 +92,14 @@ public class LightsaberForgeTier2Container extends AbstractContainerMenu  {
         TE.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iih -> outputSlot = addSlot(new SingleOutput(iih,14, 133, 72)));
         TE.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iih -> outputSlot2 = addSlot(new SingleOutput2(iih, 15, 133, 90)));
         TE.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iih -> dualSlot = addSlot(new DoubleOutput(iih, 17, 164,87 )));
-
+        TE.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iih ->
+                focusCrystal1_1= addSlot(new Focus(iih, 3,82, 71)));
+        TE.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iih ->
+                focusCrystal1_2= addSlot(new Focus(iih, 19,100, 71)));
+        TE.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iih ->
+                focusCrystal2_1= addSlot(new Focus2(iih, 20,82, 92)));
+        TE.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iih ->
+                focusCrystal2_2= addSlot(new Focus2(iih, 21,100, 92)));
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j) {
                 this.addSlot(new Slot(inventoryPlayer, j + i * 9 + 9, 26 + j * 18, 114 + i * 18));
@@ -137,8 +147,10 @@ public class LightsaberForgeTier2Container extends AbstractContainerMenu  {
         player.drop(switchSlot.remove(1),false);
         player.drop(pommelSlot.remove(1),false);
         player.drop(bodySlot.remove(1),false);
-
-
+        player.drop(focusCrystal1_2.remove(1),false);
+        player.drop(focusCrystal1_2.remove(1),false);
+        player.drop(focusCrystal2_1.remove(1),false);
+        player.drop(focusCrystal2_2.remove(1),false);
         player.drop(crystalSlot2.remove(1),false);
         player.drop(emitterSlot2.remove(1),false);
         player.drop(switchSlot2.remove(1),false);
@@ -153,7 +165,23 @@ public class LightsaberForgeTier2Container extends AbstractContainerMenu  {
 
 
 
+    private class Focus extends Crystal
+    {
+        public Focus(IItemHandler iih, int id, int x, int y) {
+            super(iih, id, x, y);
+        }
 
+
+        @Override
+        public void onTake(Player player, ItemStack itemstack) {
+            super.setChanged();
+        }
+
+        @Override
+        public boolean mayPlace(ItemStack stack) {
+            return stack.getItem() instanceof ItemFocusingCrystal;
+        }
+    }
     private class Crystal extends SlotItemHandler
     {
 
@@ -204,6 +232,8 @@ public class LightsaberForgeTier2Container extends AbstractContainerMenu  {
                 ItemStack stack = new ItemStack(ModItems.lightsaber.get());
                 stack.setTag(new CompoundTag());
 
+                stack.getTag().putString("focus1", ForgeRegistries.ITEMS.getKey(emitterSlot.getItem().getItem()).toString());
+                stack.getTag().putString("focus2", ForgeRegistries.ITEMS.getKey(emitterSlot.getItem().getItem()).toString());
                 stack.getTag().putString("emitter", ForgeRegistries.ITEMS.getKey(emitterSlot.getItem().getItem()).toString());
                 stack.getTag().putString("grip", ForgeRegistries.ITEMS.getKey(bodySlot.getItem().getItem()).toString());
                 stack.getTag().putString("pommel", ForgeRegistries.ITEMS.getKey(pommelSlot.getItem().getItem()).toString());
@@ -211,6 +241,11 @@ public class LightsaberForgeTier2Container extends AbstractContainerMenu  {
                 stack.getTag().putString("type", LightsaberType.SINGLE.toString());
                 stack.getTag().putString("color", ForgeRegistries.BLOCKS.getKey(Block.byItem(crystalSlot.getItem().getItem())).toString());
                 stack.getTag().putBoolean("active", false);
+                if(focusCrystal1_1.getItem().getItem() != Items.AIR)
+                    stack.getTag().putString("focus1", ForgeRegistries.ITEMS.getKey(focusCrystal1_1.getItem().getItem()).toString());
+                if(focusCrystal1_2.getItem().getItem() != Items.AIR)
+                    stack.getTag().putString("focus2", ForgeRegistries.ITEMS.getKey(focusCrystal1_2.getItem().getItem()).toString());
+
                 outputSlot.set(stack);
                 if(outputSlot2.getItem() != null && outputSlot2.getItem().getItem() instanceof LightsaberItem)
                 {
@@ -241,7 +276,23 @@ public class LightsaberForgeTier2Container extends AbstractContainerMenu  {
         }
 
     }
+    private class Focus2 extends Crystal2
+    {
+        public Focus2(IItemHandler iih, int id, int x, int y) {
+            super(iih, id, x, y);
+        }
 
+
+        @Override
+        public void onTake(Player player, ItemStack itemstack) {
+            super.setChanged();
+        }
+
+        @Override
+        public boolean mayPlace(ItemStack stack) {
+            return stack.getItem() instanceof ItemFocusingCrystal;
+        }
+    }
     private class Crystal2 extends SlotItemHandler
     {
 
@@ -298,6 +349,11 @@ public class LightsaberForgeTier2Container extends AbstractContainerMenu  {
                 stack.getTag().putString("type", LightsaberType.SINGLE.toString());
                 stack.getTag().putString("color", ForgeRegistries.BLOCKS.getKey(Block.byItem(crystalSlot2.getItem().getItem())).toString());
                 stack.getTag().putBoolean("active", false);
+                if(focusCrystal2_1.getItem().getItem() != Items.AIR)
+                    stack.getTag().putString("focus1", ForgeRegistries.ITEMS.getKey(focusCrystal2_1.getItem().getItem()).toString());
+                if(focusCrystal2_2.getItem().getItem() != Items.AIR)
+                    stack.getTag().putString("focus2", ForgeRegistries.ITEMS.getKey(focusCrystal2_2.getItem().getItem()).toString());
+
                 outputSlot2.set(stack);
                 if(outputSlot.getItem() != null && outputSlot.getItem().getItem() instanceof LightsaberItem)
                 {
@@ -346,6 +402,10 @@ public class LightsaberForgeTier2Container extends AbstractContainerMenu  {
                 pommelSlot.set(ForgeRegistries.ITEMS.getValue(new ResourceLocation(stack.getTag().getString("pommel"))).getDefaultInstance());
                 switchSlot.set(ForgeRegistries.ITEMS.getValue(new ResourceLocation(stack.getTag().getString("switch"))).getDefaultInstance());
                 crystalSlot.set(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(stack.getTag().getString("color"))).asItem().getDefaultInstance());
+                if(stack.getTag().contains("focus1"))
+                    focusCrystal1_1.set(ForgeRegistries.ITEMS.getValue(new ResourceLocation(stack.getTag().getString("focus1"))).asItem().getDefaultInstance());
+                if(stack.getTag().contains("focus2"))
+                    focusCrystal1_2.set(ForgeRegistries.ITEMS.getValue(new ResourceLocation(stack.getTag().getString("focus2"))).asItem().getDefaultInstance());
 
                 if(outputSlot2.getItem() != null && outputSlot2.getItem().getItem() instanceof LightsaberItem)
                 {
@@ -378,6 +438,9 @@ public class LightsaberForgeTier2Container extends AbstractContainerMenu  {
             bodySlot.remove(1);
             outputSlot.remove(1);
             dualSlot.remove(1);
+            focusCrystal1_1.remove(1);
+            focusCrystal1_2.remove(1);
+
             itemstack.getTag().putBoolean("active", false);
             craftMatrix.clearContent();
         }
@@ -400,6 +463,10 @@ public class LightsaberForgeTier2Container extends AbstractContainerMenu  {
                 pommelSlot2.set(ForgeRegistries.ITEMS.getValue(new ResourceLocation(stack.getTag().getString("pommel"))).getDefaultInstance());
                 switchSlot2.set(ForgeRegistries.ITEMS.getValue(new ResourceLocation(stack.getTag().getString("switch"))).getDefaultInstance());
                 crystalSlot2.set(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(stack.getTag().getString("color"))).asItem().getDefaultInstance());
+                if(stack.getTag().contains("focus1"))
+                    focusCrystal2_1.set(ForgeRegistries.ITEMS.getValue(new ResourceLocation(stack.getTag().getString("focus1"))).asItem().getDefaultInstance());
+                if(stack.getTag().contains("focus2"))
+                    focusCrystal2_2.set(ForgeRegistries.ITEMS.getValue(new ResourceLocation(stack.getTag().getString("focus2"))).asItem().getDefaultInstance());
 
                 if(outputSlot.getItem() != null && outputSlot.getItem().getItem() instanceof LightsaberItem)
                 {
@@ -432,6 +499,9 @@ public class LightsaberForgeTier2Container extends AbstractContainerMenu  {
             bodySlot2.remove(1);
             outputSlot2.remove(1);
             dualSlot.remove(1);
+
+            focusCrystal2_1.remove(1);
+            focusCrystal2_2.remove(1);
             itemstack.getTag().putBoolean("active", false);
             craftMatrix.clearContent();
         }
@@ -459,6 +529,10 @@ public class LightsaberForgeTier2Container extends AbstractContainerMenu  {
                 pommelSlot.set(ForgeRegistries.ITEMS.getValue(new ResourceLocation(upperTag.getString("pommel"))).getDefaultInstance());
                 switchSlot.set(ForgeRegistries.ITEMS.getValue(new ResourceLocation(upperTag.getString("switch"))).getDefaultInstance());
                 crystalSlot.set(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(upperTag.getString("color"))).asItem().getDefaultInstance());
+                if(stack.getTag().contains("focus1"))
+                    focusCrystal1_1.set(ForgeRegistries.ITEMS.getValue(new ResourceLocation(stack.getTag().getString("focus1"))).asItem().getDefaultInstance());
+                if(stack.getTag().contains("focus2"))
+                    focusCrystal2_1.set(ForgeRegistries.ITEMS.getValue(new ResourceLocation(stack.getTag().getString("focus2"))).asItem().getDefaultInstance());
 
                 itemStack = new ItemStack(ModItems.lightsaber.get());
 
@@ -470,6 +544,12 @@ public class LightsaberForgeTier2Container extends AbstractContainerMenu  {
                 pommelSlot2.set(ForgeRegistries.ITEMS.getValue(new ResourceLocation(lower.getString("pommel"))).getDefaultInstance());
                 switchSlot2.set(ForgeRegistries.ITEMS.getValue(new ResourceLocation(lower.getString("switch"))).getDefaultInstance());
                 crystalSlot2.set(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(lower.getString("color"))).asItem().getDefaultInstance());
+                if(stack.getTag().contains("focus1"))
+                    focusCrystal2_1.set(ForgeRegistries.ITEMS.getValue(new ResourceLocation(stack.getTag().getString("focus1"))).asItem().getDefaultInstance());
+                if(stack.getTag().contains("focus2"))
+                    focusCrystal2_2.set(ForgeRegistries.ITEMS.getValue(new ResourceLocation(stack.getTag().getString("focus2"))).asItem().getDefaultInstance());
+
+
             }
 
         }

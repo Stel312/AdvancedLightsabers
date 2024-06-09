@@ -7,6 +7,7 @@ import com.stelmods.lightsabers.common.item.parts.LightsaberEmiter;
 import com.stelmods.lightsabers.common.item.parts.LightsaberPommel;
 import com.stelmods.lightsabers.common.item.parts.LightsaberSwitch;
 import com.stelmods.lightsabers.common.lightsaber.FocusingCrystal;
+import com.stelmods.lightsabers.lib.Strings;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -32,11 +33,11 @@ public class ModItems {
     public static final RegistryObject<Item> lightsaber = ITEMS.register("lightsaber", LightsaberItem::new);
     public static final RegistryObject<Item> doubleLightsaber = ITEMS.register("lightsaber_double", LightsaberDoubleItem::new);
 
-    public static final RegistryObject<Item> crackedCrystal = ITEMS.register("crack_crystal", () -> new ItemFocusingCrystal(FocusingCrystal.CRACKED));
-    public static final RegistryObject<Item> compressedCrystal = ITEMS.register("compressed_crystal", () -> new ItemFocusingCrystal(FocusingCrystal.COMPRESSED));
-    public static final RegistryObject<Item> finecutCrystal = ITEMS.register("fine_cut_crystal", () -> new ItemFocusingCrystal(FocusingCrystal.FINE_CUT));
-    public static final RegistryObject<Item> invertedCrystal = ITEMS.register("inverting_crystal", () -> new ItemFocusingCrystal(FocusingCrystal.INVERTING));
-    public static final RegistryObject<Item> prismaticCrystal = ITEMS.register("prismatic_crystal", () -> new ItemFocusingCrystal(FocusingCrystal.PRISMATIC));
+    public static final RegistryObject<Item> crackedCrystal = ITEMS.register(Strings.crackedFocusingCrystal, () -> new ItemFocusingCrystal(FocusingCrystal.CRACKED));
+    public static final RegistryObject<Item> compressedCrystal = ITEMS.register(Strings.compressedFocusingCrystal, () -> new ItemFocusingCrystal(FocusingCrystal.COMPRESSED));
+    public static final RegistryObject<Item> finecutCrystal = ITEMS.register(Strings.fineCutFocusingCrystal, () -> new ItemFocusingCrystal(FocusingCrystal.FINE_CUT));
+    public static final RegistryObject<Item> invertedCrystal = ITEMS.register(Strings.invertedFocusingCrystal, () -> new ItemFocusingCrystal(FocusingCrystal.INVERTING));
+    public static final RegistryObject<Item> prismaticCrystal = ITEMS.register(Strings.prismaticFocusingCrystal, () -> new ItemFocusingCrystal(FocusingCrystal.PRISMATIC));
 
     private static RegistryObject<Item> registerPommel(String name, float height) {
         return ITEMS.register(name, () -> new LightsaberPommel(height));

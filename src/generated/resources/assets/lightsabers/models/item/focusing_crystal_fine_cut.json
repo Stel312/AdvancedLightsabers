@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "lightsabers:item/focusing_crystal_fine_cut"
+  }
+}

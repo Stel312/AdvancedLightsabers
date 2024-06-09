@@ -1,11 +1,16 @@
-// 1.20.1	2024-06-08T18:24:00.4684564	Item Models: lightsabers
+// 1.20.1	2024-06-09T10:32:04.0199695	Item Models: lightsabers
 dcdac11335c034ed77b98a746374553b6381acb1 assets/lightsabers/models/item/amber_crystal.json
-dcdac11335c034ed77b98a746374553b6381acb1 assets/lightsabers/models/item/artice_blue_crystal.json
+dcdac11335c034ed77b98a746374553b6381acb1 assets/lightsabers/models/item/artic_blue_crystal.json
 dcdac11335c034ed77b98a746374553b6381acb1 assets/lightsabers/models/item/blood_orange_crystal.json
 dcdac11335c034ed77b98a746374553b6381acb1 assets/lightsabers/models/item/cyan_crystal.json
 dcdac11335c034ed77b98a746374553b6381acb1 assets/lightsabers/models/item/deep_blue_crystal.json
+c5bbe70f8233cbeadfeaf22c435cf27e252ae39a assets/lightsabers/models/item/focusing_crystal_compressed.json
+e8a81040b3c74af0cb10148361980395a6fffbf9 assets/lightsabers/models/item/focusing_crystal_cracked.json
+5b2ce9a59eb62069eca54b32ebb34ab34f6dcb02 assets/lightsabers/models/item/focusing_crystal_fine_cut.json
+04538eb986dcbff58ddd49c03a9990e96df160f3 assets/lightsabers/models/item/focusing_crystal_inverting.json
+0d4682b82c2ac293ffb2bc3fa355daca873e1f1e assets/lightsabers/models/item/focusing_crystal_prismatic.json
 dcdac11335c034ed77b98a746374553b6381acb1 assets/lightsabers/models/item/gold_crystal.json
-dcdac11335c034ed77b98a746374553b6381acb1 assets/lightsabers/models/item/green_crystal.json.json
+dcdac11335c034ed77b98a746374553b6381acb1 assets/lightsabers/models/item/green_crystal.json
 dcdac11335c034ed77b98a746374553b6381acb1 assets/lightsabers/models/item/indigo_crystal.json
 dcdac11335c034ed77b98a746374553b6381acb1 assets/lightsabers/models/item/light_blue_crystal.json
 dcdac11335c034ed77b98a746374553b6381acb1 assets/lightsabers/models/item/lime_green_crystal.json

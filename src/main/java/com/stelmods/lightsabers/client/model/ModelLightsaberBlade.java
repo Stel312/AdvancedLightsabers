@@ -37,34 +37,22 @@ public class ModelLightsaberBlade //extends ModelBase
     public static void renderInner(float[] rgb, VertexConsumer vc, boolean isCrossguard, PoseStack matrixStack, int combineLight, FocusingCrystal focusingCrystal, FocusingCrystal focusingCrystal2)
     {
         BakedModel bm = Minecraft.getInstance().getModelManager().getModel(new ResourceLocation(Lightsabers.MODID, "item/blade"));
+        float bladeLength = 5;
 
-
-        /*if (isCrossguard && fineCut)
+        if (isCrossguard && (focusingCrystal == FocusingCrystal.FINE_CUT || focusingCrystal2 == FocusingCrystal.FINE_CUT))
         {
             matrixStack.scale(1, 1.2F, 1);
         }
 
-        if (data.hasFocusingCrystal(FocusingCrystal.INVERTING))
+        if (focusingCrystal == FocusingCrystal.COMPRESSED || focusingCrystal2 == FocusingCrystal.COMPRESSED)
         {
-            vc.color(0f, 0f, 0f, 1f);
-        }
-        else if (data.hasFocusingCrystal(FocusingCrystal.PRISMATIC))
-        {
-            vc.color(rgb[0], rgb[1], rgb[2], 1);
-        }
-        else
-        {
-            vc.color(1, 1, 1, 1);
+            matrixStack.scale(0.8F, 1, 0.8F);
         }
 
-        if (data.hasFocusingCrystal(FocusingCrystal.COMPRESSED))
-        {
-            matrixStack.scale(0.6F, 1, 0.6F);
-        }
-
-        if (fineCut)
+        if (focusingCrystal == FocusingCrystal.FINE_CUT || focusingCrystal2 == FocusingCrystal.FINE_CUT)
         {
             Tesselator tessellator = Tesselator.getInstance();
+            BufferBuilder bb = tessellator.getBuilder();
             float f = 0.0625F;
             float length = f * bladeLength * 0.7F;
             float edge = f * 1.5F;
@@ -72,9 +60,8 @@ public class ModelLightsaberBlade //extends ModelBase
             float length1 = f * bladeLength * 0.3F;
             float edge1 = f / 2;
             float tip = f * 1.5F;
-
-             tessellator.getBuilder()
-                    .vertex(-f / 2, -length, f / 2)
+            bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+             bb.vertex(-f / 2, -length, f / 2)
                     .vertex(0, -length, edge)
                     .vertex(0, edgeAngle, edge)
                     .vertex(-f / 2, -f, f / 2)
@@ -111,15 +98,9 @@ public class ModelLightsaberBlade //extends ModelBase
                     .vertex(0, -tip - f * bladeLength, -f / 2)
                     .vertex(f / 2, 0 - f * bladeLength, f / 2).endVertex();
 
+             tessellator.end();
 
-             //blade.render(0.0625F);
         }
-        else
-        {
-            //blade.render(0.0625F);
-            GL11.glTranslatef(0, -0.0625F * (0.5F + bladeLength), 0.0625F / 2);
-            ALRenderHelper.drawTip(0.03125F, 0.125F);
-        }*/
         if(focusingCrystal != FocusingCrystal.PRISMATIC && focusingCrystal2 != FocusingCrystal.PRISMATIC)
         {
             rgb[0] = 1f;
@@ -135,7 +116,7 @@ public class ModelLightsaberBlade //extends ModelBase
         if (focusingCrystal == FocusingCrystal.CRACKED || focusingCrystal2 == FocusingCrystal.CRACKED)
         {
             float divider = 60;
-            float bladelength = 5;
+
             int ticks = Minecraft.getInstance().player.tickCount;
             Random rand = new Random(ticks % 100 * 1000);
             Random prev = new Random((ticks - 1) % 100 * 1000);
@@ -153,13 +134,13 @@ public class ModelLightsaberBlade //extends ModelBase
                 {
                     matrixStack.translate((nextFloat.get() - 0.5F) / divider, 0, (nextFloat.get() - 0.5F) / /**/divider);
 
-                    for (int j = 0; j < bladelength; ++j)
+                    for (int j = 0; j < bladeLength; ++j)
                     {
                         matrixStack.pushPose();
                         matrixStack.mulPose(Axis.YP.rotationDegrees(nextFloat.get() * 360));
                         matrixStack.mulPose(Axis.XP.rotationDegrees(90));
                         float y =  0.05F - (1 - nextFloat.get() * 0.2F) / 15;
-                        float z =(1 + nextFloat.get() * bladelength) / -4.84f;
+                        float z =(1 + nextFloat.get() * bladeLength) / -4.84f;
                         matrixStack.translate(0, y,z );
                         matrixStack.scale(.3f, .3f, .3f);
                         List<BakedQuad> l = model.getQuads(null, null, RandomSource.create(), ModelData.EMPTY,
@@ -171,7 +152,7 @@ public class ModelLightsaberBlade //extends ModelBase
                         matrixStack.popPose();
                     }
                 }
-                if (focusingCrystal != FocusingCrystal.FINE_CUT && focusingCrystal2 != FocusingCrystal.FINE_CUT ) //TODO not finecut
+                if (focusingCrystal != FocusingCrystal.FINE_CUT && focusingCrystal2 != FocusingCrystal.FINE_CUT )
                 {
                     for (BakedQuad quad : bm.getQuads(null, null, RandomSource.create(), ModelData.EMPTY,
                             RenderType.entityTranslucentEmissive(new ResourceLocation(Lightsabers.MODID, "textures/item/lightsaber/blade.png"))
@@ -181,10 +162,6 @@ public class ModelLightsaberBlade //extends ModelBase
                     }
                     matrixStack.translate(0, -(0.5F + 32) / 16, 1F / 32);
                 }
-                else {
-
-                }
-
                 matrixStack.popPose();
             }
         }
@@ -206,21 +183,28 @@ public class ModelLightsaberBlade //extends ModelBase
         float heightScale = 1f;
         float zScale = .7f;
         float bloomAlpha = 0.15F;
-        BakedModel bm = Minecraft.getInstance().getModelManager().getModel(new ResourceLocation(Lightsabers.MODID, "item/blade"));
 
-        //TODO fix focus crystals
-        /* if (data.hasFocusingCrystal(FocusingCrystal.COMPRESSED))
+        boolean fineCut = focusingCrystal == FocusingCrystal.FINE_CUT || focusingCrystal2 == FocusingCrystal.FINE_CUT;
+        BakedModel bm = Minecraft.getInstance().getModelManager().getModel(new ResourceLocation(Lightsabers.MODID, "item/blade"));
+        RenderSystem.enableBlend();
+        RenderSystem.disableCull();
+        RenderSystem.depthMask(false);
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+
+
+        if (focusingCrystal == FocusingCrystal.COMPRESSED || focusingCrystal2 == FocusingCrystal.COMPRESSED)
         {
-            width = 0.4F;
+            width = 0.1F;
             smooth = 7;
             bloomAlpha = 0.07F;
         }
         
-        if (data.hasFocusingCrystal(FocusingCrystal.INVERTING) && data.hasFocusingCrystal(FocusingCrystal.PRISMATIC))
+        if ((focusingCrystal == FocusingCrystal.PRISMATIC && focusingCrystal2 == FocusingCrystal.INVERTING) || (focusingCrystal2 == FocusingCrystal.PRISMATIC && focusingCrystal == FocusingCrystal.INVERTING) )
         {
             rgb = new float[3];
             bloomAlpha *= 1.5F;
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         }
 
         if (fineCut)
@@ -228,14 +212,9 @@ public class ModelLightsaberBlade //extends ModelBase
             xscale *= 0.55F;
             heightScale *= 0.925F;
             zScale *= 1.1F;
-        }*/
-        boolean fineCut = false;
+        }
         int layerCount = 5 * smooth;
 
-        RenderSystem.enableBlend();
-        RenderSystem.disableCull();
-        RenderSystem.depthMask(false);
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_CONSTANT_ALPHA);
 
 
         for (int i = 0; i < layerCount; ++i) {
@@ -249,10 +228,10 @@ public class ModelLightsaberBlade //extends ModelBase
             float t = -f4 / 400 + 0.02F;
             matrixStack.translate(0, t, 0);
 
-            /*if (fineCut)
+            if (fineCut)
             {
                 matrixStack.translate(0, 0, 0.005F + f4 * 0.00001F);
-            }*/
+            }
             for (BakedQuad quad : bm.getQuads(null, null, RandomSource.create(), ModelData.EMPTY,
                     RenderType.entityTranslucentEmissive(new ResourceLocation(Lightsabers.MODID, "textures/item/lightsaber/blade.png"))
             )) {
@@ -264,10 +243,6 @@ public class ModelLightsaberBlade //extends ModelBase
         RenderSystem.enableCull();
         RenderSystem.disableBlend();
         RenderSystem.depthMask(true);
-//        if (data.hasFocusingCrystal(FocusingCrystal.CHARGED))
-//        {
-//            renderLightning(data, itemstack, rgb, inWorld, true);
-//        }*/
         vc.endVertex();
 
     }
