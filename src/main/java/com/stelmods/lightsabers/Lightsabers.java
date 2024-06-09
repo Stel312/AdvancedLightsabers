@@ -1,16 +1,14 @@
 package com.stelmods.lightsabers;
 
+import com.google.common.base.Suppliers;
 import com.stelmods.lightsabers.client.ClientEvents;
+import com.stelmods.lightsabers.common.block.BlockCrystal;
+import com.stelmods.lightsabers.common.item.ItemFocusingCrystal;
 import com.stelmods.lightsabers.common.block.ModBlocks;
 import com.stelmods.lightsabers.common.container.ModContainers;
 import com.stelmods.lightsabers.common.entity.ModEntities;
-import com.stelmods.lightsabers.common.item.ItemCrystal;
-import com.stelmods.lightsabers.common.item.LightsaberItem;
-import com.stelmods.lightsabers.common.item.LightsaberPart;
-import com.stelmods.lightsabers.common.item.ModItems;
-import com.stelmods.lightsabers.common.item.parts.BladeItem;
+import com.stelmods.lightsabers.common.item.*;
 import com.stelmods.lightsabers.common.lightsaber.LightsaberType;
-import com.google.common.base.Suppliers;
 import com.stelmods.lightsabers.datagen.DataGeneration;
 import com.stelmods.lightsabers.lib.Strings;
 import net.minecraft.core.registries.Registries;
@@ -52,7 +50,20 @@ public class Lightsabers
     private static final Supplier<List<ItemStack>> items = Suppliers.memoize(() ->
             ModItems.ITEMS.getEntries().stream().filter(item -> !(item.get() instanceof LightsaberItem)).map(RegistryObject::get).map(ItemStack::new).toList());
 
-    public static final RegistryObject<CreativeModeTab> lightsaber_tab = TABS.register(Strings.lightsaber_tab, () -> CreativeModeTab.builder()
+    public static final RegistryObject<CreativeModeTab> lightsaberBlockTab = TABS.register(Strings.lightsaberBlocks, () -> CreativeModeTab.builder()
+            .icon(() -> new ItemStack(ModBlocks.lightsaberForge.get()))
+            .title(Component.translatable("gui.lightsabers.lightsaber_crystals"))
+            .displayItems((params, output) -> {
+                for(ItemStack itemStack: items.get()) {
+                    Item i = itemStack.getItem();
+                    if ((i instanceof BlockItem blockItem && !(blockItem.getBlock() instanceof BlockCrystal)))
+                    {
+                        output.accept(itemStack);
+                    }
+                }
+            }).build());
+
+    public static final RegistryObject<CreativeModeTab> lightsaberLightsaber = TABS.register(Strings.lightsaber_tab, () -> CreativeModeTab.builder()
             .icon(() -> { ItemStack revan = new ItemStack(ModItems.lightsaber.get());
                 revan.setTag(new CompoundTag());
                 revan.getTag().putString("emitter", ModItems.revanEmitter.getId().toString());
@@ -97,7 +108,8 @@ public class Lightsabers
 
             .displayItems((params, output) -> {
                 for(ItemStack itemStack: items.get()) {
-                    if (itemStack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof ItemCrystal)
+                    Item i = itemStack.getItem();
+                    if ((i instanceof BlockItem blockItem && blockItem.getBlock() instanceof BlockCrystal) || i instanceof ItemFocusingCrystal)
                     {
                         output.accept(itemStack);
                     }

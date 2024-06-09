@@ -2,8 +2,10 @@ package com.stelmods.lightsabers.client.render.item;
 
 import com.stelmods.lightsabers.Lightsabers;
 import com.stelmods.lightsabers.client.model.ModelLightsaberBlade;
-import com.stelmods.lightsabers.common.item.ItemCrystal;
+import com.stelmods.lightsabers.common.item.ItemFocusingCrystal;
+import com.stelmods.lightsabers.common.block.BlockCrystal;
 import com.stelmods.lightsabers.common.item.LightsaberPart;
+import com.stelmods.lightsabers.common.lightsaber.FocusingCrystal;
 import com.stelmods.lightsabers.common.lightsaber.LightsaberType;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -76,7 +78,10 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
                 shouldRenderBlade = true;
             }
             case FIRST_PERSON_RIGHT_HAND -> {
-                matrixStack.translate(.75,.1,0);
+                matrixStack.translate(1,.1,0);
+                shouldRenderBlade = true;
+            }
+            case FIRST_PERSON_LEFT_HAND -> {
                 shouldRenderBlade = true;
             }
             case GUI -> {
@@ -126,8 +131,12 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
                 matrixStack.translate(0.5,0.53-(getHeight(tag.getString("grip"))+  getHeight(tag.getString("switch")) /2 + getHeight(tag.getString("pommel"))), 0.55);
                 shouldRenderBlade = true;
             }
-            case FIRST_PERSON_RIGHT_HAND,FIRST_PERSON_LEFT_HAND -> {
-                matrixStack.translate(.75,-.1,0);
+            case FIRST_PERSON_RIGHT_HAND -> {
+                matrixStack.translate(1,.1,0);
+                shouldRenderBlade = true;
+            }
+            case FIRST_PERSON_LEFT_HAND -> {
+
                 shouldRenderBlade = true;
             }
             case GUI -> {
@@ -157,8 +166,20 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
 
     private void renderBlade(CompoundTag tag, MultiBufferSource buffer, PoseStack matrixStack, float height)
     {
+        FocusingCrystal focusingCrystal1 = FocusingCrystal.NONE;
+        FocusingCrystal focusingCrystal2 = FocusingCrystal.NONE;
+        if(tag.contains("focus1"))
+        {
+            ItemFocusingCrystal itemFocusingCrystal =  (ItemFocusingCrystal)(ForgeRegistries.ITEMS.getValue(new ResourceLocation(tag.getString("focus1"))));
+            focusingCrystal1 = itemFocusingCrystal.getFocusingCrystal();
+        }
+        if(tag.contains("focus2"))
+        {
+            ItemFocusingCrystal itemFocusingCrystal =  (ItemFocusingCrystal)(ForgeRegistries.ITEMS.getValue(new ResourceLocation(tag.getString("focus2"))));
+            focusingCrystal2 = itemFocusingCrystal.getFocusingCrystal();
+        }
         matrixStack.pushPose();
-        ItemCrystal i  = (ItemCrystal) ForgeRegistries.BLOCKS.getValue(new ResourceLocation(tag.getString("color")));
+        BlockCrystal i  = (BlockCrystal) ForgeRegistries.BLOCKS.getValue(new ResourceLocation(tag.getString("color")));
         float[] rgb = i.getCrystalColor().getRGB();
         matrixStack.scale(1.4f, 1f, 1.4f);
         matrixStack.translate(0, height * 1, 0);
@@ -166,15 +187,15 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
 
         ModelLightsaberBlade.renderOuter(rgb, buffer.getBuffer(
                 RenderType.entityTranslucentEmissive(new ResourceLocation(Lightsabers.MODID, "textures/item/lightsaber/blade.png"), true)
-        ), matrixStack, model, 0xFFFFFFFF);
+        ), false, matrixStack, 0xFFFFFFFF, focusingCrystal1, focusingCrystal2);
         matrixStack.popPose();
 
         //render inner blade
         matrixStack.pushPose();
         matrixStack.scale(.5f, .95f, .5f);
         matrixStack.translate(0, height * 1.0, 0);
-        ModelLightsaberBlade.renderInner(new float[]{1.0f, 1.0f, 1.0f}, buffer.getBuffer(RenderType.solid()),
-                false, matrixStack, 15728880);
+        ModelLightsaberBlade.renderInner(rgb, buffer.getBuffer(RenderType.solid()),
+                false, matrixStack, 15728880, focusingCrystal1, focusingCrystal2);
 
         matrixStack.popPose();
     }

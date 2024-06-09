@@ -25,7 +25,7 @@ public class LightsaberItem extends SwordItem implements IClientItemExtensions {
         consumer.accept(new IClientItemExtensions() {
             @Override
             public RenderItemLightsaber getCustomRenderer() {
-                return  RenderItemLightsaber.bewlr;
+                return RenderItemLightsaber.bewlr;
             }
         });
     }
@@ -36,10 +36,10 @@ public class LightsaberItem extends SwordItem implements IClientItemExtensions {
         stack.getTag().putBoolean("active", !stack.getTag().getBoolean("active"));
         return InteractionResultHolder.success(stack);
     }
+
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-        if(!stack.getTag().contains("active"))
-        {
+        if (!stack.getTag().contains("active")) {
             stack.getTag().putBoolean("active", false);
         }
         return super.onEntityItemUpdate(stack, entity);

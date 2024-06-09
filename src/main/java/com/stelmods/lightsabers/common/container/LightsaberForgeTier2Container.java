@@ -1,7 +1,7 @@
 package com.stelmods.lightsabers.common.container;
 
 import com.stelmods.lightsabers.common.block.ModBlocks;
-import com.stelmods.lightsabers.common.item.ItemCrystal;
+import com.stelmods.lightsabers.common.block.BlockCrystal;
 import com.stelmods.lightsabers.common.item.LightsaberDoubleItem;
 import com.stelmods.lightsabers.common.item.LightsaberItem;
 import com.stelmods.lightsabers.common.item.ModItems;
@@ -162,7 +162,7 @@ public class LightsaberForgeTier2Container extends AbstractContainerMenu  {
         }
         @Override
         public boolean mayPlace(ItemStack stack) {
-            return stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof ItemCrystal;
+            return stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof BlockCrystal;
         }
         @Override
         public int getMaxStackSize()
@@ -250,7 +250,7 @@ public class LightsaberForgeTier2Container extends AbstractContainerMenu  {
         }
         @Override
         public boolean mayPlace(ItemStack stack) {
-            return stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof ItemCrystal;
+            return stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof BlockCrystal;
         }
         @Override
         public int getMaxStackSize()

@@ -8,8 +8,9 @@ public enum FocusingCrystal
     CRACKED,
     INVERTING,
     FINE_CUT,
-//    CHARGED,
-    PRISMATIC;
+    //CHARGED,
+    PRISMATIC,
+    NONE;
     
     public long getCode()
     {

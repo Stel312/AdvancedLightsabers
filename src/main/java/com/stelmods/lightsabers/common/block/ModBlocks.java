@@ -2,7 +2,6 @@ package com.stelmods.lightsabers.common.block;
 
 
 import com.stelmods.lightsabers.Lightsabers;
-import com.stelmods.lightsabers.common.item.ItemCrystal;
 import com.stelmods.lightsabers.common.item.ModItems;
 import com.stelmods.lightsabers.common.item.Rarity;
 import com.stelmods.lightsabers.common.lightsaber.CrystalColor;
@@ -25,24 +24,24 @@ public class ModBlocks
 
     //KyberCrystals
 
-    public  static  final RegistryObject<Block> deepBlueCrystal = createNewBlock("deep_blue_crystal",() -> new ItemCrystal(Rarity.RARE, CrystalColor.DEEP_BLUE));
-    public  static  final RegistryObject<Block> mediumBlueCrystal = createNewBlock("medium_blue_crystal",() -> new ItemCrystal(Rarity.RARE, CrystalColor.MEDIUM_BLUE));
-    public  static  final RegistryObject<Block> lightBlueCrystal = createNewBlock("light_blue_crystal",() -> new ItemCrystal(Rarity.RARE, CrystalColor.LIGHT_BLUE));
-    public  static  final RegistryObject<Block> articBlueCrystal = createNewBlock("artic_blue_crystal",() -> new ItemCrystal(Rarity.RARE, CrystalColor.ARCTIC_BLUE));
-    public  static  final RegistryObject<Block> cyanCrystal = createNewBlock("cyan_crystal",() -> new ItemCrystal(Rarity.RARE, CrystalColor.CYAN));
-    public  static  final RegistryObject<Block> whiteCrystal = createNewBlock("white_crystal",() -> new ItemCrystal(Rarity.RARE, CrystalColor.WHITE));
-    public  static  final RegistryObject<Block> greenCrystal = createNewBlock("green_crystal",() -> new ItemCrystal(Rarity.RARE, CrystalColor.GREEN));
-    public  static  final RegistryObject<Block> limeGreenCrystal = createNewBlock("lime_green_crystal",() -> new ItemCrystal(Rarity.RARE, CrystalColor.LIME_GREEN));
-    public  static  final RegistryObject<Block> mintGreenCrystal = createNewBlock("mint_green_crystal",() -> new ItemCrystal(Rarity.RARE, CrystalColor.MINT_GREEN));
-    public  static  final RegistryObject<Block> bloodOrangeCrystal = createNewBlock("blood_orange_crystal",() -> new ItemCrystal(Rarity.RARE, CrystalColor.BLOOD_ORANGE ));
-    public  static  final RegistryObject<Block> redCrystal = createNewBlock("red_crystal",() -> new ItemCrystal(Rarity.RARE, CrystalColor.RED));
-    public  static  final RegistryObject<Block> pinkCrystal = createNewBlock("pink_crystal",() -> new ItemCrystal(Rarity.RARE, CrystalColor.PINK));
-    public  static  final RegistryObject<Block> purpleCrystal = createNewBlock("purple_crystal",() -> new ItemCrystal(Rarity.RARE, CrystalColor.PURPLE));
-    public  static  final RegistryObject<Block> magentaCrystal = createNewBlock("magenta_crystal",() -> new ItemCrystal(Rarity.RARE, CrystalColor.MAGENTA));
-    public  static  final RegistryObject<Block> indigoCrystal = createNewBlock("indigo_crystal",() -> new ItemCrystal(Rarity.RARE, CrystalColor.INDIGO));
-    public  static  final RegistryObject<Block> yellowCrystal = createNewBlock("yellow_crystal",() -> new ItemCrystal(Rarity.RARE, CrystalColor.YELLOW));
-    public  static  final RegistryObject<Block> goldCrystal = createNewBlock("gold_crystal",() -> new ItemCrystal(Rarity.RARE, CrystalColor.GOLD));
-    public  static  final RegistryObject<Block> amberCrystal = createNewBlock("amber_crystal",() -> new ItemCrystal(Rarity.RARE, CrystalColor.AMBER));
+    public  static  final RegistryObject<Block> deepBlueCrystal = createNewBlock("deep_blue_crystal",() -> new BlockCrystal(Rarity.RARE, CrystalColor.DEEP_BLUE));
+    public  static  final RegistryObject<Block> mediumBlueCrystal = createNewBlock("medium_blue_crystal",() -> new BlockCrystal(Rarity.RARE, CrystalColor.MEDIUM_BLUE));
+    public  static  final RegistryObject<Block> lightBlueCrystal = createNewBlock("light_blue_crystal",() -> new BlockCrystal(Rarity.RARE, CrystalColor.LIGHT_BLUE));
+    public  static  final RegistryObject<Block> articBlueCrystal = createNewBlock("artic_blue_crystal",() -> new BlockCrystal(Rarity.RARE, CrystalColor.ARCTIC_BLUE));
+    public  static  final RegistryObject<Block> cyanCrystal = createNewBlock("cyan_crystal",() -> new BlockCrystal(Rarity.RARE, CrystalColor.CYAN));
+    public  static  final RegistryObject<Block> whiteCrystal = createNewBlock("white_crystal",() -> new BlockCrystal(Rarity.RARE, CrystalColor.WHITE));
+    public  static  final RegistryObject<Block> greenCrystal = createNewBlock("green_crystal",() -> new BlockCrystal(Rarity.RARE, CrystalColor.GREEN));
+    public  static  final RegistryObject<Block> limeGreenCrystal = createNewBlock("lime_green_crystal",() -> new BlockCrystal(Rarity.RARE, CrystalColor.LIME_GREEN));
+    public  static  final RegistryObject<Block> mintGreenCrystal = createNewBlock("mint_green_crystal",() -> new BlockCrystal(Rarity.RARE, CrystalColor.MINT_GREEN));
+    public  static  final RegistryObject<Block> bloodOrangeCrystal = createNewBlock("blood_orange_crystal",() -> new BlockCrystal(Rarity.RARE, CrystalColor.BLOOD_ORANGE ));
+    public  static  final RegistryObject<Block> redCrystal = createNewBlock("red_crystal",() -> new BlockCrystal(Rarity.RARE, CrystalColor.RED));
+    public  static  final RegistryObject<Block> pinkCrystal = createNewBlock("pink_crystal",() -> new BlockCrystal(Rarity.RARE, CrystalColor.PINK));
+    public  static  final RegistryObject<Block> purpleCrystal = createNewBlock("purple_crystal",() -> new BlockCrystal(Rarity.RARE, CrystalColor.PURPLE));
+    public  static  final RegistryObject<Block> magentaCrystal = createNewBlock("magenta_crystal",() -> new BlockCrystal(Rarity.RARE, CrystalColor.MAGENTA));
+    public  static  final RegistryObject<Block> indigoCrystal = createNewBlock("indigo_crystal",() -> new BlockCrystal(Rarity.RARE, CrystalColor.INDIGO));
+    public  static  final RegistryObject<Block> yellowCrystal = createNewBlock("yellow_crystal",() -> new BlockCrystal(Rarity.RARE, CrystalColor.YELLOW));
+    public  static  final RegistryObject<Block> goldCrystal = createNewBlock("gold_crystal",() -> new BlockCrystal(Rarity.RARE, CrystalColor.GOLD));
+    public  static  final RegistryObject<Block> amberCrystal = createNewBlock("amber_crystal",() -> new BlockCrystal(Rarity.RARE, CrystalColor.AMBER));
 
 
 

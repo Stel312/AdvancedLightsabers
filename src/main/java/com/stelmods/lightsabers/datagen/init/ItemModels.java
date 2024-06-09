@@ -1,9 +1,8 @@
 package com.stelmods.lightsabers.datagen.init;
 
 import com.stelmods.lightsabers.Lightsabers;
-import com.stelmods.lightsabers.common.item.ItemCrystal;
+import com.stelmods.lightsabers.common.block.BlockCrystal;
 import com.stelmods.lightsabers.common.item.ModItems;
-import com.stelmods.lightsabers.common.lightsaber.CrystalColor;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -26,7 +25,7 @@ public class ItemModels extends ItemModelProvider {
             //item Name
             final Item item = itemRegistryObject.get();
             final String path = ForgeRegistries.ITEMS.getKey(item).getPath();
-            if (item instanceof BlockItem blockItem && blockItem.getBlock() instanceof ItemCrystal) {
+            if (item instanceof BlockItem blockItem && blockItem.getBlock() instanceof BlockCrystal) {
                 standardBlockItem( path);
             }
         }

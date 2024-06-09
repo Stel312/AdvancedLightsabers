@@ -7,7 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-public class LightsaberDoubleItem extends LightsaberItem{
+public class LightsaberDoubleItem extends LightsaberItem {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
@@ -16,14 +16,13 @@ public class LightsaberDoubleItem extends LightsaberItem{
         stack.getTag().getCompound("lower").putBoolean("active", !stack.getTag().getCompound("lower").getBoolean("active"));
         return InteractionResultHolder.success(stack);
     }
+
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-        if(!stack.getTag().getCompound("upper").contains("active"))
-        {
+        if (!stack.getTag().getCompound("upper").contains("active")) {
             stack.getTag().getCompound("upper").putBoolean("active", false);
         }
-        if(!stack.getTag().getCompound("lower").contains("active"))
-        {
+        if (!stack.getTag().getCompound("lower").contains("active")) {
             stack.getTag().getCompound("lower").putBoolean("active", false);
         }
         return super.onEntityItemUpdate(stack, entity);

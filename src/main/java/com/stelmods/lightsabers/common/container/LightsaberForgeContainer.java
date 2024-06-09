@@ -1,7 +1,8 @@
 package com.stelmods.lightsabers.common.container;
 
+import com.stelmods.lightsabers.common.item.ItemFocusingCrystal;
 import com.stelmods.lightsabers.common.block.ModBlocks;
-import com.stelmods.lightsabers.common.item.ItemCrystal;
+import com.stelmods.lightsabers.common.block.BlockCrystal;
 import com.stelmods.lightsabers.common.item.LightsaberDoubleItem;
 import com.stelmods.lightsabers.common.item.LightsaberItem;
 import com.stelmods.lightsabers.common.item.ModItems;
@@ -44,6 +45,7 @@ public class LightsaberForgeContainer extends AbstractContainerMenu
     public static final int[][] SLOTS = { {43, 71}, {89, 71}, {107, 71}};
     public static List<Slot> inputSlots = new ArrayList<>();
     private Slot outputSlot, bodySlot, switchSlot, emitterSlot, pommelSlot, crystalSlot;
+    private Slot focusCrystal1, focusCrystal2;
 
     public LightsaberForgeContainer(int id, Inventory inventoryPlayer)
     {
@@ -71,6 +73,10 @@ public class LightsaberForgeContainer extends AbstractContainerMenu
 
         TE.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iih ->
                crystalSlot= addSlot(new Crystal(iih, 3,66, 71)));
+        TE.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iih ->
+               focusCrystal1= addSlot(new Focus(iih, 9,89, 71)));
+        TE.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iih ->
+               focusCrystal2= addSlot(new Focus(iih, 8,107, 71)));
 
         for (int slot = 0; slot < SLOTS.length; ++slot)
         {
@@ -110,6 +116,8 @@ public class LightsaberForgeContainer extends AbstractContainerMenu
     public void removed(Player player) {
         super.removed(player);
 
+        player.drop(focusCrystal1.remove(1),false);
+        player.drop(focusCrystal2.remove(1),false);
         player.drop(crystalSlot.remove(1),false);
         player.drop(emitterSlot.remove(1),false);
         player.drop(switchSlot.remove(1),false);
@@ -243,6 +251,23 @@ public class LightsaberForgeContainer extends AbstractContainerMenu
         }
 
     }
+    private class Focus extends Crystal
+    {
+        public Focus(IItemHandler iih, int id, int x, int y) {
+            super(iih, id, x, y);
+        }
+
+
+        @Override
+        public void onTake(Player player, ItemStack itemstack) {
+            super.setChanged();
+        }
+
+        @Override
+        public boolean mayPlace(ItemStack stack) {
+            return stack.getItem() instanceof ItemFocusingCrystal;
+        }
+    }
 
     private class Crystal extends SlotItemHandler
     {
@@ -252,7 +277,7 @@ public class LightsaberForgeContainer extends AbstractContainerMenu
         }
         @Override
         public boolean mayPlace(ItemStack stack) {
-            return stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof ItemCrystal;
+            return stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof BlockCrystal;
         }
         @Override
         public int getMaxStackSize()
@@ -293,6 +318,11 @@ public class LightsaberForgeContainer extends AbstractContainerMenu
                 stack.getTag().putString("switch", ForgeRegistries.ITEMS.getKey(switchSlot.getItem().getItem()).toString());
                 stack.getTag().putString("type", LightsaberType.SINGLE.toString());
                 stack.getTag().putString("color", ForgeRegistries.BLOCKS.getKey(Block.byItem(crystalSlot.getItem().getItem())).toString());
+                if(focusCrystal1.getItem().getItem() != Items.AIR)
+                    stack.getTag().putString("focus1", ForgeRegistries.ITEMS.getKey(focusCrystal1.getItem().getItem()).toString());
+                if(focusCrystal2.getItem().getItem() != Items.AIR)
+                    stack.getTag().putString("focus2", ForgeRegistries.ITEMS.getKey(focusCrystal2.getItem().getItem()).toString());
+
                 stack.getTag().putBoolean("active", false);
                 outputSlot.set(stack);
             }
@@ -301,6 +331,8 @@ public class LightsaberForgeContainer extends AbstractContainerMenu
             }
         }
     }
+
+
     private class Output extends Slot
     {
         public Output(int id, int x, int y)
@@ -318,6 +350,11 @@ public class LightsaberForgeContainer extends AbstractContainerMenu
                 pommelSlot.set(ForgeRegistries.ITEMS.getValue(new ResourceLocation(stack.getTag().getString("pommel"))).getDefaultInstance());
                 switchSlot.set(ForgeRegistries.ITEMS.getValue(new ResourceLocation(stack.getTag().getString("switch"))).getDefaultInstance());
                 crystalSlot.set(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(stack.getTag().getString("color"))).asItem().getDefaultInstance());
+                if(stack.getTag().contains("focus1"))
+                    focusCrystal1.set(ForgeRegistries.ITEMS.getValue(new ResourceLocation(stack.getTag().getString("focus1"))).asItem().getDefaultInstance());
+                if(stack.getTag().contains("focus2"))
+                    focusCrystal2.set(ForgeRegistries.ITEMS.getValue(new ResourceLocation(stack.getTag().getString("focus2"))).asItem().getDefaultInstance());
+
             }
 
         }
@@ -341,6 +378,8 @@ public class LightsaberForgeContainer extends AbstractContainerMenu
             outputSlot.remove(1);
             itemstack.getTag().putBoolean("active", false);
             craftMatrix.clearContent();
+            focusCrystal1.remove(1);
+            focusCrystal2.remove(1);
         }
     }
 }

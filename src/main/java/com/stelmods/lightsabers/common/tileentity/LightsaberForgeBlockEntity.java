@@ -30,7 +30,7 @@ public class LightsaberForgeBlockEntity extends BaseContainerBlockEntity
     }
 
     protected IItemHandler createInventory() {
-        return new ItemStackHandler(9) {
+        return new ItemStackHandler(10) {
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
                 return true;
