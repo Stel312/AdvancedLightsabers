@@ -187,7 +187,7 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
 
         ModelLightsaberBlade.renderOuter(rgb, buffer.getBuffer(
                 RenderType.entityTranslucentEmissive(new ResourceLocation(Lightsabers.MODID, "textures/item/lightsaber/blade.png"), true)
-        ), false, matrixStack, 0xFFFFFFFF, focusingCrystal1, focusingCrystal2);
+        ), false, matrixStack, 0X0, focusingCrystal1, focusingCrystal2);
         matrixStack.popPose();
 
         //render inner blade
@@ -195,7 +195,7 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
         matrixStack.scale(.5f, .95f, .5f);
         matrixStack.translate(0, height * 1.0, 0);
         ModelLightsaberBlade.renderInner(rgb, buffer.getBuffer(RenderType.solid()),
-                false, matrixStack, 15728880, focusingCrystal1, focusingCrystal2);
+                false, matrixStack, 0X0, focusingCrystal1, focusingCrystal2);
 
         matrixStack.popPose();
     }

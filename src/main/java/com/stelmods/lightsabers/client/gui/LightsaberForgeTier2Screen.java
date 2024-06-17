@@ -46,7 +46,7 @@ public class LightsaberForgeTier2Screen extends AbstractContainerScreen<Lightsab
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         gui.blit(GUI_TEXTURES, this.leftPos, this.topPos, 0, 0, imageWidth, 195);
-        ItemStack itemStack = this.menu.getDualSlot().getItem().copy();
+        ItemStack itemStack = this.menu.getDualSlot().getItem();
         if(itemStack.getItem() instanceof LightsaberDoubleItem){
             PoseStack matrixstack = gui.pose();
             matrixstack.pushPose();

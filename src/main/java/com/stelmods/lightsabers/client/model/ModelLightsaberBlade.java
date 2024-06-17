@@ -46,7 +46,7 @@ public class ModelLightsaberBlade //extends ModelBase
 
         if (focusingCrystal == FocusingCrystal.COMPRESSED || focusingCrystal2 == FocusingCrystal.COMPRESSED)
         {
-            matrixStack.scale(0.8F, 1, 0.8F);
+            matrixStack.scale(0.7F, 1, 0.7F);
         }
 
         if (focusingCrystal == FocusingCrystal.FINE_CUT || focusingCrystal2 == FocusingCrystal.FINE_CUT)
