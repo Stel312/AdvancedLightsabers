@@ -126,13 +126,13 @@ public class ModelLightsaberBlade //extends ModelBase
             BakedModel model = Minecraft.getInstance().getModelManager().getModel(new ResourceLocation(Lightsabers.MODID, "item/cube"));
 
             matrixStack.popPose();
-            for (int i = 0; i < 4; ++i)
+            for (int i = 0; i < 5; ++i)
             {
                 matrixStack.pushPose();
 
                 if (i != 0)
                 {
-                    matrixStack.translate((nextFloat.get() - 0.5F) / divider, 0, (nextFloat.get() - 0.5F) / /**/divider);
+                    matrixStack.translate((nextFloat.get() - 0.5F) / divider, 0, (nextFloat.get() - 0.5F) / divider);
 
                     for (int j = 0; j < bladeLength; ++j)
                     {
@@ -160,7 +160,7 @@ public class ModelLightsaberBlade //extends ModelBase
 
                         vc.putBulkData(matrixStack.last(), quad, rgb[0], rgb[1], rgb[2], 1f, combineLight, OverlayTexture.NO_OVERLAY, true);
                     }
-                    matrixStack.translate(0, -(0.5F + 32) / 16, 1F / 32);
+                    // matrixStack.translate(0, -(0.5F + 32) / 16, 1F / 32);
                 }
                 matrixStack.popPose();
             }

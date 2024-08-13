@@ -18,11 +18,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 public class LightsaberForgeTier2Screen extends AbstractContainerScreen<LightsaberForgeTier2Container> {
-    private static final ResourceLocation GUI_TEXTURES = new ResourceLocation(Lightsabers.MODID, "textures/gui/container/lightsaber_forge_t2.png");
+    private static final ResourceLocation GUI_TEXTURES = new ResourceLocation(Lightsabers.MODID, "textures/gui/container/lightsaber_forge_double.png");
     private float rotate = 0;
     public LightsaberForgeTier2Screen(LightsaberForgeTier2Container menu, Inventory inventoryPlayer, Component component /*, TileEntityLightsaberForge tile */) {
         super(menu, inventoryPlayer, component);
-        this.imageWidth = 193;
+        this.imageWidth = 175;
         this.imageHeight = 195;
         this.height = 195;
         this.init();
@@ -50,11 +50,11 @@ public class LightsaberForgeTier2Screen extends AbstractContainerScreen<Lightsab
         if(itemStack.getItem() instanceof LightsaberDoubleItem){
             PoseStack matrixstack = gui.pose();
             matrixstack.pushPose();
-            matrixstack.translate(this.leftPos + 115, this.topPos + 36, 0);
+            matrixstack.translate(this.leftPos + 90, this.topPos + 36, 0);
             matrixstack.mulPose(Axis.ZP.rotationDegrees(90));
             matrixstack.mulPose(Axis.YP.rotationDegrees(rotate = (rotate % 360) + 2f));
             matrixstack.scale(65L,65,65);
-            gui.enableScissor(this.leftPos + 60, this.topPos + 16, this.leftPos + 174, this.topPos + 64);
+            gui.enableScissor(this.leftPos + 12, this.topPos + 16, this.leftPos + 157, this.topPos + 63);
             RenderItemLightsaber.bewlr.renderDouble(ItemDisplayContext.NONE, matrixstack, gui.bufferSource(), 0x0, itemStack);
             gui.disableScissor();
             RenderSystem.enableCull();
