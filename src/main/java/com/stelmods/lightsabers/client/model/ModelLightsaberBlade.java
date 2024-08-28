@@ -195,7 +195,7 @@ public class ModelLightsaberBlade //extends ModelBase
         if (focusingCrystal == FocusingCrystal.COMPRESSED || focusingCrystal2 == FocusingCrystal.COMPRESSED)
         {
             width = 0.1F;
-            smooth = 7;
+            smooth = 1;
             bloomAlpha = 0.07F;
         }
         
@@ -214,8 +214,6 @@ public class ModelLightsaberBlade //extends ModelBase
             zScale *= 1.1F;
         }
         int layerCount = 5 * smooth;
-
-
 
         for (int i = 0; i < layerCount; ++i) {
 

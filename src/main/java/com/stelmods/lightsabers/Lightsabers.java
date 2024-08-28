@@ -164,6 +164,7 @@ public class Lightsabers
             @Override
             public void run() {
                 bus.addListener(ClientEvents::colourTint);
+                bus.addListener(ClientEvents::itemTint);
             }
         });
     }

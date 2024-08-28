@@ -1,5 +1,7 @@
 package com.stelmods.lightsabers.client.gui;
 
+import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.stelmods.lightsabers.Lightsabers;
@@ -8,8 +10,13 @@ import com.stelmods.lightsabers.common.container.LightsaberForgeTier2Container;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.stelmods.lightsabers.common.item.LightsaberDoubleItem;
 import com.stelmods.lightsabers.common.item.LightsaberItem;
+import com.stelmods.lightsabers.common.item.ModItems;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -55,9 +62,12 @@ public class LightsaberForgeTier2Screen extends AbstractContainerScreen<Lightsab
             matrixstack.mulPose(Axis.YP.rotationDegrees(rotate = (rotate % 360) + 2f));
             matrixstack.scale(65L,65,65);
             gui.enableScissor(this.leftPos + 12, this.topPos + 16, this.leftPos + 157, this.topPos + 63);
-            RenderItemLightsaber.bewlr.renderDouble(ItemDisplayContext.NONE, matrixstack, gui.bufferSource(), 0x0, itemStack);
+
+            Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
+            Lighting.setupForEntityInInventory();
+            RenderItemLightsaber.bewlr.renderDouble(ItemDisplayContext.NONE, matrixstack, gui.bufferSource(), 0xFFFFFF, itemStack);
+            Minecraft.getInstance().gameRenderer.lightTexture().turnOffLightLayer();
             gui.disableScissor();
-            RenderSystem.enableCull();
             matrixstack.popPose();
         }
     }

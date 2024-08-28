@@ -1,5 +1,6 @@
 package com.stelmods.lightsabers.client.gui;
 
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -53,16 +54,14 @@ public class LightsaberForgeScreen extends AbstractContainerScreen<LightsaberFor
         if(itemStack.getItem() instanceof LightsaberItem && itemStack.getItem() != Items.AIR){
             PoseStack matrixstack = gui.pose();
             matrixstack.pushPose();
-
             matrixstack.translate(this.leftPos + 150    , this.topPos + 36, 0);
             matrixstack.mulPose(Axis.ZP.rotationDegrees(90));
             matrixstack.mulPose(Axis.YP.rotationDegrees(rotate = (rotate % 360) + 2f));
             matrixstack.scale(75,75,75);
             gui.enableScissor(this.leftPos + 42, this.topPos + 20, this.leftPos + 156, this.topPos + 64);
-            RenderItemLightsaber.bewlr.renderSingle(ItemDisplayContext.NONE, matrixstack, gui.bufferSource(), 0x0, itemStack);
+            Lighting.setupFor3DItems();
+            RenderItemLightsaber.bewlr.renderSingle(ItemDisplayContext.NONE, matrixstack, gui.bufferSource(), 0xfffff, itemStack);
             gui.disableScissor();
-            RenderSystem.enableCull();
-
             matrixstack.popPose();
         }
     }

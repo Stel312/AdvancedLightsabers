@@ -1,20 +1,13 @@
 package com.stelmods.lightsabers.common.container;
 
 import com.stelmods.lightsabers.common.block.ModBlocks;
-import com.stelmods.lightsabers.common.block.BlockCrystal;
-import com.stelmods.lightsabers.common.item.ItemFocusingCrystal;
 import com.stelmods.lightsabers.common.item.LightsaberDoubleItem;
 import com.stelmods.lightsabers.common.item.LightsaberItem;
 import com.stelmods.lightsabers.common.item.ModItems;
-import com.stelmods.lightsabers.common.item.parts.LightsaberBody;
-import com.stelmods.lightsabers.common.item.parts.LightsaberEmiter;
-import com.stelmods.lightsabers.common.item.parts.LightsaberPommel;
-import com.stelmods.lightsabers.common.item.parts.LightsaberSwitch;
 import com.stelmods.lightsabers.common.lightsaber.LightsaberType;
 import com.stelmods.lightsabers.common.tileentity.LightsaberForgeTier2BlockEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -22,18 +15,11 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.registries.ForgeRegistries;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class LightsaberForgeTier2Container extends AbstractContainerMenu  {
     public final LightsaberForgeTier2BlockEntity TE;

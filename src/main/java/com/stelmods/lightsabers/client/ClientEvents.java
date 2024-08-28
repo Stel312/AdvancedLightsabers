@@ -16,4 +16,14 @@ public class ClientEvents {
             }
         }
     }
+
+    public static void itemTint(RegisterColorHandlersEvent.Item event)
+    {
+        for(RegistryObject<Block> block: ModBlocks.BLOCKS.getEntries())
+        {
+            if (block.get() instanceof BlockCrystal crystal){
+                event.register((itemStack, tint) -> crystal.getCrystalColor().color, crystal.asItem());
+            }
+        }
+    }
 }

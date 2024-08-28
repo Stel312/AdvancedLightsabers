@@ -1,5 +1,6 @@
 package com.stelmods.lightsabers.client.render.item;
 
+import com.mojang.blaze3d.platform.Lighting;
 import com.stelmods.lightsabers.Lightsabers;
 import com.stelmods.lightsabers.client.model.ModelLightsaberBlade;
 import com.stelmods.lightsabers.common.item.ItemFocusingCrystal;
@@ -67,7 +68,6 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
         float lowerHeight = getTotalHeight(lowerTag) - getHeight(lowerTag.getString("pommel"));
         CompoundTag upperTag = tag.getCompound("upper");
         float upperHeight = getTotalHeight(upperTag) - getHeight(upperTag.getString("pommel"));
-
         boolean shouldRenderBlade = false;
 
         switch (itemDisplayContext)
@@ -87,7 +87,7 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
             case GUI -> {
                 matrixStack.translate(0.5,0.5,0  );
                 matrixStack.mulPose(Axis.ZN.rotationDegrees(-45));
-                matrixStack.scale(0.7f, 0.7f, 0.7f);
+                matrixStack.scale(1.1f, 1.1f, 1.1f);
             }
             case FIXED -> {
                 matrixStack.mulPose(Axis.ZN.rotationDegrees(-45));
@@ -140,8 +140,9 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
                 shouldRenderBlade = true;
             }
             case GUI -> {
-                matrixStack.translate(0.3,0.1f,0  );
+                //matrixStack.translate(0,0f,0  );
                 matrixStack.mulPose(Axis.ZN.rotationDegrees(45));
+                matrixStack.scale(1.9f,1.9f,1.9f);
             }
             case FIXED -> {
                 matrixStack.mulPose(Axis.ZN.rotationDegrees(-45));
@@ -183,10 +184,8 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
         float[] rgb = i.getCrystalColor().getRGB();
         matrixStack.scale(1.4f, 1f, 1.4f);
         matrixStack.translate(0, height * 1, 0);
-        BakedModel model = Minecraft.getInstance().getModelManager().getModel(new ResourceLocation(Lightsabers.MODID, "item/blade"));
-
         ModelLightsaberBlade.renderOuter(rgb, buffer.getBuffer(
-                RenderType.entityTranslucentEmissive(new ResourceLocation(Lightsabers.MODID, "textures/item/lightsaber/blade.png"), true)
+                RenderType.entityTranslucentEmissive(new ResourceLocation(Lightsabers.MODID, "textures/item/lightsaber/blade.png"), false)
         ), false, matrixStack, 0X0, focusingCrystal1, focusingCrystal2);
         matrixStack.popPose();
 
