@@ -30,6 +30,9 @@ public class ModItems {
             revanGrip = registerBody("revan_grip", 0.30083f),
             revanPommel = registerPommel("revan_pommel", 0.041906f);
 
+    public static final RegistryObject<Item>
+        stelEmitter = registerEmitter("stel_emitter", .192952f);
+
     public static final RegistryObject<Item> lightsaber = ITEMS.register("lightsaber", LightsaberItem::new);
     public static final RegistryObject<Item> doubleLightsaber = ITEMS.register("lightsaber_double", LightsaberDoubleItem::new);
 

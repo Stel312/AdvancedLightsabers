@@ -148,6 +148,7 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
                 matrixStack.mulPose(Axis.ZN.rotationDegrees(-45));
                 matrixStack.mulPose(Axis.YP.rotationDegrees(180));
                 matrixStack.translate(-.7,-0.5,-0.5);
+                matrixStack.scale(1.9f,1.9f,1.9f);
             }
             case GROUND -> {
                 matrixStack.translate(.25,0.5,0.5);

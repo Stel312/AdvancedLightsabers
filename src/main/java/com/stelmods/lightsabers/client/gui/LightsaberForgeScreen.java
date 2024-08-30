@@ -8,6 +8,7 @@ import com.stelmods.lightsabers.Lightsabers;
 import com.stelmods.lightsabers.client.render.item.RenderItemLightsaber;
 import com.stelmods.lightsabers.common.container.LightsaberForgeContainer;
 import com.stelmods.lightsabers.common.item.LightsaberItem;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -59,8 +60,11 @@ public class LightsaberForgeScreen extends AbstractContainerScreen<LightsaberFor
             matrixstack.mulPose(Axis.YP.rotationDegrees(rotate = (rotate % 360) + 2f));
             matrixstack.scale(75,75,75);
             gui.enableScissor(this.leftPos + 42, this.topPos + 20, this.leftPos + 156, this.topPos + 64);
-            Lighting.setupFor3DItems();
-            RenderItemLightsaber.bewlr.renderSingle(ItemDisplayContext.NONE, matrixstack, gui.bufferSource(), 0xfffff, itemStack);
+
+            Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
+            Lighting.setupForEntityInInventory();
+            RenderItemLightsaber.bewlr.renderSingle(ItemDisplayContext.NONE, matrixstack, gui.bufferSource(), 0xFFFFFF, itemStack);
+            //Minecraft.getInstance().gameRenderer.lightTexture().turnOffLightLayer();
             gui.disableScissor();
             matrixstack.popPose();
         }
