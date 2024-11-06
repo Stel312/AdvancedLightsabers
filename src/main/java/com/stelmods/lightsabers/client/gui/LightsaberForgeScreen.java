@@ -58,13 +58,14 @@ public class LightsaberForgeScreen extends AbstractContainerScreen<LightsaberFor
             matrixstack.translate(this.leftPos + 150    , this.topPos + 36, 0);
             matrixstack.mulPose(Axis.ZP.rotationDegrees(90));
             matrixstack.mulPose(Axis.YP.rotationDegrees(rotate = (rotate % 360) + 2f));
-            matrixstack.scale(75,75,75);
+            matrixstack.scale(110,110,110);
             gui.enableScissor(this.leftPos + 42, this.topPos + 20, this.leftPos + 156, this.topPos + 64);
 
-            Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
-            Lighting.setupForEntityInInventory();
+            //Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
+            //Lighting.setupForEntityInInventory();
             RenderItemLightsaber.bewlr.renderSingle(ItemDisplayContext.NONE, matrixstack, gui.bufferSource(), 0xFFFFFF, itemStack);
             //Minecraft.getInstance().gameRenderer.lightTexture().turnOffLightLayer();
+            RenderSystem.disableCull();
             gui.disableScissor();
             matrixstack.popPose();
         }

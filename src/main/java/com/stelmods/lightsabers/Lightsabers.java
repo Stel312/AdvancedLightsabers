@@ -2,6 +2,8 @@ package com.stelmods.lightsabers;
 
 import com.google.common.base.Suppliers;
 import com.stelmods.lightsabers.client.ClientEvents;
+import com.stelmods.lightsabers.client.InputHandler;
+import com.stelmods.lightsabers.client.KeyMappings;
 import com.stelmods.lightsabers.common.block.BlockCrystal;
 import com.stelmods.lightsabers.common.item.ItemFocusingCrystal;
 import com.stelmods.lightsabers.common.block.ModBlocks;
@@ -11,6 +13,7 @@ import com.stelmods.lightsabers.common.item.*;
 import com.stelmods.lightsabers.common.lightsaber.LightsaberType;
 import com.stelmods.lightsabers.datagen.DataGeneration;
 import com.stelmods.lightsabers.lib.Strings;
+import com.stelmods.lightsabers.network.PacketHandler;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -165,6 +168,7 @@ public class Lightsabers
             public void run() {
                 bus.addListener(ClientEvents::colourTint);
                 bus.addListener(ClientEvents::itemTint);
+                bus.addListener(KeyMappings::registerKeyMap);
             }
         });
     }
@@ -175,6 +179,7 @@ public class Lightsabers
     
     private void doClientStuff(final FMLClientSetupEvent event) {
         ModContainers.registerGUIFactories();
+        MinecraftForge.EVENT_BUS.register(new InputHandler());
     }
 	
 	private void doServerStuff(final FMLDedicatedServerSetupEvent event) {
@@ -182,7 +187,7 @@ public class Lightsabers
 	}
 	
 	private void doCommonStuff(final FMLCommonSetupEvent event) {
-
+        event.enqueueWork(PacketHandler::register);
     }
     @OnlyIn(Dist.CLIENT)
     private void modelRegistry(ModelEvent.RegisterAdditional event) {
