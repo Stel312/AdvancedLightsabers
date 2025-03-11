@@ -7,6 +7,7 @@ import com.stelmods.lightsabers.network.cts.CSToggleLightsaber;
 import com.stelmods.lightsabers.network.cts.ForcePull;
 import com.stelmods.lightsabers.network.cts.ForcePush;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
@@ -85,7 +86,6 @@ public class InputHandler {
             // Checks for multiple blocks until an interactable one is reached
             Vec3 nextPos = currentPos.add(lookVec.x * 0.1, lookVec.y * 0.1, lookVec.z * 0.1);
             returnMOP = mc.level.clip(new ClipContext(currentPos, nextPos, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, theRenderViewEntity));
-
             // If we got a block check it
             if (returnMOP != null) {
                 BlockState blockState = mc.level.getBlockState(returnMOP.getBlockPos());

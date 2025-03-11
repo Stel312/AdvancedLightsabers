@@ -7,14 +7,17 @@ import com.stelmods.lightsabers.Lightsabers;
 import com.stelmods.lightsabers.common.block.BlockCrystal;
 import com.stelmods.lightsabers.common.block.ModBlocks;
 import com.stelmods.lightsabers.lib.Utils;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
@@ -67,16 +70,42 @@ public class ClientEvents {
             PoseStack poseStack = event.getPoseStack();
 
             poseStack.pushPose();
-            poseStack.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
+            {
+                poseStack.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
 
-            //TODO Make lines render through blocks and scan only visible blocks rather than radius around the player
-            for (BlockPos pos : BlockPos.betweenClosed(player.blockPosition().offset(-20, -20, -20), player.blockPosition().offset(20, 20, 20))) {
-                BlockState state = level.getBlockState(pos);
-                if (Utils.isBlockStateInteractable(state)) {
-                    drawCubeOutline(poseStack, pos);
+                Frustum frustum = mc.levelRenderer.getFrustum();
+
+                int radius = 20;
+
+                BlockPos playerPos = player.blockPosition();
+                BlockPos minPos = playerPos.offset(-radius, -10, -radius);
+                BlockPos maxPos = playerPos.offset(radius, 10, radius + 5);
+
+
+                //TODO Maybe this can be further optimized with some maths ignoring the blocks outside player view
+                for (BlockPos pos : BlockPos.betweenClosed(minPos, maxPos)) {
+                    AABB blockAABB = new AABB(pos);
+                    if (frustum.isVisible(blockAABB)) {  // Filters blocks outside of frustum
+                        BlockState state = level.getBlockState(pos);
+
+                        if (Utils.isBlockStateInteractable(state)) {
+                            drawCubeOutline(poseStack, pos);
+                        }
+                    }
                 }
-            }
 
+                /*int radius = 50;
+                //TODO Make lines render through blocks and scan only visible blocks rather than radius around the player
+                for (BlockPos pos : BlockPos.betweenClosed(player.blockPosition().offset(-radius, -radius, -radius), player.blockPosition().offset(radius, radius, radius))) {
+                    AABB blockAABB = new AABB(pos);
+                    if(mc.levelRenderer.getFrustum().isVisible(blockAABB)) {
+                        BlockState state = level.getBlockState(pos);
+                        if (Utils.isBlockStateInteractable(state)) {
+                            drawCubeOutline(poseStack, pos);
+                        }
+                    }
+                }*/
+            }
             poseStack.popPose();
         }
     }
