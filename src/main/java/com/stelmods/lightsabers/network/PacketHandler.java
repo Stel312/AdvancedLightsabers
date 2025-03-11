@@ -1,7 +1,9 @@
 package com.stelmods.lightsabers.network;
 
 import com.stelmods.lightsabers.Lightsabers;
+import com.stelmods.lightsabers.network.cts.ForcePull;
 import com.stelmods.lightsabers.network.cts.ForcePush;
+import com.stelmods.lightsabers.network.cts.SCToggleLightsaber;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.util.FakePlayer;
@@ -16,7 +18,9 @@ public class PacketHandler {
 
     public static void register() {
         int packetID = 0;
+        HANDLER.registerMessage(packetID++, SCToggleLightsaber.class, SCToggleLightsaber::encode, SCToggleLightsaber::decode, SCToggleLightsaber::handle);
         HANDLER.registerMessage(packetID++, ForcePush.class, ForcePush::encode, ForcePush::decode, ForcePush::handle);
+        HANDLER.registerMessage(packetID++, ForcePull.class, ForcePull::encode, ForcePull::decode, ForcePull::handle);
 
     }
     public static <MSG> void sendToServer(MSG msg) {

@@ -40,8 +40,7 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
         CompoundTag tag = itemStack.getTag();
         String type = tag.getString("type");
 
-        if(!type.isEmpty())
-        {
+        if(!type.isEmpty()) {
             LightsaberType typeL = LightsaberType.valueOf(type);
 
             switch (typeL) {
@@ -55,8 +54,7 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
         return  getHeight(tag.getString("switch")) + getHeight(tag.getString("emitter")) +
                 getHeight(tag.getString("grip"))+ getHeight(tag.getString("pommel"));
     }
-    public static float getHeight(String name)
-    {
+    public static float getHeight(String name) {
         LightsaberPart part = (LightsaberPart) ForgeRegistries.ITEMS.getValue(new ResourceLocation(name));
         return part.getHeight();
     }
@@ -100,7 +98,7 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
         }
 
         matrixStack.pushPose();
-        if((upperTag.getBoolean("active") && shouldRenderBlade) || itemDisplayContext.equals(ItemDisplayContext.NONE)) {
+        if(shouldRenderBlade || itemDisplayContext.equals(ItemDisplayContext.NONE)) {
             renderBlade(upperTag, buffer, matrixStack, upperHeight);
         }
         upperHeight = renderPart(upperTag.getString("emitter"),upperHeight, (byte) 1,itemDisplayContext,matrixStack,buffer,combinedLightIn);
@@ -110,8 +108,8 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
 
         matrixStack.pushPose();
         matrixStack.mulPose(Axis.ZN.rotationDegrees(180));
-        if((lowerTag.getBoolean("active") && shouldRenderBlade) || itemDisplayContext.equals(ItemDisplayContext.NONE)) {
-                    renderBlade(lowerTag, buffer, matrixStack, lowerHeight);
+        if(shouldRenderBlade || itemDisplayContext.equals(ItemDisplayContext.NONE)) {
+            renderBlade(lowerTag, buffer, matrixStack, lowerHeight);
         }
         lowerHeight = renderPart(lowerTag.getString("emitter"),lowerHeight, (byte) 1,itemDisplayContext,matrixStack,buffer,combinedLightIn);
         lowerHeight = renderPart(lowerTag.getString("switch"),lowerHeight, (byte) 1,itemDisplayContext,matrixStack,buffer,combinedLightIn);
@@ -119,8 +117,7 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
         matrixStack.popPose();
     }
 
-    public void renderSingle(ItemDisplayContext itemDisplayContext, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn,ItemStack itemStack)
-    {
+    public void renderSingle(ItemDisplayContext itemDisplayContext, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn,ItemStack itemStack) {
         boolean shouldRenderBlade = false;
         CompoundTag tag = itemStack.getTag();
         float height = getTotalHeight(tag);
@@ -128,7 +125,7 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
         switch (itemDisplayContext)
         {
             case THIRD_PERSON_LEFT_HAND, THIRD_PERSON_RIGHT_HAND -> {
-                matrixStack.translate(0.5,0.53-(getHeight(tag.getString("grip"))+  getHeight(tag.getString("switch")) /2 + getHeight(tag.getString("pommel"))), 0.55);
+                matrixStack.translate(0.5,0.53-(getHeight(tag.getString("grip")) + getHeight(tag.getString("switch")) /2 + getHeight(tag.getString("pommel"))), 0.55);
                 shouldRenderBlade = true;
             }
             case FIRST_PERSON_RIGHT_HAND -> {
@@ -155,8 +152,8 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
                 matrixStack.mulPose(Axis.ZN.rotationDegrees(45));
             }
         }
-        if((tag.getBoolean("active") && shouldRenderBlade) || itemDisplayContext.equals(ItemDisplayContext.NONE)) {
-                    renderBlade(tag, buffer, matrixStack, height);
+        if(shouldRenderBlade || itemDisplayContext.equals(ItemDisplayContext.NONE)) {
+            renderBlade(tag, buffer, matrixStack, height);
         }
         height = renderPart(tag.getString("emitter"),height, (byte) 1,itemDisplayContext,matrixStack,buffer,combinedLightIn);
         height = renderPart(tag.getString("switch"),height, (byte) 1,itemDisplayContext,matrixStack,buffer,combinedLightIn);
@@ -166,8 +163,7 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
         matrixStack.popPose();
     }
 
-    private void renderBlade(CompoundTag tag, MultiBufferSource buffer, PoseStack matrixStack, float height)
-    {
+    private void renderBlade(CompoundTag tag, MultiBufferSource buffer, PoseStack matrixStack, float height) {
         FocusingCrystal focusingCrystal1 = FocusingCrystal.NONE;
         FocusingCrystal focusingCrystal2 = FocusingCrystal.NONE;
         if(tag.contains("focus1"))
@@ -181,26 +177,30 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
             focusingCrystal2 = itemFocusingCrystal.getFocusingCrystal();
         }
         matrixStack.pushPose();
+
+        float length = 1F;
+        if(tag.contains("length")){
+            length = tag.getFloat("length");
+        }
+
         BlockCrystal i  = (BlockCrystal) ForgeRegistries.BLOCKS.getValue(new ResourceLocation(tag.getString("color")));
         float[] rgb = i.getCrystalColor().getRGB();
         matrixStack.scale(1.4f, 1f, 1.4f);
         matrixStack.translate(0, height * 1, 0);
-        ModelLightsaberBlade.renderOuter(rgb, buffer.getBuffer(
-                RenderType.entityTranslucentEmissive(new ResourceLocation(Lightsabers.MODID, "textures/item/lightsaber/blade.png"), false)
-        ), false, matrixStack, 0X0, focusingCrystal1, focusingCrystal2);
+        if(length > 0.1F)
+            ModelLightsaberBlade.renderOuter(rgb, buffer.getBuffer(RenderType.entityTranslucentEmissive(new ResourceLocation(Lightsabers.MODID, "textures/item/lightsaber/blade.png"), false)), false, matrixStack, 0X0, focusingCrystal1, focusingCrystal2, length);
         matrixStack.popPose();
 
         //render inner blade
         matrixStack.pushPose();
-        matrixStack.scale(.5f, .95f, .5f);
-        matrixStack.translate(0, height * 1.0, 0);
-        ModelLightsaberBlade.renderInner(rgb, buffer.getBuffer(RenderType.solid()),
-                false, matrixStack, 0X0, focusingCrystal1, focusingCrystal2);
+        matrixStack.scale(.5f, .95f * length, .5f);
+        matrixStack.translate(0, height * 1.06, 0);
+        if(length > 0.1F)
+            ModelLightsaberBlade.renderInner(rgb, buffer.getBuffer(RenderType.solid()), false, matrixStack, 0X0, focusingCrystal1, focusingCrystal2);
 
         matrixStack.popPose();
     }
-    private float renderPart(String name,float height, byte y, ItemDisplayContext itemDisplayContext, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn)
-    {
+    private float renderPart(String name,float height, byte y, ItemDisplayContext itemDisplayContext, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn) {
         matrixStack.pushPose();
         LightsaberPart part = (LightsaberPart) ForgeRegistries.ITEMS.getValue(new ResourceLocation(name));
         height = height - part.getHeight();

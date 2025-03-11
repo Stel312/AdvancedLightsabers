@@ -29,7 +29,7 @@ public class ForcePush
         Level world = senderPlayer.level();
         // Calculate the bounding box coordinates based on the player's look vector
         Vec3 playerPos = senderPlayer.position();
-        playerPos = playerPos.add(0, 0, 1);
+        playerPos = playerPos.add(0, 1, 0);
         Vec3 boxStart = playerPos.add(lookVec.scale(1)); // Start the box a bit in front of the player
         Vec3 boxEnd = playerPos.add(lookVec.scale(10));
 
@@ -37,7 +37,6 @@ public class ForcePush
                 Math.min(boxStart.x, boxEnd.x), Math.min(boxStart.y, boxEnd.y), Math.min(boxStart.z, boxEnd.z),
                 Math.max(boxStart.x, boxEnd.x), Math.max(boxStart.y, boxEnd.y), Math.max(boxStart.z, boxEnd.z)
         );
-        boundingBox.
         // Get all entities within the bounding box
         for (Entity entity : world.getEntities(senderPlayer, boundingBox)) {
             // Push entity
