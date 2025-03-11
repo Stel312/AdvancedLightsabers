@@ -1,6 +1,7 @@
 package com.stelmods.lightsabers.datagen;
 
-import com.stelmods.lightsabers.datagen.init.*;
+import com.stelmods.lightsabers.datagen.init.ItemModels;
+import com.stelmods.lightsabers.datagen.init.LootTables;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.ExistingFileHelper;

@@ -1,8 +1,8 @@
 package com.stelmods.lightsabers.common.container;
 
-import com.stelmods.lightsabers.common.item.ItemFocusingCrystal;
-import com.stelmods.lightsabers.common.block.ModBlocks;
 import com.stelmods.lightsabers.common.block.BlockCrystal;
+import com.stelmods.lightsabers.common.block.ModBlocks;
+import com.stelmods.lightsabers.common.item.ItemFocusingCrystal;
 import com.stelmods.lightsabers.common.item.LightsaberDoubleItem;
 import com.stelmods.lightsabers.common.item.LightsaberItem;
 import com.stelmods.lightsabers.common.item.ModItems;

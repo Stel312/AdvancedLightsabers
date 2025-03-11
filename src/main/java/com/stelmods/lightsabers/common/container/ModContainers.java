@@ -2,7 +2,6 @@ package com.stelmods.lightsabers.common.container;
 
 import com.stelmods.lightsabers.Lightsabers;
 import com.stelmods.lightsabers.client.gui.LightsaberForgeScreen;
-
 import com.stelmods.lightsabers.client.gui.LightsaberForgeTier2Screen;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
