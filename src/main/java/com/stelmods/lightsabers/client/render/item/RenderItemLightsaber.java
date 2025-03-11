@@ -185,7 +185,7 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer // imp
 
         BlockCrystal i  = (BlockCrystal) ForgeRegistries.BLOCKS.getValue(new ResourceLocation(tag.getString("color")));
         float[] rgb = i.getCrystalColor().getRGB();
-        matrixStack.scale(1.4f, 1f, 1.4f);
+        matrixStack.scale(1.2f, 1f, 1.2f);
         matrixStack.translate(0, height * 1, 0);
         if(length > 0.1F)
             ModelLightsaberBlade.renderOuter(rgb, buffer.getBuffer(RenderType.entityTranslucentEmissive(new ResourceLocation(Lightsabers.MODID, "textures/item/lightsaber/blade.png"), false)), false, matrixStack, 0X0, focusingCrystal1, focusingCrystal2, length);

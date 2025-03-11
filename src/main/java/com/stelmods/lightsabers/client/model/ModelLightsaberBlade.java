@@ -166,12 +166,12 @@ public class ModelLightsaberBlade //extends ModelBase
     }
 
     public static void renderOuter(float[] rgb, VertexConsumer vc, boolean isCrossguard, PoseStack matrixStack, int combineLight, FocusingCrystal focusingCrystal, FocusingCrystal focusingCrystal2, float progress) {
-        int smooth = 10;
-        float width = 0.2F;
+        int smooth = 5;
+        float width = 0.15F;
         float xscale = .7f;
-        float heightScale = 1f * progress;
+        float heightScale = .95f * progress;
         float zScale = .7f;
-        float bloomAlpha = 0.15F;
+        float bloomAlpha = 0.09F;
 
         boolean fineCut = focusingCrystal == FocusingCrystal.FINE_CUT || focusingCrystal2 == FocusingCrystal.FINE_CUT;
         BakedModel bm = Minecraft.getInstance().getModelManager().getModel(new ResourceLocation(Lightsabers.MODID, "item/blade"));
@@ -180,14 +180,12 @@ public class ModelLightsaberBlade //extends ModelBase
         RenderSystem.depthMask(false);
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-
         if (focusingCrystal == FocusingCrystal.COMPRESSED || focusingCrystal2 == FocusingCrystal.COMPRESSED)
         {
             width = 0.1F;
             smooth = 1;
             bloomAlpha = 0.07F;
         }
-        
         if ((focusingCrystal == FocusingCrystal.PRISMATIC && focusingCrystal2 == FocusingCrystal.INVERTING) || (focusingCrystal2 == FocusingCrystal.PRISMATIC && focusingCrystal == FocusingCrystal.INVERTING) )
         {
             rgb = new float[3];
@@ -195,14 +193,14 @@ public class ModelLightsaberBlade //extends ModelBase
 
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         }
-
         if (fineCut)
         {
             xscale *= 0.55F;
             heightScale *= 0.925F;
             zScale *= 1.1F;
         }
-        int layerCount = 5 * smooth;
+
+        int layerCount = 4 * smooth;
 
         for (int i = 0; i < layerCount; ++i) {
 
@@ -210,7 +208,7 @@ public class ModelLightsaberBlade //extends ModelBase
             float f4 = (float) i / (layerCount * 50);
 
             matrixStack.pushPose();
-            float test = (1 - f4 * (fineCut ? 0.003F : 0.005F)) * heightScale;
+            float test = (1 - f4 * (fineCut ? 0.003F : 0.005F)) * (heightScale * (1 + (i * .003f)));
             matrixStack.scale(scale * xscale, test, scale * zScale);
             float t = -f4 / 400 + 0.02F;
             matrixStack.translate(0, t, 0);
