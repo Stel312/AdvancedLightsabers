@@ -1,8 +1,6 @@
 package com.stelmods.lightsabers.common.item;
 
 import com.stelmods.lightsabers.client.render.item.RenderItemLightsaber;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;

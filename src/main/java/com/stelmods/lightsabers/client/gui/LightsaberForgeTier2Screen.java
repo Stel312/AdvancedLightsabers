@@ -1,28 +1,20 @@
 package com.stelmods.lightsabers.client.gui;
 
-import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.stelmods.lightsabers.Lightsabers;
 import com.stelmods.lightsabers.client.render.item.RenderItemLightsaber;
 import com.stelmods.lightsabers.common.container.LightsaberForgeTier2Container;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.stelmods.lightsabers.common.item.LightsaberDoubleItem;
-import com.stelmods.lightsabers.common.item.LightsaberItem;
-import com.stelmods.lightsabers.common.item.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
 public class LightsaberForgeTier2Screen extends AbstractContainerScreen<LightsaberForgeTier2Container> {
     private static final ResourceLocation GUI_TEXTURES = new ResourceLocation(Lightsabers.MODID, "textures/gui/container/lightsaber_forge_double.png");

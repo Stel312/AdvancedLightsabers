@@ -1,7 +1,6 @@
 package com.stelmods.lightsabers.datagen.init;
 
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;
 

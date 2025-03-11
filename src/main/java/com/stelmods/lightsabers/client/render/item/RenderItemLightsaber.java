@@ -1,15 +1,14 @@
 package com.stelmods.lightsabers.client.render.item;
 
-import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import com.stelmods.lightsabers.Lightsabers;
 import com.stelmods.lightsabers.client.model.ModelLightsaberBlade;
-import com.stelmods.lightsabers.common.item.ItemFocusingCrystal;
 import com.stelmods.lightsabers.common.block.BlockCrystal;
+import com.stelmods.lightsabers.common.item.ItemFocusingCrystal;
 import com.stelmods.lightsabers.common.item.LightsaberPart;
 import com.stelmods.lightsabers.common.lightsaber.FocusingCrystal;
 import com.stelmods.lightsabers.common.lightsaber.LightsaberType;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;

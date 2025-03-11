@@ -7,21 +7,16 @@ import com.mojang.math.Axis;
 import com.stelmods.lightsabers.Lightsabers;
 import com.stelmods.lightsabers.common.lightsaber.FocusingCrystal;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.codehaus.plexus.util.dag.Vertex;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 import java.util.List;
 import java.util.Random;
@@ -58,7 +53,7 @@ public class ModelLightsaberBlade //extends ModelBase
             float edge1 = f / 2;
             float tip = f * 1.5F;
             bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-             bb.vertex(-f / 2, -length, f / 2)
+            bb.vertex(-f / 2, -length, f / 2)
                     .vertex(0, -length, edge)
                     .vertex(0, edgeAngle, edge)
                     .vertex(-f / 2, -f, f / 2)
@@ -95,7 +90,7 @@ public class ModelLightsaberBlade //extends ModelBase
                     .vertex(0, -tip - f * bladeLength, -f / 2)
                     .vertex(f / 2, 0 - f * bladeLength, f / 2).endVertex();
 
-             tessellator.end();
+            tessellator.end();
 
         }
         if(focusingCrystal != FocusingCrystal.PRISMATIC && focusingCrystal2 != FocusingCrystal.PRISMATIC) {
@@ -332,12 +327,12 @@ public class ModelLightsaberBlade //extends ModelBase
 //                }
 //            }
 //
-////            if (!fineCut)
-////            {
-////                blade.render(0.0625F);
-////                GL11.glTranslatef(0, -0.0625F * (0.5F + bladeLength), 0.0625F / 2);
-////                ALRenderHelper.drawTip(0.03125F, 0.125F);
-////            }
+    ////            if (!fineCut)
+    ////            {
+    ////                blade.render(0.0625F);
+    ////                GL11.glTranslatef(0, -0.0625F * (0.5F + bladeLength), 0.0625F / 2);
+    ////                ALRenderHelper.drawTip(0.03125F, 0.125F);
+    ////            }
 //
 //            GL11.glPopMatrix();
 //        }

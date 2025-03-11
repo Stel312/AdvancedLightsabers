@@ -1,8 +1,8 @@
 package com.stelmods.lightsabers.datagen.init;
 
 import com.stelmods.lightsabers.Lightsabers;
-import com.stelmods.lightsabers.common.block.ModBlocks;
 import com.stelmods.lightsabers.common.block.BlockCrystal;
+import com.stelmods.lightsabers.common.block.ModBlocks;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
