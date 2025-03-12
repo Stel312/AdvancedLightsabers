@@ -14,7 +14,7 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
 import java.util.function.Consumer;
 
-public class LightsaberItem extends SwordItem implements IClientItemExtensions {
+public class LightsaberItem extends SwordItem {
 
     public LightsaberItem() {
         super(Tiers.NETHERITE, 8, 1, new Item.Properties().stacksTo(1));
