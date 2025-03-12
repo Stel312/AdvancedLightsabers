@@ -5,6 +5,7 @@ import com.stelmods.lightsabers.capabilities.ModCapabilities;
 import com.stelmods.lightsabers.network.PacketHandler;
 import com.stelmods.lightsabers.network.stc.SCSendLightningData;
 import com.stelmods.lightsabers.network.stc.SCSyncCapabilityPacket;
+import com.stelmods.lightsabers.network.stc.SCSyncCapabilityToAllPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -42,7 +43,7 @@ public class CSShootLightning {
                 if(!message.enabled) {
                     PacketHandler.sendTo(new SCSendLightningData(player.getId(), new ArrayList<>()), p);
                 }
-                PacketHandler.sendTo(new SCSyncCapabilityPacket(playerData), p);
+                PacketHandler.sendTo(new SCSyncCapabilityToAllPacket(player.getDisplayName().getString(),playerData), p);
             }
 
 

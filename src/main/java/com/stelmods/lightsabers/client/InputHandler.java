@@ -26,30 +26,31 @@ public class InputHandler {
 
     @SubscribeEvent
     public void handleKeyInputEvent(InputEvent.Key event) {
-        if(event.getAction() == 1) { //We only want to run it once the key has been pressed, not released
-            if (event.getKey() == KeyMappings.FORCE_PUSH.getKey().getValue()) {
-                PacketHandler.sendToServer(new ForcePush());
-            } else if (event.getKey() == KeyMappings.FORCE_PULL.getKey().getValue()) {
-                PacketHandler.sendToServer(new ForcePull());
-            } else if (event.getKey() == KeyMappings.TOGGLE_LIGHTSABER.getKey().getValue()) {
-                PacketHandler.sendToServer(new CSToggleLightsaber());
-            } else if (event.getKey() == KeyMappings.FORCE_ACTIVATE.getKey().getValue()) {
-                forceSense = !forceSense;
-            } else if (event.getKey() == KeyMappings.FORCE_LIGHTNING.getKey().getValue()) {
-                //Turn force lightning on
-                PacketHandler.sendToServer(new CSShootLightning(true));
+        if(mc.screen == null) {
+            if (event.getAction() == 1) { //We only want to run it once the key has been pressed, not released
+                if (event.getKey() == KeyMappings.FORCE_PUSH.getKey().getValue()) {
+                    PacketHandler.sendToServer(new ForcePush());
+                } else if (event.getKey() == KeyMappings.FORCE_PULL.getKey().getValue()) {
+                    PacketHandler.sendToServer(new ForcePull());
+                } else if (event.getKey() == KeyMappings.TOGGLE_LIGHTSABER.getKey().getValue()) {
+                    PacketHandler.sendToServer(new CSToggleLightsaber());
+                } else if (event.getKey() == KeyMappings.FORCE_ACTIVATE.getKey().getValue()) {
+                    forceSense = !forceSense;
+                } else if (event.getKey() == KeyMappings.FORCE_LIGHTNING.getKey().getValue()) {
+                    //Turn force lightning on
+                    PacketHandler.sendToServer(new CSShootLightning(true));
 
+                }
+            }
+
+            if (event.getAction() == 0) { // On release
+                if (event.getKey() == KeyMappings.FORCE_LIGHTNING.getKey().getValue()) {
+                    //Turn force lightning off
+                    PacketHandler.sendToServer(new CSShootLightning(false));
+
+                }
             }
         }
-
-        if(event.getAction() == 0){ // On release
-            if(event.getKey() == KeyMappings.FORCE_LIGHTNING.getKey().getValue()) {
-                //Turn force lightning off
-                PacketHandler.sendToServer(new CSShootLightning(false));
-
-            }
-        }
-
 
     }
 

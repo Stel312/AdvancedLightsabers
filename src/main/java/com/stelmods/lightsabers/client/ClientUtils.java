@@ -31,8 +31,7 @@ public class ClientUtils {
         VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.LINES);
         //System.out.println(poseStack+" "+bufferSource+" "+start+" "+end+" "+segments);
 
-        poseStack.pushPose();
-        {
+
             Vec3 direction = end.subtract(start).normalize();
             double length = start.distanceTo(end);
 
@@ -46,14 +45,15 @@ public class ClientUtils {
             for (int i = 1; i < segments; i++) {
                 double t = (double) i / segments;
 
-                double rand1 = (random.nextDouble() - 0.5) * 2;
-                double rand2 = (random.nextDouble() - 0.5) * 2;
+                double rand1 = (random.nextDouble() - 0.5) * 4;
+                double rand2 = (random.nextDouble() - 0.5) * 4;
                 double randY = (random.nextDouble() - 0.5) * thickness * 2;
 
                 Vec3 offset = perp1.scale(rand1).add(perp2.scale(rand2)).add(0, randY, 0); // Offset ahora también afecta Y
                 points[i] = start.add(direction.scale(t * length)).add(offset);
             }
-
+        poseStack.pushPose();
+        {
             for (int i = 0; i < segments - 1; i++) {
                 Vec3 p1 = points[i];
                 Vec3 p2 = points[i + 1];

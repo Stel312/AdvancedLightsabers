@@ -1,11 +1,14 @@
 package com.stelmods.lightsabers.network;
 
 import com.stelmods.lightsabers.Lightsabers;
+import com.stelmods.lightsabers.capabilities.IPlayerCapabilities;
 import com.stelmods.lightsabers.network.cts.*;
 import com.stelmods.lightsabers.network.stc.SCSendLightningData;
 import com.stelmods.lightsabers.network.stc.SCSyncCapabilityPacket;
+import com.stelmods.lightsabers.network.stc.SCSyncCapabilityToAllPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
@@ -26,6 +29,7 @@ public class PacketHandler {
 
         HANDLER.registerMessage(packetID++, SCSyncCapabilityPacket.class, SCSyncCapabilityPacket::encode, SCSyncCapabilityPacket::decode, SCSyncCapabilityPacket::handle);
         HANDLER.registerMessage(packetID++, SCSendLightningData.class, SCSendLightningData::encode, SCSendLightningData::decode, SCSendLightningData::handle);
+        HANDLER.registerMessage(packetID++, SCSyncCapabilityToAllPacket.class, SCSyncCapabilityToAllPacket::encode, SCSyncCapabilityToAllPacket::decode, SCSyncCapabilityToAllPacket::handle);
 
     }
     public static <MSG> void sendToServer(MSG msg) {
@@ -35,6 +39,14 @@ public class PacketHandler {
     public static <MSG> void sendTo(MSG msg, ServerPlayer player) {
         if (!(player instanceof FakePlayer)) {
             HANDLER.sendTo(msg, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+        }
+    }
+
+    public static void syncToAllAround(Player player, IPlayerCapabilities playerData) {
+        if (!player.level().isClientSide) {
+            for (Player playerFromList : player.level().players()) {
+                sendTo(new SCSyncCapabilityToAllPacket(player.getDisplayName().getString(), playerData), (ServerPlayer) playerFromList);
+            }
         }
     }
 

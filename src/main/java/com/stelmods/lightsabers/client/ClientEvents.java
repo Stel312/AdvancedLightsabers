@@ -87,6 +87,8 @@ public class ClientEvents {
             if(e instanceof Player player){
                 IPlayerCapabilities playerData = ModCapabilities.getPlayer(player);
                 if (playerData.isLightningMode()) {
+                    System.out.println(player.getDisplayName().getString()+" "+playerData.isLightningMode());
+
                     MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 
                     PoseStack poseStack = event.getPoseStack();
@@ -106,7 +108,7 @@ public class ClientEvents {
                             if (hitResult.getType() == HitResult.Type.BLOCK) {
                                 end = hitResult.getLocation();
                             }
-                            ClientUtils.renderLightningBeam(poseStack, bufferSource, player.getEyePosition().add(0, -0.2, 0), end, 20, 0.2F);
+                            ClientUtils.renderLightningBeam(poseStack, bufferSource, player.getEyePosition().add(random.nextFloat()-0.5F, random.nextFloat(0.1F)-0.2, random.nextFloat()-0.5F), end.add(random.nextFloat(5)-2.5,random.nextFloat(),random.nextFloat(5)-2.5), 20, 0.3F);
                         }
                         poseStack.popPose();
                     } else {
