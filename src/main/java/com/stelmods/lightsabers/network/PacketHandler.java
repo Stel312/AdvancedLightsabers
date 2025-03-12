@@ -1,10 +1,9 @@
 package com.stelmods.lightsabers.network;
 
 import com.stelmods.lightsabers.Lightsabers;
-import com.stelmods.lightsabers.network.cts.CSInteractWithBlock;
-import com.stelmods.lightsabers.network.cts.CSToggleLightsaber;
-import com.stelmods.lightsabers.network.cts.ForcePull;
-import com.stelmods.lightsabers.network.cts.ForcePush;
+import com.stelmods.lightsabers.network.cts.*;
+import com.stelmods.lightsabers.network.stc.SCSendLightningData;
+import com.stelmods.lightsabers.network.stc.SCSyncCapabilityPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.util.FakePlayer;
@@ -23,6 +22,10 @@ public class PacketHandler {
         HANDLER.registerMessage(packetID++, ForcePush.class, ForcePush::encode, ForcePush::decode, ForcePush::handle);
         HANDLER.registerMessage(packetID++, ForcePull.class, ForcePull::encode, ForcePull::decode, ForcePull::handle);
         HANDLER.registerMessage(packetID++, CSInteractWithBlock.class, CSInteractWithBlock::encode, CSInteractWithBlock::decode, CSInteractWithBlock::handle);
+        HANDLER.registerMessage(packetID++, CSShootLightning.class, CSShootLightning::encode, CSShootLightning::decode, CSShootLightning::handle);
+
+        HANDLER.registerMessage(packetID++, SCSyncCapabilityPacket.class, SCSyncCapabilityPacket::encode, SCSyncCapabilityPacket::decode, SCSyncCapabilityPacket::handle);
+        HANDLER.registerMessage(packetID++, SCSendLightningData.class, SCSendLightningData::encode, SCSendLightningData::decode, SCSendLightningData::handle);
 
     }
     public static <MSG> void sendToServer(MSG msg) {

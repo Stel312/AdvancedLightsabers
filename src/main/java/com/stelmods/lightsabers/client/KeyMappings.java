@@ -14,6 +14,7 @@ public class KeyMappings {
     public static final KeyMapping FORCE_PULL = new KeyMapping("key." + Lightsabers.MODID + ".force.pull", InputConstants.KEY_H, "key." + Lightsabers.MODID + ".force");
     public static final KeyMapping FORCE_PICKUP = new KeyMapping("key." + Lightsabers.MODID + ".force.pickup", InputConstants.KEY_Y, "key." + Lightsabers.MODID + ".force");
     public static final KeyMapping FORCE_ACTIVATE= new KeyMapping("key." + Lightsabers.MODID + ".force.activate", InputConstants.KEY_U, "key." + Lightsabers.MODID + ".force");
+    public static final KeyMapping FORCE_LIGHTNING= new KeyMapping("key." + Lightsabers.MODID + ".force.lightning", InputConstants.KEY_L, "key." + Lightsabers.MODID + ".force");
 
     public static void registerKeyMap(RegisterKeyMappingsEvent event) {
         event.register(TOGGLE_LIGHTSABER);
@@ -21,5 +22,6 @@ public class KeyMappings {
         event.register(FORCE_PULL);
         event.register(FORCE_PICKUP);
         event.register(FORCE_ACTIVATE);
+        event.register(FORCE_LIGHTNING);
     }
 }

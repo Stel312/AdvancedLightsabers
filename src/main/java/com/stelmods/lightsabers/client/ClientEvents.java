@@ -4,29 +4,40 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.stelmods.lightsabers.Lightsabers;
+import com.stelmods.lightsabers.capabilities.IPlayerCapabilities;
+import com.stelmods.lightsabers.capabilities.ModCapabilities;
 import com.stelmods.lightsabers.common.block.BlockCrystal;
 import com.stelmods.lightsabers.common.block.ModBlocks;
 import com.stelmods.lightsabers.lib.Utils;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterColorHandlersEvent;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.RegistryObject;
+
+import java.util.*;
+
+import static com.stelmods.lightsabers.client.ClientUtils.random;
 
 @Mod.EventBusSubscriber(modid = Lightsabers.MODID, value = Dist.CLIENT)
 public class ClientEvents {
@@ -57,10 +68,70 @@ public class ClientEvents {
         }
     }
 
+    public static Map<Integer, ArrayList<Integer>> lightningMap = new HashMap<>();
+    /**
+     * Renders force sense nearby interactable blocks
+     * Uncomment the annotation to enable
+     * Maybe add a requirement for a specific force sense level
+     * @param event
+     */
     @SubscribeEvent
     public static void onRenderWorld(RenderLevelStageEvent event) {
-        if (InputHandler.forceSense && event.getStage() == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
-            Minecraft mc = Minecraft.getInstance();
+        Minecraft mc = Minecraft.getInstance();
+        if(mc.level == null)
+            return;
+
+      //  System.out.println(lightningMap);
+        for (Map.Entry<Integer, ArrayList<Integer>> entry : lightningMap.entrySet()) {
+            Entity e = mc.level.getEntity(entry.getKey());
+            if(e instanceof Player player){
+                IPlayerCapabilities playerData = ModCapabilities.getPlayer(player);
+                if (playerData.isLightningMode()) {
+                    MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
+
+                    PoseStack poseStack = event.getPoseStack();
+                    if(entry.getValue().isEmpty()){
+                        poseStack.pushPose();
+                        {
+                            Vec3 cameraPos = mc.gameRenderer.getMainCamera().getPosition();
+                            poseStack.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
+
+                            Vec3 start = player.getEyePosition(); // Posición de los ojos del jugador
+                            Vec3 look = player.getViewVector(1.0F); // Dirección en la que mira
+                            Vec3 end = start.add(look.scale(10)); // 10 bloques de distancia máxima
+                            Level level = player.level();
+
+                            HitResult hitResult = level.clip(new ClipContext(start, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
+
+                            if (hitResult.getType() == HitResult.Type.BLOCK) {
+                                end = hitResult.getLocation();
+                            }
+                            ClientUtils.renderLightningBeam(poseStack, bufferSource, player.getEyePosition().add(0, -0.2, 0), end, 20, 0.2F);
+                        }
+                        poseStack.popPose();
+                    } else {
+                        for(int tID : entry.getValue()){
+                            Entity target = mc.level.getEntity(tID);
+                            if(target != null) {
+                                poseStack.pushPose();
+                                {
+                                    Vec3 cameraPos = mc.gameRenderer.getMainCamera().getPosition();
+                                    poseStack.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
+
+                                    ClientUtils.renderLightningBeam(poseStack, bufferSource, player.getEyePosition().add(0, -0.2, 0), target.position().add(random.nextFloat(target.getBbWidth())-0.5F, random.nextFloat(target.getBbHeight()), random.nextFloat(target.getBbWidth())-0.5F), 20, 0.2F*entry.getValue().size());
+                                }
+                                poseStack.popPose();
+                            }
+                        }
+                    }
+
+
+                }
+            }
+        }
+
+        //Block outline
+       if (false && event.getStage() == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
             LocalPlayer player = mc.player;
             if (player == null)
                 return;
@@ -81,7 +152,6 @@ public class ClientEvents {
                 BlockPos minPos = playerPos.offset(-radius, -10, -radius);
                 BlockPos maxPos = playerPos.offset(radius, 10, radius + 5);
 
-
                 //TODO Maybe this can be further optimized with some maths ignoring the blocks outside player view
                 for (BlockPos pos : BlockPos.betweenClosed(minPos, maxPos)) {
                     AABB blockAABB = new AABB(pos);
@@ -89,7 +159,7 @@ public class ClientEvents {
                         BlockState state = level.getBlockState(pos);
 
                         if (Utils.isBlockStateInteractable(state)) {
-                            drawCubeOutline(poseStack, pos);
+                            //drawCubeOutline(poseStack, pos);
                         }
                     }
                 }
@@ -125,15 +195,24 @@ public class ClientEvents {
         Minecraft mc = Minecraft.getInstance();
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 
-        // Usamos RenderType.LINES para dibujar las líneas del contorno
         VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.LINES);
 
-        float x = pos.getX();
+       // ClientUtils.renderLightningBeam(poseStack, bufferSource, mc.player.getEyePosition().add(0,-0.3,0), pos.getCenter(), 20);
+
+        /*float x = pos.getX();
         float y = pos.getY();
         float z = pos.getZ();
 
-        // Definimos los 8 vértices del cubo
-        float[][] vertices = {
+        vertexConsumer.vertex(poseStack.last().pose(), x+0.5F,y+0.5F,z+0.5F).color(255, 255, 0, 255).normal(1, 1, 1).endVertex();
+        vertexConsumer.vertex(poseStack.last().pose(), (float)mc.player.position().x(),(float)(mc.player.position().y()+mc.player.getEyeHeight()-0.1F),(float)mc.player.position().z()).color(100, 180, 255, 255).normal(1, 1, 1).endVertex();
+
+        bufferSource.endBatch(RenderType.LINES);*/
+
+        /**
+         * Render block hitbox
+         */
+        // We define the 8 cube vertex
+        /*float[][] vertices = {
                 {x, y, z},
                 {x + 1, y, z},
                 {x + 1, y, z + 1},
@@ -144,26 +223,25 @@ public class ClientEvents {
                 {x, y + 1, z + 1}
         };
 
-        // Conectar los vértices para formar las 12 aristas del cubo
+        // Connect the vertex to form the 12 cube edges
         int[][] edges = {
                 {0, 1}, {1, 2}, {2, 3}, {3, 0}, // Base del cubo
                 {4, 5}, {5, 6}, {6, 7}, {7, 4}, // Parte superior del cubo
                 {0, 4}, {1, 5}, {2, 6}, {3, 7}  // Conexiones entre la base y la parte superior
         };
 
-        // Desactivar la prueba de profundidad para asegurar que las líneas no sean bloqueadas por los bloques
         RenderSystem.disableDepthTest();
 
-        // Dibujar cada arista
+        // Draw each edge
         for (int[] edge : edges) {
             int start = edge[0];
             int end = edge[1];
 
-            // Obtener las coordenadas de los vértices
+            // Get vertex
             float[] startVertex = vertices[start];
             float[] endVertex = vertices[end];
 
-            // Dibujar la línea con el color amarillo (255, 255, 0)
+            // Draw yellow line
             vertexConsumer.vertex(poseStack.last().pose(), startVertex[0], startVertex[1], startVertex[2])
                     .color(255, 255, 0, 255)
                     .normal(1, 1, 1) // Normal arbitraria
@@ -174,11 +252,10 @@ public class ClientEvents {
                     .endVertex();
         }
 
-        // Finalizamos el renderizado de las líneas
+        // Finish line rendering
         bufferSource.endBatch(RenderType.LINES);
 
-        // Restaurar la prueba de profundidad (Z-buffer) para el resto del renderizado
-        RenderSystem.enableDepthTest();
+        RenderSystem.enableDepthTest();*/
     }
 
 }

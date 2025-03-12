@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -22,7 +23,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
-@Mod.EventBusSubscriber
+
+@Mod.EventBusSubscriber(Dist.CLIENT)
 public class ModelLightsaberBlade //extends ModelBase
 {
     private static float renderTick;

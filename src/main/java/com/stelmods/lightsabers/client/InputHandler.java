@@ -2,10 +2,7 @@ package com.stelmods.lightsabers.client;
 
 import com.stelmods.lightsabers.lib.Utils;
 import com.stelmods.lightsabers.network.PacketHandler;
-import com.stelmods.lightsabers.network.cts.CSInteractWithBlock;
-import com.stelmods.lightsabers.network.cts.CSToggleLightsaber;
-import com.stelmods.lightsabers.network.cts.ForcePull;
-import com.stelmods.lightsabers.network.cts.ForcePush;
+import com.stelmods.lightsabers.network.cts.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.world.InteractionHand;
@@ -37,19 +34,23 @@ public class InputHandler {
             } else if (event.getKey() == KeyMappings.TOGGLE_LIGHTSABER.getKey().getValue()) {
                 PacketHandler.sendToServer(new CSToggleLightsaber());
             } else if (event.getKey() == KeyMappings.FORCE_ACTIVATE.getKey().getValue()) {
-                //Toggle force scan on or hold to use?
                 forceSense = !forceSense;
-                //forceSense = true;
+            } else if (event.getKey() == KeyMappings.FORCE_LIGHTNING.getKey().getValue()) {
+                //Turn force lightning on
+                PacketHandler.sendToServer(new CSShootLightning(true));
 
             }
         }
 
-       /* if(event.getAction() == 0){ // On release
-            if(event.getKey() == KeyMappings.FORCE_ACTIVATE.getKey().getValue()) {
-                //Toggle force scan off
-                forceSense = false;
+        if(event.getAction() == 0){ // On release
+            if(event.getKey() == KeyMappings.FORCE_LIGHTNING.getKey().getValue()) {
+                //Turn force lightning off
+                PacketHandler.sendToServer(new CSShootLightning(false));
+
             }
-        }*/
+        }
+
+
     }
 
     @SubscribeEvent

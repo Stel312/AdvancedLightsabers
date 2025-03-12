@@ -1,9 +1,11 @@
 package com.stelmods.lightsabers;
 
 import com.google.common.base.Suppliers;
+import com.stelmods.lightsabers.capabilities.ModCapabilities;
 import com.stelmods.lightsabers.client.ClientEvents;
 import com.stelmods.lightsabers.client.InputHandler;
 import com.stelmods.lightsabers.client.KeyMappings;
+import com.stelmods.lightsabers.common.CommonEvents;
 import com.stelmods.lightsabers.common.block.BlockCrystal;
 import com.stelmods.lightsabers.common.block.ModBlocks;
 import com.stelmods.lightsabers.common.container.ModContainers;
@@ -158,13 +160,15 @@ public class Lightsabers
     	bus.addListener(this::doClientStuff);
     	bus.addListener(this::doServerStuff);
     	bus.addListener(this::doCommonStuff);
-        bus.addListener(this::modelRegistry);
+
         ModItems.ITEMS.register(bus);
         ModBlocks.BLOCKS.register(bus);
         ModEntities.TILE_ENTITIES.register(bus);
         ModContainers.CONTAINERS.register(bus);
         TABS.register(bus);
         MinecraftForge.EVENT_BUS.register(new DataGeneration());
+        MinecraftForge.EVENT_BUS.register(new CommonEvents());
+        MinecraftForge.EVENT_BUS.register(new ModCapabilities());
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> new DistExecutor.SafeRunnable() {
             @Override
             public void run() {
@@ -180,6 +184,9 @@ public class Lightsabers
     }
     
     private void doClientStuff(final FMLClientSetupEvent event) {
+        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modEventBus.addListener(this::modelRegistry);
+
         ModContainers.registerGUIFactories();
         MinecraftForge.EVENT_BUS.register(new InputHandler());
     }
