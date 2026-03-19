@@ -1,6 +1,5 @@
 package com.stelmods.lightsabers.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.stelmods.lightsabers.Lightsabers;
@@ -15,34 +14,31 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.*;
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
 
 import static com.stelmods.lightsabers.client.ClientUtils.random;
 
 @Mod.EventBusSubscriber(modid = Lightsabers.MODID, value = Dist.CLIENT)
 public class ClientEvents {
     public static void colourTint(RegisterColorHandlersEvent.Block event) {
-        for (RegistryObject<Block> block : ModBlocks.BLOCKS.getEntries()) {
+        for (Supplier<Block> block : ModBlocks.BLOCKS.getEntries()) {
             if (block.get() instanceof BlockCrystal crystal) {
                 event.register((state, level, pos, tintIndex) -> crystal.getCrystalColor().color, crystal);
             }
@@ -50,7 +46,7 @@ public class ClientEvents {
     }
 
     public static void itemTint(RegisterColorHandlersEvent.Item event) {
-        for (RegistryObject<Block> block : ModBlocks.BLOCKS.getEntries()) {
+        for (Supplier<Block> block : ModBlocks.BLOCKS.getEntries()) {
             if (block.get() instanceof BlockCrystal crystal) {
                 event.register((itemStack, tint) -> crystal.getCrystalColor().color, crystal.asItem());
             }

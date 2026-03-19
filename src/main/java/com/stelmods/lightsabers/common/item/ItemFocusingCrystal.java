@@ -7,7 +7,7 @@ public class ItemFocusingCrystal extends Item {
     FocusingCrystal focusingCrystal;
 
     public ItemFocusingCrystal(FocusingCrystal focusingCrystal) {
-        super(new Properties().stacksTo(1).defaultDurability(0));
+        super(new Properties().stacksTo(1).durability(0));
         this.focusingCrystal = focusingCrystal;
     }
 

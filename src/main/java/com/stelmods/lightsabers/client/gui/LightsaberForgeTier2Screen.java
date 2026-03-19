@@ -17,7 +17,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 public class LightsaberForgeTier2Screen extends AbstractContainerScreen<LightsaberForgeTier2Container> {
-    private static final ResourceLocation GUI_TEXTURES = new ResourceLocation(Lightsabers.MODID, "textures/gui/container/lightsaber_forge_double.png");
+    private static final ResourceLocation GUI_TEXTURES = ResourceLocation.fromNamespaceAndPath(Lightsabers.MODID, "textures/gui/container/lightsaber_forge_double.png");
     private float rotate = 0;
     public LightsaberForgeTier2Screen(LightsaberForgeTier2Container menu, Inventory inventoryPlayer, Component component /*, TileEntityLightsaberForge tile */) {
         super(menu, inventoryPlayer, component);
@@ -57,7 +57,7 @@ public class LightsaberForgeTier2Screen extends AbstractContainerScreen<Lightsab
 
             Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
             //Lighting.setupForEntityInInventory();
-            RenderItemLightsaber.bewlr.renderDouble(ItemDisplayContext.NONE, matrixstack, gui.bufferSource(), 0xFFFFFF, itemStack);
+            RenderItemLightsaber.BEWLR.renderDouble(ItemDisplayContext.NONE, matrixstack, gui.bufferSource(), 0xFFFFFF, itemStack);
             //Minecraft.getInstance().gameRenderer.lightTexture().turnOffLightLayer();
             RenderSystem.disableCull();
             gui.disableScissor();

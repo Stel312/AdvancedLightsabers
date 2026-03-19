@@ -15,13 +15,12 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class LightsaberForgeScreen extends AbstractContainerScreen<LightsaberForgeContainer> {
-    private static final ResourceLocation GUI_TEXTURES = new ResourceLocation(Lightsabers.MODID, "textures/gui/container/lightsaber_forge.png");
+    private static final ResourceLocation GUI_TEXTURES = ResourceLocation.fromNamespaceAndPath(Lightsabers.MODID, "textures/gui/container/lightsaber_forge.png");
     private float rotate = 0;
 
     public LightsaberForgeScreen(LightsaberForgeContainer menu, Inventory inventoryPlayer, Component component /*, TileEntityLightsaberForge tile */) {
@@ -61,7 +60,7 @@ public class LightsaberForgeScreen extends AbstractContainerScreen<LightsaberFor
 
             //Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
             //Lighting.setupForEntityInInventory();
-            RenderItemLightsaber.bewlr.renderSingle(ItemDisplayContext.NONE, matrixstack, gui.bufferSource(), 0xFFFFFF, itemStack);
+            RenderItemLightsaber.BEWLR.renderSingle(ItemDisplayContext.NONE, matrixstack, gui.bufferSource(), 0xFFFFFF, itemStack);
             //Minecraft.getInstance().gameRenderer.lightTexture().turnOffLightLayer();
             RenderSystem.disableCull();
             gui.disableScissor();

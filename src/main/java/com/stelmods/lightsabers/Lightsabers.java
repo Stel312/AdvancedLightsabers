@@ -8,6 +8,7 @@ import com.stelmods.lightsabers.client.KeyMappings;
 import com.stelmods.lightsabers.common.CommonEvents;
 import com.stelmods.lightsabers.common.block.BlockCrystal;
 import com.stelmods.lightsabers.common.block.ModBlocks;
+import com.stelmods.lightsabers.common.component.LightsaberDataComponents;
 import com.stelmods.lightsabers.common.container.ModContainers;
 import com.stelmods.lightsabers.common.entity.ModEntities;
 import com.stelmods.lightsabers.common.item.ItemFocusingCrystal;
@@ -26,20 +27,11 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -55,9 +47,9 @@ public class Lightsabers
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     private static Lightsabers instance;
     private static final Supplier<List<ItemStack>> items = Suppliers.memoize(() ->
-            ModItems.ITEMS.getEntries().stream().filter(item -> !(item.get() instanceof LightsaberItem)).map(RegistryObject::get).map(ItemStack::new).toList());
+            ModItems.ITEMS.getEntries().stream().filter(item -> !(item.get() instanceof LightsaberItem)).map(Supplier::get).map(ItemStack::new).toList());
 
-    public static final RegistryObject<CreativeModeTab> lightsaberBlockTab = TABS.register(Strings.lightsaberBlocks, () -> CreativeModeTab.builder()
+    public static final Supplier<CreativeModeTab> lightsaberBlockTab = TABS.register(Strings.lightsaberBlocks, () -> CreativeModeTab.builder()
             .icon(() -> new ItemStack(ModBlocks.lightsaberForge.get()))
             .title(Component.translatable("gui.lightsabers.lightsaber_crystals"))
             .displayItems((params, output) -> {
@@ -70,46 +62,75 @@ public class Lightsabers
                 }
             }).build());
 
-    public static final RegistryObject<CreativeModeTab> lightsaberLightsaber = TABS.register(Strings.lightsaber_tab, () -> CreativeModeTab.builder()
+    public static final Supplier<CreativeModeTab> lightsaberLightsaber = TABS.register(Strings.lightsaber_tab, () -> CreativeModeTab.builder()
             .icon(() -> { ItemStack revan = new ItemStack(ModItems.lightsaber.get());
-                revan.setTag(new CompoundTag());
-                revan.getTag().putString("emitter", ModItems.revanEmitter.getId().toString());
-                revan.getTag().putString("grip", ModItems.revanGrip.getId().toString());
-                revan.getTag().putString("pommel", ModItems.revanPommel.getId().toString());
-                revan.getTag().putString("switch", ModItems.revanSwitch.getId().toString());
-                revan.getTag().putString("type", LightsaberType.SINGLE.toString());
-                revan.getTag().putString("color", ModBlocks.purpleCrystal.getId().toString());
-                revan.getTag().putBoolean("active", false);
+                revan.set(LightsaberDataComponents.LIGHTSABER, new LightsaberDataComponents.LightsaberData(
+                        ModItems.revanPommel.get().get,
+                        ModItems.revanGrip.get(),
+                        ModItems.revanSwitch.get(),
+                        ModItems.revanEmitter.get(),
+                        "",
+                        "",
+                        ModBlocks.purpleCrystal.get()
+                ));
+                revan.set(LightsaberDataComponents.LIGHTSABER_ACTIVE, false);
+                revan.set(LightsaberDataComponents.LIGHTSABER_LENGTH, 0f);
                 return revan;})
             .title(Component.translatable("gui.lightsabers.lightsaber_creative"))
+
             .displayItems((params, output) -> {
+                
+
+                LightsaberDataComponents.LightsaberData taronSingle = new LightsaberDataComponents.LightsaberData(
+                        ModItems.taronPommel.get().toString(),
+                        ModItems.taronGrip.get().toString(),
+                        ModItems.taronSwitch.get().toString(),
+                        ModItems.taronEmitter.get().toString(),
+                        "",
+                        "",
+                        ModBlocks.redCrystal.get().toString()
+                );
                 ItemStack taron = new ItemStack(ModItems.lightsaber.get());
-                taron.setTag(new CompoundTag());
-                taron.getTag().putString("emitter", ModItems.taronEmitter.getId().toString());
-                taron.getTag().putString("grip", ModItems.taronGrip.getId().toString());
-                taron.getTag().putString("pommel", ModItems.taronPommel.getId().toString());
-                taron.getTag().putString("switch", ModItems.taronSwitch.getId().toString());
-                taron.getTag().putString("type", LightsaberType.SINGLE.toString());
-                taron.getTag().putString("color", ModBlocks.redCrystal.getId().toString());
-                taron.getTag().putBoolean("active", false);
+                taron.set(LightsaberDataComponents.LIGHTSABER, taronSingle);
+                taron.set(LightsaberDataComponents.LIGHTSABER_ACTIVE, false);
+                taron.set(LightsaberDataComponents.LIGHTSABER_LENGTH, 0f);
                 output.accept(taron);
 
+
+
+                LightsaberDataComponents.LightsaberData revanSingle = new LightsaberDataComponents.LightsaberData(
+                        ModItems.revanPommel.get().toString(),
+                        ModItems.revanGrip.get().toString(),
+                        ModItems.revanSwitch.get().toString(),
+                        ModItems.revanEmitter.get().toString(),
+                        "",
+                        "",
+                        ModBlocks.purpleCrystal.get().toString()
+                );
                 ItemStack revan = new ItemStack(ModItems.lightsaber.get());
-                revan.setTag(new CompoundTag());
-                revan.getTag().putString("emitter", ModItems.revanEmitter.getId().toString());
-                revan.getTag().putString("grip", ModItems.revanGrip.getId().toString());
-                revan.getTag().putString("pommel", ModItems.revanPommel.getId().toString());
-                revan.getTag().putString("switch", ModItems.revanSwitch.getId().toString());
-                revan.getTag().putString("type", LightsaberType.SINGLE.toString());
-                revan.getTag().putString("color", ModBlocks.purpleCrystal.getId().toString());
-                revan.getTag().putBoolean("active", false);
+                revan.set(LightsaberDataComponents.LIGHTSABER, revanSingle);
+                revan.set(LightsaberDataComponents.LIGHTSABER_ACTIVE, false);
+                revan.set(LightsaberDataComponents.LIGHTSABER_LENGTH, 0f);
                 output.accept(revan);
 
-                output.accept(registerDoubleSaber(taron, revan));
-                output.accept(registerDoubleSaber(taron, taron));
+
+                ItemStack revanDouble = new ItemStack(ModItems.doubleLightsaber.get());
+                revanDouble.set(LightsaberDataComponents.DOUBLE_LIGHTSABER,
+                        new LightsaberDataComponents.DoubleLightsaberData(revanSingle, revanSingle));
+                revanDouble.set(LightsaberDataComponents.LIGHTSABER_ACTIVE, false);
+                revanDouble.set(LightsaberDataComponents.LIGHTSABER_LENGTH, 0f);
+                output.accept(revanDouble);
+
+
+                ItemStack taronDouble = new ItemStack(ModItems.doubleLightsaber.get());
+                taronDouble.set(LightsaberDataComponents.DOUBLE_LIGHTSABER,
+                        new LightsaberDataComponents.DoubleLightsaberData(taronSingle, taronSingle));
+                taronDouble.set(LightsaberDataComponents.LIGHTSABER_ACTIVE, false);
+                taronDouble.set(LightsaberDataComponents.LIGHTSABER_LENGTH, 0f);
+                output.accept(taronDouble);
             }).build());
 
-    public static final RegistryObject<CreativeModeTab> crystal_tab = TABS.register(Strings.crystal_tab, () -> CreativeModeTab.builder()
+    public static final Supplier<CreativeModeTab> crystal_tab = TABS.register(Strings.crystal_tab, () -> CreativeModeTab.builder()
             .icon(() -> new ItemStack(ModBlocks.goldCrystal.get()))
             .title(Component.translatable("gui.lightsabers.lightsaber_crystals"))
 
@@ -123,7 +144,7 @@ public class Lightsabers
                 }
             }).build());
 
-    public static final RegistryObject<CreativeModeTab> part_tab = TABS.register(Strings.partsTab, () -> CreativeModeTab.builder()
+    public static final Supplier<CreativeModeTab> part_tab = TABS.register(Strings.partsTab, () -> CreativeModeTab.builder()
             .icon(() -> new ItemStack(ModItems.taronEmitter.get()))
             .title(Component.translatable("gui.lightsabers.lightsaber_creative"))
             .displayItems((params, output) -> {
@@ -136,7 +157,7 @@ public class Lightsabers
 
             })
             .build());
-
+    /*
     private static ItemStack registerDoubleSaber(ItemStack upper, ItemStack lower)
     {
         ItemStack itemStack = new ItemStack(ModItems.doubleLightsaber.get());
@@ -146,7 +167,7 @@ public class Lightsabers
         itemStack.getTag().put("lower", lower.getTag());
         return itemStack;
     }
-
+    */
 	public static Lightsabers getInstance() {
 		return instance;
 	}
@@ -198,6 +219,7 @@ public class Lightsabers
 	private void doCommonStuff(final FMLCommonSetupEvent event) {
         event.enqueueWork(PacketHandler::register);
     }
+
     @OnlyIn(Dist.CLIENT)
     private void modelRegistry(ModelEvent.RegisterAdditional event) {
         event.register(new ResourceLocation(Lightsabers.MODID, "item/blade"));

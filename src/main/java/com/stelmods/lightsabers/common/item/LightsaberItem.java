@@ -1,73 +1,55 @@
 package com.stelmods.lightsabers.common.item;
 
 import com.stelmods.lightsabers.client.render.item.RenderItemLightsaber;
+import com.stelmods.lightsabers.common.component.LightsaberDataComponents;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
-import java.util.function.Consumer;
-
-public class LightsaberItem extends SwordItem {
+public class LightsaberItem extends SwordItem implements IClientItemExtensions {
 
     public LightsaberItem() {
-        super(Tiers.NETHERITE, 8, 1, new Item.Properties().stacksTo(1));
+        super(Tiers.NETHERITE,  new Item.Properties().stacksTo(1));
     }
 
-    @OnlyIn(Dist.CLIENT)
     @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            @Override
-            public RenderItemLightsaber getCustomRenderer() {
-                return RenderItemLightsaber.bewlr;
-            }
-        });
+    public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+        return RenderItemLightsaber.BEWLR;
     }
 
-    /*@Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        stack.getTag().putBoolean("active", !stack.getTag().getBoolean("active"));
-        return InteractionResultHolder.success(stack);
-    }*/
-
     @Override
-    public void onInventoryTick(ItemStack stack, Level level, Player player, int slotIndex, int selectedIndex) {
-        //System.out.println(stack.getTag().getFloat("length"));
-        //stack.getTag().putFloat("length", 1F);
-        if(!stack.getTag().contains("length")) {
-            stack.getTag().putFloat("length", 0);
-            stack.getTag().putBoolean("active", false);
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+        if(!stack.has(LightsaberDataComponents.LIGHTSABER_LENGTH)){
+            stack.set(LightsaberDataComponents.LIGHTSABER_ACTIVE, false);
+            stack.set(LightsaberDataComponents.LIGHTSABER_LENGTH, 0f);
         }
 
-        float len = stack.getTag().getFloat("length");
-        if (!stack.getTag().getBoolean("active")) { //If is turned off
-            if (len > 0) { //And still has length
-                //Reduce it
-                stack.getTag().putFloat("length", Math.max(len - 0.2F,0));
+        float len = stack.get(LightsaberDataComponents.LIGHTSABER_LENGTH);
+        if(!stack.get(LightsaberDataComponents.LIGHTSABER_ACTIVE))
+        {
+            if(len > 0){
+                stack.set(LightsaberDataComponents.LIGHTSABER_LENGTH, Math.max(len - 0.2f, 0));
             }
-        } else { //If is turned on
-            if (len < 1) { //And still has no length
-                //Increase it
-                stack.getTag().putFloat("length", Math.min(len + 0.3F,1));
+        }else{
+            if(len < 1){
+                stack.set(LightsaberDataComponents.LIGHTSABER_LENGTH, Math.min(len + 0.3f, 1));
             }
         }
-
-        super.onInventoryTick(stack, level, player, slotIndex, selectedIndex);
+        super.inventoryTick(stack, level, entity, slotId, isSelected);
     }
 
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-        if (!stack.getTag().contains("active")) {
-            stack.getTag().putBoolean("active", false);
-            stack.getTag().putFloat("length", 0F);
+        if(!stack.get(LightsaberDataComponents.LIGHTSABER_ACTIVE))
+        {
+            stack.set(LightsaberDataComponents.LIGHTSABER_ACTIVE, false);
+            stack.set(LightsaberDataComponents.LIGHTSABER_LENGTH, 0f);
         }
         return super.onEntityItemUpdate(stack, entity);
     }
