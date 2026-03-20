@@ -1,6 +1,7 @@
 package com.stelmods.lightsabers.network.stc;
 
 import com.stelmods.lightsabers.capabilities.ModCapabilities;
+import com.stelmods.lightsabers.capabilities.PlayerCapabilities;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.network.FriendlyByteBuf;
@@ -20,7 +21,7 @@ public class SCSyncCapabilityToAllPacket {
     public SCSyncCapabilityToAllPacket() {
     }
 
-    public SCSyncCapabilityToAllPacket(String name, IPlayerCapabilities capability) {
+    public SCSyncCapabilityToAllPacket(String name, PlayerCapabilities capability) {
         this.name = name;
 
         this.lightningMode = capability.isLightningMode();
@@ -51,7 +52,7 @@ public class SCSyncCapabilityToAllPacket {
                 }
             }
             if (player != null) {
-                IPlayerCapabilities playerData = ModCapabilities.getPlayer(player);
+                PlayerCapabilities playerData = ModCapabilities.getPlayer(player);
 
                 playerData.setLightningMode(message.lightningMode);
             }

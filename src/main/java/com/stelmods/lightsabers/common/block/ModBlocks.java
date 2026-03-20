@@ -9,6 +9,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.Objects;
@@ -18,7 +19,8 @@ public class ModBlocks
 {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, Lightsabers.MODID);
-    public  static  final Supplier<Block> lightsaberForge = createNewBlock("lightsaber_forge", BlockLightsaberForge::new);
+    public  static  final Supplier<Block> lightsaberForge = createNewBlock("lightsaber_forge",() ->
+            new BlockLightsaberForge(BlockBehaviour.Properties.of().strength(1.0F, 10.0F)));
 
     //KyberCrystals
 

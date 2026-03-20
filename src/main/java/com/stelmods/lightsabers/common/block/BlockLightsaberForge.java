@@ -1,5 +1,6 @@
 package com.stelmods.lightsabers.common.block;
 
+import com.mojang.serialization.MapCodec;
 import com.stelmods.lightsabers.common.entity.ModEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,8 +21,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlockLightsaberForge extends BaseEntityBlock {
 
-    public BlockLightsaberForge() {
-        super(BlockBehaviour.Properties.of().strength(1.0F, 10.0F));
+    public BlockLightsaberForge(Properties properties) {
+        super(properties);
     }
 
     @Nullable
@@ -49,5 +50,10 @@ public class BlockLightsaberForge extends BaseEntityBlock {
             return ItemInteractionResult.FAIL;
         serverPlayer.openMenu(provider, buf -> buf.writeBlockPos(pos));
         return ItemInteractionResult.SUCCESS;
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(BlockLightsaberForge::new);
     }
 }

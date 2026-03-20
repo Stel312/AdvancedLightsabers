@@ -30,7 +30,7 @@ import java.util.concurrent.CompletableFuture;
             private final DataGenerator generator;
 
             public BaseLootTables(PackOutput pOutput, Set<ResourceLocation> pRequiredTables, List<SubProviderEntry> pSubProviders, DataGenerator generator) {
-                super(pOutput, pRequiredTables, pSubProviders);
+                    super(pOutput, pRequiredTables, pSubProviders);
                 this.generator = generator;
             }
 

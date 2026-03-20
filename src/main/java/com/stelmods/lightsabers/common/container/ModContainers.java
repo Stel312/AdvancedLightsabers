@@ -19,7 +19,6 @@ public class ModContainers {
 
 
 	public static final Supplier<MenuType<LightsaberForgeContainer>> LIGHTSABER_FORGE = createContainer("lightsaber_forge", LightsaberForgeContainer::new);
-	public static final Supplier<MenuType<LightsaberForgeTier2Container>> LIGHTSABER_FORGE_TIER2 = createContainer("lightsaber_forge_tier2", LightsaberForgeTier2Container::new);
 
 
 	public static <M extends AbstractContainerMenu> Supplier<MenuType<M>> createContainer(String name, IContainerFactory<M> container) {
@@ -29,6 +28,5 @@ public class ModContainers {
 	@OnlyIn(Dist.CLIENT)
 	public static void registerGUIFactories(RegisterMenuScreensEvent event) {
         event.register(ModContainers.LIGHTSABER_FORGE.get(), LightsaberForgeScreen::new);
-        event.register(ModContainers.LIGHTSABER_FORGE_TIER2.get(), LightsaberForgeTier2Screen::new);
 	}
 }

@@ -6,10 +6,11 @@ import com.stelmods.lightsabers.datagen.provider.BaseLootTables;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class LootTables extends BaseLootTables {
     public LootTables( Set<ResourceLocation> pRequiredTables, List<SubProviderEntry> pSubProviders, DataGenerator generator) {
@@ -24,7 +25,7 @@ public class LootTables extends BaseLootTables {
 
     private void crystal()
     {
-        for(RegistryObject<Block> block: ModBlocks.BLOCKS.getEntries())
+        for(DeferredHolder<Block, ? extends Block> block: ModBlocks.BLOCKS.getEntries())
         {
             if (block.get() instanceof BlockCrystal crystal)
             {
