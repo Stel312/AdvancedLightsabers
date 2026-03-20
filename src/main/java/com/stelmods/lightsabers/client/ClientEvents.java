@@ -21,7 +21,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
@@ -35,26 +37,29 @@ import static com.stelmods.lightsabers.client.ClientUtils.random;
 
 public class ClientEvents {
 
-    @SubscribeEvent
-    public static void colourTint(RegisterColorHandlersEvent.Block event) {
-        for (DeferredHolder<Block, ? extends Block> block : ModBlocks.BLOCKS.getEntries()) {
-            if (block.get() instanceof BlockCrystal crystal) {
-                event.register((state, level, pos, tintIndex) -> crystal.getCrystalColor().color, crystal);
+    /*@EventBusSubscriber(value = Dist.CLIENT)
+    public static class ModBusEvents {
+        @SubscribeEvent
+        public static void colourTint(RegisterColorHandlersEvent.Block event) {
+            for (DeferredHolder<Block, ? extends Block> block : ModBlocks.BLOCKS.getEntries()) {
+                if (block.get() instanceof BlockCrystal crystal) {
+                    event.register((state, level, pos, tintIndex) -> crystal.getCrystalColor().color, crystal);
+                }
             }
         }
-    }
 
-    @SubscribeEvent
-    public static void itemTint(RegisterColorHandlersEvent.Item event) {
-        for (DeferredHolder<Block, ? extends Block> block : ModBlocks.BLOCKS.getEntries()) {
-            if (block.get() instanceof BlockCrystal crystal) {
-                event.register((itemStack, tint) -> crystal.getCrystalColor().color, crystal.asItem());
+        @SubscribeEvent
+        public static void itemTint(RegisterColorHandlersEvent.Item event) {
+            for (DeferredHolder<Block, ? extends Block> block : ModBlocks.BLOCKS.getEntries()) {
+                if (block.get() instanceof BlockCrystal crystal) {
+                    event.register((itemStack, tint) -> crystal.getCrystalColor().color, crystal.asItem());
+                }
             }
         }
-    }
+    }*/
 
     @SubscribeEvent
-    public static void onRenderOverlay(RenderGuiLayerEvent.Post event) {
+    public void onRenderOverlay(RenderGuiLayerEvent.Post event) {
         if (InputHandler.forceSense){// && event.getLayer() == VanillaGuiLayers.CROSSHAIR.gettype()) {
             Minecraft mc = Minecraft.getInstance();
             int width = mc.getWindow().getGuiScaledWidth();
@@ -72,7 +77,7 @@ public class ClientEvents {
      * @param event
      */
     @SubscribeEvent
-    public static void onRenderWorld(RenderLevelStageEvent event) {
+    public void onRenderWorld(RenderLevelStageEvent event) {
         Minecraft mc = Minecraft.getInstance();
         if(mc.level == null)
             return;
@@ -189,7 +194,7 @@ public class ClientEvents {
         height = (float) (maxY - minY);
     }*/
 
-    private static void drawCubeOutline(PoseStack poseStack, BlockPos pos) {
+    private void drawCubeOutline(PoseStack poseStack, BlockPos pos) {
         Minecraft mc = Minecraft.getInstance();
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 

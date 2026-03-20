@@ -27,15 +27,15 @@ public class InputHandler {
     public void handleKeyInputEvent(InputEvent.Key event) {
         if(mc.screen == null) {
             if (event.getAction() == 1) { //We only want to run it once the key has been pressed, not released
-                if (event.getKey() == KeyMappings.FORCE_PUSH.getKey().getValue()) {
+                if (event.getKey() == ClientSetup.Keybinds.FORCE_PUSH.getKeybind().getKey().getValue()) {
                     PacketHandler.sendToServer(new CSForcePush());
-                } else if (event.getKey() == KeyMappings.FORCE_PULL.getKey().getValue()) {
+                } else if (event.getKey() == ClientSetup.Keybinds.FORCE_PULL.getKeybind().getKey().getValue()) {
                     PacketHandler.sendToServer(new CSForcePull());
-                } else if (event.getKey() == KeyMappings.TOGGLE_LIGHTSABER.getKey().getValue()) {
+                } else if (event.getKey() == ClientSetup.Keybinds.TOGGLE_LIGHTSABER.getKeybind().getKey().getValue()) {
                     PacketHandler.sendToServer(new CSToggleLightsaber());
-                } else if (event.getKey() == KeyMappings.FORCE_ACTIVATE.getKey().getValue()) {
+                } else if (event.getKey() == ClientSetup.Keybinds.FORCE_ACTIVATE.getKeybind().getKey().getValue()) {
                     forceSense = !forceSense;
-                } else if (event.getKey() == KeyMappings.FORCE_LIGHTNING.getKey().getValue()) {
+                } else if (event.getKey() == ClientSetup.Keybinds.FORCE_LIGHTNING.getKeybind().getKey().getValue()) {
                     //Turn force lightning on
                     PacketHandler.sendToServer(new CSShootLightning(true));
 
@@ -43,7 +43,7 @@ public class InputHandler {
             }
 
             if (event.getAction() == 0) { // On release
-                if (event.getKey() == KeyMappings.FORCE_LIGHTNING.getKey().getValue()) {
+                if (event.getKey() == ClientSetup.Keybinds.FORCE_LIGHTNING.getKeybind().getKey().getValue()) {
                     //Turn force lightning off
                     PacketHandler.sendToServer(new CSShootLightning(false));
 
