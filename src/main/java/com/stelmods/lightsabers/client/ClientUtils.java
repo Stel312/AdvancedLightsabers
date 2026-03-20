@@ -11,6 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class ClientUtils {
@@ -81,7 +82,7 @@ public class ClientUtils {
             }
         };
     }*/
-    public static void setLightningMap(int id, ArrayList<Integer> targets) {
+    public static void setLightningMap(int id, List<Integer> targets) {
         Minecraft.getInstance().execute(() -> {
             ClientEvents.lightningMap.put(id, targets);
         });

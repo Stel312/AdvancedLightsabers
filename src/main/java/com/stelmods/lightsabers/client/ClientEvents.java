@@ -29,6 +29,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.stelmods.lightsabers.client.ClientUtils.random;
@@ -64,7 +65,7 @@ public class ClientEvents {
         }
     }
 
-    public static Map<Integer, ArrayList<Integer>> lightningMap = new HashMap<>();
+    public static Map<Integer, List<Integer>> lightningMap = new HashMap<>();
     /**
      * Renders force sense nearby interactable blocks
      * Uncomment the annotation to enable
@@ -78,7 +79,7 @@ public class ClientEvents {
             return;
 
       //  System.out.println(lightningMap);
-        for (Map.Entry<Integer, ArrayList<Integer>> entry : lightningMap.entrySet()) {
+        for (Map.Entry<Integer, List<Integer>> entry : lightningMap.entrySet()) {
             Entity e = mc.level.getEntity(entry.getKey());
             if(e instanceof Player player){
                 PlayerCapabilities playerData = PlayerCapabilities.get(player);
