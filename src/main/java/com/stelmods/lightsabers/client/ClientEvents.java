@@ -27,6 +27,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,18 +37,20 @@ import java.util.function.Supplier;
 
 import static com.stelmods.lightsabers.client.ClientUtils.random;
 
-@Mod.EventBusSubscriber(modid = Lightsabers.MODID, value = Dist.CLIENT)
 public class ClientEvents {
+
+    @SubscribeEvent
     public static void colourTint(RegisterColorHandlersEvent.Block event) {
-        for (Supplier<Block> block : ModBlocks.BLOCKS.getEntries()) {
+        for (DeferredHolder<Block, ? extends Block> block : ModBlocks.BLOCKS.getEntries()) {
             if (block.get() instanceof BlockCrystal crystal) {
                 event.register((state, level, pos, tintIndex) -> crystal.getCrystalColor().color, crystal);
             }
         }
     }
 
+    @SubscribeEvent
     public static void itemTint(RegisterColorHandlersEvent.Item event) {
-        for (Supplier<Block> block : ModBlocks.BLOCKS.getEntries()) {
+        for (DeferredHolder<Block, ? extends Block> block : ModBlocks.BLOCKS.getEntries()) {
             if (block.get() instanceof BlockCrystal crystal) {
                 event.register((itemStack, tint) -> crystal.getCrystalColor().color, crystal.asItem());
             }

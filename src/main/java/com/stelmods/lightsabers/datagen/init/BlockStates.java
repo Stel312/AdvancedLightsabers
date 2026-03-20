@@ -5,9 +5,9 @@ import com.stelmods.lightsabers.common.block.BlockCrystal;
 import com.stelmods.lightsabers.common.block.ModBlocks;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.model.generators.BlockStateProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.function.Supplier;
 
@@ -19,7 +19,7 @@ public class BlockStates extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        for (RegistryObject<Block> itemRegistryObject : ModBlocks.BLOCKS.getEntries()) {
+        for (DeferredHolder<Block, ? extends Block> itemRegistryObject : ModBlocks.BLOCKS.getEntries()) {
             if(itemRegistryObject.get() instanceof BlockCrystal)
             {
                 crystalBlockstate(itemRegistryObject);

@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 
 public class ModItems {
 
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, Lightsabers.MODID);
+    public static final DeferredRegister<Item> ITEM = DeferredRegister.create(BuiltInRegistries.ITEM, Lightsabers.MODID);
 
 
     public static final Supplier<Item>
@@ -34,28 +34,28 @@ public class ModItems {
     public static final Supplier<Item>
         stelEmitter = registerEmitter("stel_emitter", .192952f);
 
-    public static final Supplier<Item> lightsaber = ITEMS.register("lightsaber", LightsaberItem::new);
-    public static final Supplier<Item> doubleLightsaber = ITEMS.register("lightsaber_double", LightsaberDoubleItem::new);
+    public static final Supplier<Item> lightsaber = ITEM.register("lightsaber", LightsaberItem::new);
+    public static final Supplier<Item> doubleLightsaber = ITEM.register("lightsaber_double", LightsaberDoubleItem::new);
 
-    public static final Supplier<Item> crackedCrystal = ITEMS.register(Strings.crackedFocusingCrystal, () -> new ItemFocusingCrystal(FocusingCrystal.CRACKED));
-    public static final Supplier<Item> compressedCrystal = ITEMS.register(Strings.compressedFocusingCrystal, () -> new ItemFocusingCrystal(FocusingCrystal.COMPRESSED));
-    public static final Supplier<Item> finecutCrystal = ITEMS.register(Strings.fineCutFocusingCrystal, () -> new ItemFocusingCrystal(FocusingCrystal.FINE_CUT));
-    public static final Supplier<Item> invertedCrystal = ITEMS.register(Strings.invertedFocusingCrystal, () -> new ItemFocusingCrystal(FocusingCrystal.INVERTING));
-    public static final Supplier<Item> prismaticCrystal = ITEMS.register(Strings.prismaticFocusingCrystal, () -> new ItemFocusingCrystal(FocusingCrystal.PRISMATIC));
+    public static final Supplier<Item> crackedCrystal = ITEM.register(Strings.crackedFocusingCrystal, () -> new ItemFocusingCrystal(FocusingCrystal.CRACKED));
+    public static final Supplier<Item> compressedCrystal = ITEM.register(Strings.compressedFocusingCrystal, () -> new ItemFocusingCrystal(FocusingCrystal.COMPRESSED));
+    public static final Supplier<Item> finecutCrystal = ITEM.register(Strings.fineCutFocusingCrystal, () -> new ItemFocusingCrystal(FocusingCrystal.FINE_CUT));
+    public static final Supplier<Item> invertedCrystal = ITEM.register(Strings.invertedFocusingCrystal, () -> new ItemFocusingCrystal(FocusingCrystal.INVERTING));
+    public static final Supplier<Item> prismaticCrystal = ITEM.register(Strings.prismaticFocusingCrystal, () -> new ItemFocusingCrystal(FocusingCrystal.PRISMATIC));
 
     private static Supplier<Item> registerPommel(String name, float height) {
-        return ITEMS.register(name, () -> new LightsaberPommel(height));
+        return ITEM.register(name, () -> new LightsaberPommel(height));
     }
 
     private static Supplier<Item> registerBody(String name, float height) {
-        return ITEMS.register(name, () -> new LightsaberBody(height));
+        return ITEM.register(name, () -> new LightsaberBody(height));
     }
 
     private static Supplier<Item> registerSwitch(String name, float height) {
-        return ITEMS.register(name, () -> new LightsaberSwitch(height));
+        return ITEM.register(name, () -> new LightsaberSwitch(height));
     }
 
     private static Supplier<Item> registerEmitter(String name, float height) {
-        return ITEMS.register(name, () -> new LightsaberEmiter(height));
+        return ITEM.register(name, () -> new LightsaberEmiter(height));
     }
 }

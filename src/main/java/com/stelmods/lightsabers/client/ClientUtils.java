@@ -9,12 +9,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fml.DistExecutor;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 public class ClientUtils {
+    /*
     public static DistExecutor.SafeRunnable syncCapability(SCSyncCapabilityPacket message) {
         return new DistExecutor.SafeRunnable() {
             @Override
@@ -23,8 +23,16 @@ public class ClientUtils {
                 playerData.setLightningMode(message.lightningMode);
             }
         };
-    }
+    }*/
+    public static void syncCapability(SCSyncCapabilityPacket message) {
+        Minecraft.getInstance().execute(() -> {
+            var player = Minecraft.getInstance().player;
+            if (player == null) return;
 
+            var data = ModCapabilities.getPlayer(player);
+            data.setLightningMode(message.lightningMode);
+        });
+    }
     static Random random = new Random();
 
     public static void renderLightningBeam(PoseStack poseStack, MultiBufferSource bufferSource, Vec3 start, Vec3 end, int segments, float thickness) {
@@ -58,21 +66,19 @@ public class ClientUtils {
                 Vec3 p1 = points[i];
                 Vec3 p2 = points[i + 1];
 
-                vertexConsumer.vertex(poseStack.last().pose(), (float) p1.x, (float) p1.y, (float) p1.z)
-                        .color(100, 150, 255, 255) // Azul eléctrico
-                        .normal(poseStack.last().normal(), 0, 1, 0)
-                        .endVertex();
+                vertexConsumer.addVertex(poseStack.last().pose(), (float) p1.x, (float) p1.y, (float) p1.z)
+                        .setColor(100, 150, 255, 255) // Azul eléctrico
+                        .setNormal(poseStack.last(), 0, 1, 0);
 
-                vertexConsumer.vertex(poseStack.last().pose(), (float) p2.x, (float) p2.y, (float) p2.z)
-                        .color(100, 150, 255, 255) // Azul eléctrico
-                        .normal(poseStack.last().normal(), 0, 1, 0)
-                        .endVertex();
+                vertexConsumer.addVertex(poseStack.last().pose(), (float) p2.x, (float) p2.y, (float) p2.z)
+                        .setColor(100, 150, 255, 255) // Azul eléctrico
+                        .setNormal(poseStack.last(), 0, 1, 0);
             }
         }
         poseStack.popPose();
     }
 
-
+    /*
     public static DistExecutor.SafeRunnable setLightningMap(int id, int targetsSize, ArrayList<Integer> targets) {
         return new DistExecutor.SafeRunnable() {
             @Override
@@ -80,5 +86,10 @@ public class ClientUtils {
                 ClientEvents.lightningMap.put(id, targets);
             }
         };
+    }*/
+    public static void setLightningMap(int id, int targetsSize, ArrayList<Integer> targets) {
+        Minecraft.getInstance().execute(() -> {
+            ClientEvents.lightningMap.put(id, targets);
+        });
     }
 }

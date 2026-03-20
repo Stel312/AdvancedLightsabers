@@ -79,9 +79,6 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
                 heightOf(d.pomel());
     }
 
-    // ------------------------------------------------------------
-    // DOUBLE SABER
-    // ------------------------------------------------------------
 
     public void renderDouble(ItemDisplayContext ctx,
                               PoseStack pose,
@@ -155,10 +152,6 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
         pose.popPose();
     }
 
-    // ------------------------------------------------------------
-    // SINGLE SABER
-    // ------------------------------------------------------------
-
     public void renderSingle(ItemDisplayContext ctx,
                               PoseStack pose,
                               MultiBufferSource buffer,
@@ -217,10 +210,6 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
 
         pose.popPose();
     }
-
-    // ------------------------------------------------------------
-    // BLADE RENDERING (CUBE-BASED + CRACKED EFFECT)
-    // ------------------------------------------------------------
 
     private void renderBlade(ItemStack bladeStack,
                              ItemStack parentStack,
@@ -314,10 +303,6 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
 
         pose.popPose();
     }
-
-    // ------------------------------------------------------------
-    // PART RENDERING
-    // ------------------------------------------------------------
 
     private float renderPart(String idStr,
                              float height,

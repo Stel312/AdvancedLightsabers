@@ -19,7 +19,6 @@ public class ModBlocks
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, Lightsabers.MODID);
     public  static  final Supplier<Block> lightsaberForge = createNewBlock("lightsaber_forge", BlockLightsaberForge::new);
-    public  static  final Supplier<Block> lightsaberForgeT2 = createNewBlock("lightsaber_forge_tier2", BlockLightsaberTier2::new);
 
     //KyberCrystals
 
@@ -52,7 +51,7 @@ public class ModBlocks
 
     private static <T extends Block> void createNewBlockItem(String name, Supplier<? extends T> block) {
         Supplier<BlockItem> item = () -> new BlockItem(Objects.requireNonNull(block.get()), new Item.Properties());
-        ModItems.ITEMS.register(name, item);
+        ModItems.ITEM.register(name, item);
     }
 
     /*

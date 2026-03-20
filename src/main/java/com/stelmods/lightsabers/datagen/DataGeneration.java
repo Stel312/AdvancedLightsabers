@@ -2,16 +2,16 @@ package com.stelmods.lightsabers.datagen;
 
 import com.stelmods.lightsabers.datagen.init.ItemModels;
 import com.stelmods.lightsabers.datagen.init.LootTables;
+import com.stelmods.lightsabers.datagen.init.Recipes;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 import java.util.Collections;
 
-@Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
+
 public class DataGeneration {
 
     @SubscribeEvent
@@ -19,7 +19,7 @@ public class DataGeneration {
         DataGenerator generator = event.getGenerator();
         PackOutput output = generator.getPackOutput();
         final ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
-        //generator.addProvider(event.includeServer(), new Recipes(generator));
+        generator.addProvider(event.includeServer(), new Recipes(generator, event.getLookupProvider()));
         generator.addProvider(event.includeClient(), new ItemModels(generator, existingFileHelper));
         //generator.addProvider(event.includeClient(), new BlockStates(generator, existingFileHelper));
         //generator.addProvider(event.includeClient(), new BlockModels(generator, existingFileHelper));

@@ -4,7 +4,6 @@ import com.stelmods.lightsabers.lib.Utils;
 import com.stelmods.lightsabers.network.PacketHandler;
 import com.stelmods.lightsabers.network.cts.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
@@ -12,8 +11,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
 
 public class InputHandler {
     Minecraft mc;
