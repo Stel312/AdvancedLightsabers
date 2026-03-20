@@ -3,6 +3,7 @@ package com.stelmods.lightsabers.datagen;
 import com.stelmods.lightsabers.datagen.init.ItemModels;
 import com.stelmods.lightsabers.datagen.init.LootTables;
 import com.stelmods.lightsabers.datagen.init.Recipes;
+import com.stelmods.lightsabers.datagen.provider.BaseLootTableProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -24,6 +25,7 @@ public class DataGeneration {
         //generator.addProvider(event.includeClient(), new BlockStates(generator, existingFileHelper));
         //generator.addProvider(event.includeClient(), new BlockModels(generator, existingFileHelper));
 
-        generator.addProvider(event.includeClient(), new LootTables(Collections.emptySet(), Collections.emptyList(), generator));
+        generator.addProvider(event.includeServer(), new BaseLootTableProvider(output, event.getLookupProvider()));
+
     }
 }
