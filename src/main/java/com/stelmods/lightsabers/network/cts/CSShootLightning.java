@@ -5,7 +5,6 @@ import com.stelmods.lightsabers.capabilities.PlayerCapabilities;
 import com.stelmods.lightsabers.network.Packet;
 import com.stelmods.lightsabers.network.PacketHandler;
 import com.stelmods.lightsabers.network.stc.SCSendLightningData;
-import com.stelmods.lightsabers.network.stc.SCSyncCapabilityToAllPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -35,7 +34,7 @@ public record CSShootLightning(boolean enabled) implements Packet {
             if(!enabled) {
                 PacketHandler.sendTo(new SCSendLightningData(player.getId(), new ArrayList<>()), p);
             }
-            PacketHandler.sendTo(new SCSyncCapabilityToAllPacket(player.getDisplayName().getString(),playerData), p);
+            PacketHandler.syncToAllAround(player, playerData);
         }
     }
 
