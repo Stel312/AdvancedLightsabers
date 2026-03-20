@@ -1,14 +1,10 @@
 package com.stelmods.lightsabers.network.stc;
 
-import com.stelmods.lightsabers.capabilities.IPlayerCapabilities;
 import com.stelmods.lightsabers.capabilities.ModCapabilities;
-import com.stelmods.lightsabers.client.ClientUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.List;

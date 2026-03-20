@@ -1,51 +1,83 @@
 package com.stelmods.lightsabers.network;
 
 import com.stelmods.lightsabers.Lightsabers;
-import com.stelmods.lightsabers.capabilities.IPlayerCapabilities;
+import com.stelmods.lightsabers.capabilities.PlayerCapabilities;
 import com.stelmods.lightsabers.network.cts.*;
 import com.stelmods.lightsabers.network.stc.SCSendLightningData;
 import com.stelmods.lightsabers.network.stc.SCSyncCapabilityPacket;
-import com.stelmods.lightsabers.network.stc.SCSyncCapabilityToAllPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
+@EventBusSubscriber()
 public class PacketHandler {
-    private static final String PROTOCOL_VERSION = Integer.toString(1);
 
-    private static final SimpleChannel HANDLER = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(Lightsabers.MODID, "main_channel")).clientAcceptedVersions(PROTOCOL_VERSION::equals).serverAcceptedVersions(PROTOCOL_VERSION::equals).networkProtocolVersion(() -> PROTOCOL_VERSION).simpleChannel();
+    private static PayloadRegistrar registrar;
 
-    public static void register() {
-        int packetID = 0;
-        HANDLER.registerMessage(packetID++, CSToggleLightsaber.class, CSToggleLightsaber::encode, CSToggleLightsaber::decode, CSToggleLightsaber::handle);
-        HANDLER.registerMessage(packetID++, ForcePush.class, ForcePush::encode, ForcePush::decode, ForcePush::handle);
-        HANDLER.registerMessage(packetID++, ForcePull.class, ForcePull::encode, ForcePull::decode, ForcePull::handle);
-        HANDLER.registerMessage(packetID++, CSInteractWithBlock.class, CSInteractWithBlock::encode, CSInteractWithBlock::decode, CSInteractWithBlock::handle);
-        HANDLER.registerMessage(packetID++, CSShootLightning.class, CSShootLightning::encode, CSShootLightning::decode, CSShootLightning::handle);
+    @SubscribeEvent
+    public static void register(final RegisterPayloadHandlersEvent event) {
+        registrar = event.registrar(Lightsabers.MODID);
 
-        HANDLER.registerMessage(packetID++, SCSyncCapabilityPacket.class, SCSyncCapabilityPacket::encode, SCSyncCapabilityPacket::decode, SCSyncCapabilityPacket::handle);
-        HANDLER.registerMessage(packetID++, SCSendLightningData.class, SCSendLightningData::encode, SCSendLightningData::decode, SCSendLightningData::handle);
-        HANDLER.registerMessage(packetID++, SCSyncCapabilityToAllPacket.class, SCSyncCapabilityToAllPacket::encode, SCSyncCapabilityToAllPacket::decode, SCSyncCapabilityToAllPacket::handle);
+        client(CSToggleLightsaber.TYPE, CSToggleLightsaber.STREAM_CODEC);
+        client(CSForcePush.TYPE, CSForcePush.STREAM_CODEC);
+        client(CSForcePull.TYPE, CSForcePull.STREAM_CODEC);
+        client(CSInteractWithBlock.TYPE, CSInteractWithBlock.STREAM_CODEC);
+        client(CSShootLightning.TYPE, CSShootLightning.STREAM_CODEC);
+
+        server(SCSyncCapabilityPacket.TYPE, SCSyncCapabilityPacket.STREAM_CODEC);
+        server(SCSendLightningData.TYPE, SCSendLightningData.STREAM_CODEC);
+        //server(SCSyncCapabilityToAllPacket.TYPE, SCSyncCapabilityToAllPacket.STREAM_CODEC)
+
 
     }
-    public static <MSG> void sendToServer(MSG msg) {
-        HANDLER.sendToServer(msg);
+
+    private static <T extends Packet> void client(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> reader) {
+        registrar.playToClient(type, reader, PacketHandler::handlePacket);
     }
 
-    public static <MSG> void sendTo(MSG msg, ServerPlayer player) {
-        if (!(player instanceof FakePlayer)) {
-            HANDLER.sendTo(msg, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+    private static <T extends Packet> void server(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> reader) {
+        registrar.playToServer(type, reader, PacketHandler::handlePacket);
+    }
+
+    private static <T extends Packet> void bidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> reader) {
+        registrar.playBidirectional(type, reader, PacketHandler::handlePacket);
+    }
+
+    public static void sendTo (Packet packet, ServerPlayer player) {
+        PacketDistributor.sendToPlayer(player, packet);
+    }
+
+    public static void sendToAll (Packet packet) {
+        PacketDistributor.sendToAllPlayers(packet);
+    }
+
+    public static void sendToServer(Packet packet) {
+        PacketDistributor.sendToServer(packet);
+    }
+
+    public static <T extends Packet>void handlePacket(final T data, final IPayloadContext context) {
+        context.enqueueWork(() -> data.handle(context)).exceptionally(e -> {
+            Lightsabers.LOGGER.warn("Packet \"{}\" handling failed, something is likely broken", data.type());
+            return null;
+        });
+        Packet reply = data.reply(context);
+        if (reply != null) {
+            context.reply(reply);
         }
     }
 
-    public static void syncToAllAround(Player player, IPlayerCapabilities playerData) {
+    public static void syncToAllAround(Player player, PlayerCapabilities playerData) {
         if (!player.level().isClientSide) {
             for (Player playerFromList : player.level().players()) {
-                sendTo(new SCSyncCapabilityToAllPacket(player.getDisplayName().getString(), playerData), (ServerPlayer) playerFromList);
+                sendTo(new SCSyncCapabilityPacket(player), (ServerPlayer) playerFromList);
             }
         }
     }

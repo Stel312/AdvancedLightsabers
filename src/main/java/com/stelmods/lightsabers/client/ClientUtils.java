@@ -2,12 +2,12 @@ package com.stelmods.lightsabers.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.stelmods.lightsabers.capabilities.IPlayerCapabilities;
-import com.stelmods.lightsabers.capabilities.ModCapabilities;
+import com.stelmods.lightsabers.capabilities.PlayerCapabilities;
 import com.stelmods.lightsabers.network.stc.SCSyncCapabilityPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -25,13 +25,7 @@ public class ClientUtils {
         };
     }*/
     public static void syncCapability(SCSyncCapabilityPacket message) {
-        Minecraft.getInstance().execute(() -> {
-            var player = Minecraft.getInstance().player;
-            if (player == null) return;
-
-            var data = ModCapabilities.getPlayer(player);
-            data.setLightningMode(message.lightningMode);
-        });
+        PlayerCapabilities.get(message.data(), (Player) Minecraft.getInstance().level.getEntity(message.player()));
     }
     static Random random = new Random();
 
@@ -87,7 +81,7 @@ public class ClientUtils {
             }
         };
     }*/
-    public static void setLightningMap(int id, int targetsSize, ArrayList<Integer> targets) {
+    public static void setLightningMap(int id, ArrayList<Integer> targets) {
         Minecraft.getInstance().execute(() -> {
             ClientEvents.lightningMap.put(id, targets);
         });

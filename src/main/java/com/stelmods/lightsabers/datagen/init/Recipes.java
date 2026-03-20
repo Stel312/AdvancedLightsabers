@@ -6,7 +6,6 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 public class Recipes extends RecipeProvider {
     DataGenerator dataGenerator;

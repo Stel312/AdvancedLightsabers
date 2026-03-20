@@ -1,7 +1,6 @@
 package com.stelmods.lightsabers.common.component;
 
 import com.mojang.datafixers.util.Function7;
-import com.mojang.datafixers.util.Function8;
 import net.minecraft.network.codec.StreamCodec;
 
 import java.util.function.Function;

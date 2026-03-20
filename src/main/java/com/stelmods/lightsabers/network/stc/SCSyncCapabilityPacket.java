@@ -1,41 +1,48 @@
 package com.stelmods.lightsabers.network.stc;
 
-import com.stelmods.lightsabers.capabilities.IPlayerCapabilities;
+import com.stelmods.lightsabers.Lightsabers;
+import com.stelmods.lightsabers.capabilities.PlayerCapabilities;
 import com.stelmods.lightsabers.client.ClientUtils;
+import com.stelmods.lightsabers.network.Packet;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /**
  * Sync to own player
  */
-public class SCSyncCapabilityPacket {
+public record SCSyncCapabilityPacket(int player, CompoundTag data) implements Packet {
 
-    public boolean lightningMode = false;
-
-    public SCSyncCapabilityPacket() {}
-
-    public SCSyncCapabilityPacket(IPlayerCapabilities capability) {
-        this.lightningMode = capability.isLightningMode();
+    public SCSyncCapabilityPacket(Player player) {
+        this(player.getId(), PlayerCapabilities.get(player).serializeNBT(player.level().registryAccess()));
     }
 
-    public void encode(FriendlyByteBuf buffer) {
-        buffer.writeBoolean(this.lightningMode);
+    public static final CustomPacketPayload.Type<SCSyncCapabilityPacket> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(Lightsabers.MODID, "sc_sync_capability"));
+
+    public static final StreamCodec<FriendlyByteBuf, SCSyncCapabilityPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.INT,
+            SCSyncCapabilityPacket::player,
+            ByteBufCodecs.COMPOUND_TAG,
+            SCSyncCapabilityPacket::data,
+            SCSyncCapabilityPacket::new
+    );
+
+    public SCSyncCapabilityPacket(Player player, PlayerCapabilities playerData) {
+        this(player.getId(), playerData.serializeNBT(player.level().registryAccess()));
     }
 
-    public static SCSyncCapabilityPacket decode(FriendlyByteBuf buffer) {
-        SCSyncCapabilityPacket msg = new SCSyncCapabilityPacket();
-
-        msg.lightningMode = buffer.readBoolean();
-
-        return msg;
+    @Override
+    public void handle(IPayloadContext context) {
+        ClientUtils.syncCapability(this);
     }
 
-    public static void handle(final SCSyncCapabilityPacket message, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientUtils.syncCapability(message)));
-        ctx.get().setPacketHandled(true);
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

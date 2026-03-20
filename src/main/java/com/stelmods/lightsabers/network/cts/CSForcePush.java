@@ -1,27 +1,25 @@
 package com.stelmods.lightsabers.network.cts;
 
+import com.stelmods.lightsabers.Lightsabers;
+import com.stelmods.lightsabers.network.Packet;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public record CSForcePush() implements Packet {
+    public static final CustomPacketPayload.Type<CSForcePush> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(Lightsabers.MODID, "cs_force_push"));
+    public static final StreamCodec<FriendlyByteBuf, CSForcePush> STREAM_CODEC = StreamCodec.of((pBuffer, pValue) -> {}, pBuffer -> new CSForcePush());
 
-public class ForcePull {
-    public ForcePull()
-    {}
-
-    public void encode(FriendlyByteBuf buffer) {
-    }
-
-    public static ForcePull decode(FriendlyByteBuf buffer) {
-        return new ForcePull();
-    }
-    public static void handle(ForcePull message, final Supplier<NetworkEvent.Context> ctx) {
-        Player senderPlayer = ctx.get().getSender();
+    @Override
+    public void handle(IPayloadContext context) {
+        Player senderPlayer = context.player();
         Vec3 lookVec = senderPlayer.getLookAngle();// Get the direction the player is looking
         Level world = senderPlayer.level();
         // Calculate the bounding box coordinates based on the player's look vector
@@ -34,15 +32,18 @@ public class ForcePull {
                 Math.min(boxStart.x, boxEnd.x), Math.min(boxStart.y, boxEnd.y), Math.min(boxStart.z, boxEnd.z),
                 Math.max(boxStart.x, boxEnd.x), Math.max(boxStart.y, boxEnd.y), Math.max(boxStart.z, boxEnd.z)
         );
-        // Get all entities within the bounding box
+
         for (Entity entity : world.getEntities(senderPlayer, boundingBox)) {
-            // Pull entity
             double distance = playerPos.distanceTo(entity.position());
             double strength = 5 / distance;
-            Vec3 pullDirection = entity.position().subtract(playerPos).normalize();
-            pullDirection = pullDirection.scale(-strength);
-            entity.addDeltaMovement(pullDirection);
-        }
+            Vec3 pushDirection = entity.position().subtract(playerPos).normalize();
+            pushDirection = pushDirection.scale(strength);
+            entity.addDeltaMovement(pushDirection);
+;        }
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }
-

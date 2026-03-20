@@ -22,6 +22,8 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -31,6 +33,8 @@ public class Lightsabers {
 
     public static final String NAME = "Advanced Lightsabers";
     public static final String MODID = "lightsabers";
+
+    public static final Logger LOGGER = LogManager.getLogger();
 
     public static final DeferredRegister<CreativeModeTab> TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);

@@ -2,9 +2,7 @@ package com.stelmods.lightsabers.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.stelmods.lightsabers.Lightsabers;
-import com.stelmods.lightsabers.capabilities.IPlayerCapabilities;
-import com.stelmods.lightsabers.capabilities.ModCapabilities;
+import com.stelmods.lightsabers.capabilities.PlayerCapabilities;
 import com.stelmods.lightsabers.common.block.BlockCrystal;
 import com.stelmods.lightsabers.common.block.ModBlocks;
 import com.stelmods.lightsabers.lib.Utils;
@@ -23,17 +21,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import static com.stelmods.lightsabers.client.ClientUtils.random;
 
@@ -58,8 +54,8 @@ public class ClientEvents {
     }
 
     @SubscribeEvent
-    public static void onRenderOverlay(RenderGuiOverlayEvent.Post event) {
-        if (InputHandler.forceSense && event.getOverlay() == VanillaGuiOverlay.VIGNETTE.type()) {
+    public static void onRenderOverlay(RenderGuiLayerEvent.Post event) {
+        if (InputHandler.forceSense){// && event.getLayer() == VanillaGuiLayers.CROSSHAIR.gettype()) {
             Minecraft mc = Minecraft.getInstance();
             int width = mc.getWindow().getGuiScaledWidth();
             int height = mc.getWindow().getGuiScaledHeight();
@@ -85,7 +81,7 @@ public class ClientEvents {
         for (Map.Entry<Integer, ArrayList<Integer>> entry : lightningMap.entrySet()) {
             Entity e = mc.level.getEntity(entry.getKey());
             if(e instanceof Player player){
-                IPlayerCapabilities playerData = ModCapabilities.getPlayer(player);
+                PlayerCapabilities playerData = PlayerCapabilities.get(player);
                 if (playerData.isLightningMode()) {
                     System.out.println(player.getDisplayName().getString()+" "+playerData.isLightningMode());
 

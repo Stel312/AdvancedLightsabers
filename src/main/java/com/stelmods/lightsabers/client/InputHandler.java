@@ -28,9 +28,9 @@ public class InputHandler {
         if(mc.screen == null) {
             if (event.getAction() == 1) { //We only want to run it once the key has been pressed, not released
                 if (event.getKey() == KeyMappings.FORCE_PUSH.getKey().getValue()) {
-                    PacketHandler.sendToServer(new ForcePush());
+                    PacketHandler.sendToServer(new CSForcePush());
                 } else if (event.getKey() == KeyMappings.FORCE_PULL.getKey().getValue()) {
-                    PacketHandler.sendToServer(new ForcePull());
+                    PacketHandler.sendToServer(new CSForcePull());
                 } else if (event.getKey() == KeyMappings.TOGGLE_LIGHTSABER.getKey().getValue()) {
                     PacketHandler.sendToServer(new CSToggleLightsaber());
                 } else if (event.getKey() == KeyMappings.FORCE_ACTIVATE.getKey().getValue()) {

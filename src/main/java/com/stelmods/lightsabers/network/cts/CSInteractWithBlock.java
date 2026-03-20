@@ -1,41 +1,69 @@
 package com.stelmods.lightsabers.network.cts;
 
+import com.stelmods.lightsabers.Lightsabers;
+import com.stelmods.lightsabers.network.Packet;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public record CSInteractWithBlock(BlockPos pos, BlockHitResult hitResult) implements Packet {
+    public static final StreamCodec<FriendlyByteBuf, net.minecraft.world.phys.Vec3> VEC3_STREAM_CODEC =
+            StreamCodec.composite(
+                    ByteBufCodecs.DOUBLE,
+                    vec -> vec.x,
+                    ByteBufCodecs.DOUBLE,
+                    vec -> vec.y,
+                    ByteBufCodecs.DOUBLE,
+                    vec -> vec.z,
+                    (x, y, z) -> new net.minecraft.world.phys.Vec3(x, y, z)
+            );
+    public static final StreamCodec<FriendlyByteBuf, BlockHitResult> BLOCK_HIT_RESULT_STREAM_CODEC =
+            StreamCodec.composite(
+                    VEC3_STREAM_CODEC,
+                    BlockHitResult::getLocation,
 
-public class CSInteractWithBlock {
-    BlockPos pos;
-    BlockHitResult hitResult;
-    public CSInteractWithBlock(){}
+                    ByteBufCodecs.INT,
+                    hit -> hit.getDirection().ordinal(),
 
-    public CSInteractWithBlock(BlockPos pos, BlockHitResult hitResult){
-        this.pos = pos;
-        this.hitResult = hitResult;
-    }
+                    BlockPos.STREAM_CODEC,
+                    BlockHitResult::getBlockPos,
 
-    public void encode(FriendlyByteBuf buffer) {
-        buffer.writeBlockPos(this.pos);
-        buffer.writeBlockHitResult(this.hitResult);
-    }
+                    ByteBufCodecs.BOOL,
+                    BlockHitResult::isInside,
 
-    public static CSInteractWithBlock decode(FriendlyByteBuf buffer) {
-        CSInteractWithBlock msg = new CSInteractWithBlock();
-        msg.pos = buffer.readBlockPos();
-        msg.hitResult = buffer.readBlockHitResult();
-        return msg;
-    }
+                    (location, dirOrdinal, pos, inside) ->
+                            new BlockHitResult(location, Direction.values()[dirOrdinal], pos, inside)
+            );
 
-    public static void handle(CSInteractWithBlock message, final Supplier<NetworkEvent.Context> ctx) {
-        Player senderPlayer = ctx.get().getSender();
-        BlockState blockState = senderPlayer.level().getBlockState(message.pos);
-        blockState.use(senderPlayer.level(),senderPlayer, InteractionHand.MAIN_HAND, message.hitResult);
+    public static final Type<CSInteractWithBlock> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Lightsabers.MODID, "cs_interact_block"));
+
+    public static final StreamCodec<FriendlyByteBuf, CSInteractWithBlock> STREAM_CODEC = StreamCodec.composite(
+            BlockPos.STREAM_CODEC,
+            CSInteractWithBlock::pos,
+            BLOCK_HIT_RESULT_STREAM_CODEC,
+            CSInteractWithBlock::hitResult,
+            CSInteractWithBlock::new
+    );
+
+    @Override
+    public void handle(IPayloadContext context) {
+        Player player = context.player();
+        BlockState blockState = player.level().getBlockState(pos);
+        blockState.useWithoutItem(player.level(),player, hitResult);
+
         //senderPlayer.level().setBlockAndUpdate(message.pos,blockState.setValue(LeverBlock.POWERED,!blockState.getValue(LeverBlock.POWERED)));
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

@@ -1,54 +1,66 @@
 package com.stelmods.lightsabers.network.stc;
 
+import com.stelmods.lightsabers.Lightsabers;
 import com.stelmods.lightsabers.client.ClientUtils;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
+import com.stelmods.lightsabers.network.Packet;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.function.Supplier;
+import java.util.List;
 
 /**
  * Sync to own player
  */
-public class SCSendLightningData {
+public record SCSendLightningData(int id, List<Integer> targets) implements Packet {
 
-    private int id;
-    private int targetsSize;
-    private ArrayList<Integer> targets = new ArrayList<>();
+    public static final Type<SCSendLightningData> TYPE =
+            new Type<>(ResourceLocation.fromNamespaceAndPath(Lightsabers.MODID, "sc_send_lightning_data"));
 
-    public SCSendLightningData() {}
+    // 🔧 Codec de lista manual
+    public static final StreamCodec<RegistryFriendlyByteBuf, List<Integer>> INT_LIST_CODEC =
+            new StreamCodec<>() {
+                @Override
+                public List<Integer> decode(RegistryFriendlyByteBuf buf) {
+                    int size = buf.readInt();
+                    List<Integer> list = new ArrayList<>(size);
+                    for (int i = 0; i < size; i++) {
+                        list.add(buf.readInt());
+                    }
+                    return list;
+                }
 
-    public SCSendLightningData(int id, ArrayList<Integer> targets) {
-        this.id = id;
-        this.targetsSize = targets.size();
-        this.targets = targets;
-        System.out.println("Syncing data");
+                @Override
+                public void encode(RegistryFriendlyByteBuf buf, List<Integer> list) {
+                    buf.writeInt(list.size());
+                    for (int i : list) {
+                        buf.writeInt(i);
+                    }
+                }
+            };
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, SCSendLightningData> STREAM_CODEC =
+            StreamCodec.composite(
+                    ByteBufCodecs.INT,
+                    SCSendLightningData::id,
+                    INT_LIST_CODEC,
+                    SCSendLightningData::targets,
+                    SCSendLightningData::new
+            );
+
+    @Override
+    public void handle(IPayloadContext context) {
+        context.enqueueWork(() ->
+                ClientUtils.setLightningMap(id, targets)
+        );
     }
 
-    public void encode(FriendlyByteBuf buffer) {
-        buffer.writeInt(id);
-        buffer.writeInt(targetsSize);
-        for(int i = 0; i< targetsSize; i++){
-            buffer.writeInt(targets.get(i));
-        }
-    }
-
-    public static SCSendLightningData decode(FriendlyByteBuf buffer) {
-        SCSendLightningData msg = new SCSendLightningData();
-
-        msg.id = buffer.readInt();
-        msg.targetsSize = buffer.readInt();
-        for(int i = 0; i< msg.targetsSize;i++){
-            msg.targets.add(buffer.readInt());
-        }
-        return msg;
-    }
-
-    public static void handle(final SCSendLightningData message, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientUtils.setLightningMap(message.id, message.targetsSize, message.targets)));
-        ctx.get().setPacketHandled(true);
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }
