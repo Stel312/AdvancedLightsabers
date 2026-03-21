@@ -14,7 +14,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record CSToggleLightsaber() implements Packet {
 
-    public static final CustomPacketPayload.Type<CSToggleLightsaber> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(Lightsabers.MODID, "cs_lightsaber_toggle"));
+    public static final Type<CSToggleLightsaber> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Lightsabers.MODID, "cs_lightsaber_toggle"));
     public static final StreamCodec<FriendlyByteBuf, CSToggleLightsaber> STREAM_CODEC = StreamCodec.of((pBuffer, pValue) -> {}, pBuffer -> new CSToggleLightsaber());
 
     @Override

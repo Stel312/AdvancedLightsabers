@@ -37,7 +37,7 @@ import static com.stelmods.lightsabers.client.ClientUtils.random;
 
 public class ClientEvents {
 
-    /*@EventBusSubscriber(value = Dist.CLIENT)
+    @EventBusSubscriber(value = Dist.CLIENT)
     public static class ModBusEvents {
         @SubscribeEvent
         public static void colourTint(RegisterColorHandlersEvent.Block event) {
@@ -56,7 +56,7 @@ public class ClientEvents {
                 }
             }
         }
-    }*/
+    }
 
     @SubscribeEvent
     public void onRenderOverlay(RenderGuiLayerEvent.Post event) {

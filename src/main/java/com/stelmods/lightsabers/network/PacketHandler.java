@@ -26,17 +26,14 @@ public class PacketHandler {
     public static void register(final RegisterPayloadHandlersEvent event) {
         registrar = event.registrar(Lightsabers.MODID);
 
-        client(CSToggleLightsaber.TYPE, CSToggleLightsaber.STREAM_CODEC);
-        client(CSForcePush.TYPE, CSForcePush.STREAM_CODEC);
-        client(CSForcePull.TYPE, CSForcePull.STREAM_CODEC);
-        client(CSInteractWithBlock.TYPE, CSInteractWithBlock.STREAM_CODEC);
-        client(CSShootLightning.TYPE, CSShootLightning.STREAM_CODEC);
+        server(CSToggleLightsaber.TYPE, CSToggleLightsaber.STREAM_CODEC);
+        server(CSForcePush.TYPE, CSForcePush.STREAM_CODEC);
+        server(CSForcePull.TYPE, CSForcePull.STREAM_CODEC);
+        server(CSInteractWithBlock.TYPE, CSInteractWithBlock.STREAM_CODEC);
+        server(CSShootLightning.TYPE, CSShootLightning.STREAM_CODEC);
 
-        server(SCSyncCapabilityPacket.TYPE, SCSyncCapabilityPacket.STREAM_CODEC);
-        server(SCSendLightningData.TYPE, SCSendLightningData.STREAM_CODEC);
-        //server(SCSyncCapabilityToAllPacket.TYPE, SCSyncCapabilityToAllPacket.STREAM_CODEC)
-
-
+        client(SCSyncCapabilityPacket.TYPE, SCSyncCapabilityPacket.STREAM_CODEC);
+        client(SCSendLightningData.TYPE, SCSendLightningData.STREAM_CODEC);
     }
 
     private static <T extends Packet> void client(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> reader) {
