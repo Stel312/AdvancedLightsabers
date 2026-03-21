@@ -1,6 +1,6 @@
 {
-    "parent": "forge:item/default",
-    "loader": "forge:obj",
+    "parent": "neoforge:item/default",
+    "loader": "neoforge:obj",
     "model": "lightsabers:models/item/lightsabers/grip/test_grip.obj",
     "flip_v": true,
     "textures": {

@@ -1,7 +1,7 @@
 {
-  "parent": "forge:block/default",
+  "parent": "neoforge:block/default",
   "render_type": "minecraft:cutout",
-  "loader": "forge:obj",
+  "loader": "neoforge:obj",
   "flip_v": true,
   "model": "lightsabers:models/block/model/crystal.obj",
   "transform":{

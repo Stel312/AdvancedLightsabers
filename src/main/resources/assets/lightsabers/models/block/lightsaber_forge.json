@@ -1,7 +1,7 @@
 {
-  "parent": "forge:block/default",
+  "parent": "neoforge:block/default",
   "render_type": "minecraft:cutout",
-  "loader": "forge:obj",
+  "loader": "neoforge:obj",
   "model": "lightsaber:models/block/lightsaberforge.obj",
   "transform":{
     "translation": [ -1, -1.5, -1 ],

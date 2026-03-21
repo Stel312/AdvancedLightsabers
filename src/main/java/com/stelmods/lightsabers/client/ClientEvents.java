@@ -3,11 +3,14 @@ package com.stelmods.lightsabers.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.stelmods.lightsabers.capabilities.PlayerCapabilities;
+import com.stelmods.lightsabers.client.render.item.RenderItemLightsaber;
 import com.stelmods.lightsabers.common.block.BlockCrystal;
 import com.stelmods.lightsabers.common.block.ModBlocks;
+import com.stelmods.lightsabers.common.item.ModItems;
 import com.stelmods.lightsabers.lib.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -27,6 +30,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.HashMap;
@@ -36,6 +41,7 @@ import java.util.Map;
 import static com.stelmods.lightsabers.client.ClientUtils.random;
 
 public class ClientEvents {
+
 
     @EventBusSubscriber(value = Dist.CLIENT)
     public static class ModBusEvents {
@@ -55,6 +61,26 @@ public class ClientEvents {
                     event.register((itemStack, tint) -> crystal.getCrystalColor().color, crystal.asItem());
                 }
             }
+        }
+
+        @SubscribeEvent
+        public static void registerClientExtensions(RegisterClientExtensionsEvent event){
+            event.registerItem(new IClientItemExtensions() {
+                                   @Override
+                                   public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                                       return RenderItemLightsaber.BEWLR;
+                                   }
+                               },
+                    ModItems.lightsaber.get() // your item
+            );
+            event.registerItem(new IClientItemExtensions() {
+                                   @Override
+                                   public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                                       return RenderItemLightsaber.BEWLR;
+                                   }
+                               },
+                    ModItems.doubleLightsaber.get() // your item
+            );
         }
     }
 

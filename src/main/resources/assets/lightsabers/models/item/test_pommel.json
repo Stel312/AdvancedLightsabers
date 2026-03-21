@@ -1,6 +1,6 @@
 {
-    "parent": "forge:item/default",
-    "loader": "forge:obj",
+    "parent": "neoforge:item/default",
+    "loader": "neoforge:obj",
     "model": "lightsabers:models/item/lightsabers/pommel/test_pommel.obj",
     "flip_v": true,
     "textures": {

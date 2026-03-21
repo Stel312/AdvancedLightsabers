@@ -46,7 +46,7 @@ public class LightsaberItem extends SwordItem implements IClientItemExtensions {
 
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-        if(!stack.get(LightsaberDataComponents.LIGHTSABER_ACTIVE))
+        if(!stack.has(LightsaberDataComponents.LIGHTSABER_ACTIVE))
         {
             stack.set(LightsaberDataComponents.LIGHTSABER_ACTIVE, false);
             stack.set(LightsaberDataComponents.LIGHTSABER_LENGTH, 0f);

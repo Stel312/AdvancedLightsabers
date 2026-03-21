@@ -27,7 +27,7 @@ public class InputHandler {
     public void handleKeyInputEvent(InputEvent.Key event) {
         if(mc.screen == null) {
             if (event.getAction() == 1) { //We only want to run it once the key has been pressed, not released
-                if (event.getKey() == ClientSetup.Keybinds.FORCE_PUSH.getKeybind().getKey().getValue()) {
+                 if (event.getKey() == ClientSetup.Keybinds.FORCE_PUSH.getKeybind().getKey().getValue()) {
                     PacketHandler.sendToServer(new CSForcePush());
                 } else if (event.getKey() == ClientSetup.Keybinds.FORCE_PULL.getKeybind().getKey().getValue()) {
                     PacketHandler.sendToServer(new CSForcePull());

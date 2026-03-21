@@ -11,6 +11,7 @@ import com.stelmods.lightsabers.common.item.LightsaberItem;
 import com.stelmods.lightsabers.common.item.LightsaberPart;
 import com.stelmods.lightsabers.common.item.ModItems;
 import com.stelmods.lightsabers.lib.Strings;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
@@ -76,7 +77,7 @@ public class Lightsabers {
                                         ModItems.revanEmitter.get().toString(),
                                         "",
                                         "",
-                                        ModBlocks.purpleCrystal.get().toString()
+                                        BuiltInRegistries.BLOCK.getKey(ModBlocks.purpleCrystal.get()).toString()
                                 ));
                         revan.set(LightsaberDataComponents.LIGHTSABER_ACTIVE, false);
                         revan.set(LightsaberDataComponents.LIGHTSABER_LENGTH, 0f);
@@ -94,7 +95,7 @@ public class Lightsabers {
                                         ModItems.taronEmitter.get().toString(),
                                         "",
                                         "",
-                                        ModBlocks.redCrystal.get().toString()
+                                        BuiltInRegistries.BLOCK.getKey(ModBlocks.redCrystal.get()).toString()
                                 );
 
                         ItemStack taron = new ItemStack(ModItems.lightsaber.get());
@@ -112,7 +113,7 @@ public class Lightsabers {
                                         ModItems.revanEmitter.get().toString(),
                                         "",
                                         "",
-                                        ModBlocks.purpleCrystal.get().toString()
+                                        BuiltInRegistries.BLOCK.getKey(ModBlocks.purpleCrystal.get()).toString()
                                 );
 
                         ItemStack revan = new ItemStack(ModItems.lightsaber.get());
