@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.stelmods.lightsabers.Lightsabers;
 import com.stelmods.lightsabers.client.model.ModelLightsaberBlade;
+import com.stelmods.lightsabers.client.render.ModelRenderTypes;
 import com.stelmods.lightsabers.common.block.BlockCrystal;
 import com.stelmods.lightsabers.common.component.LightsaberDataComponents;
 import com.stelmods.lightsabers.common.item.ItemFocusingCrystal;
@@ -26,6 +27,8 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import org.joml.Matrix4f;
+
+import java.util.Random;
 
 public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
 
@@ -125,10 +128,16 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
 
         pose.pushPose();
         float h = 0f;
-
+        if (showBlade || ctx == ItemDisplayContext.NONE) {
+            pose.pushPose();
+            pose.translate(0, emitterTop(upper), 0);
+            renderBlade(upperStack, stack, buffer, pose, 0, false);
+            pose.popPose();
+        }
         h = renderPart(upper.hilt(),   h, (byte) 1, ctx, pose, buffer, light);
         h = renderPart(upper.switch_(), h, (byte) 1, ctx, pose, buffer, light);
         h = renderPart(upper.emitter(), h, (byte) 1, ctx, pose, buffer, light);
+
 
         pose.popPose();
 
@@ -136,28 +145,20 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
         pose.mulPose(Axis.ZN.rotationDegrees(180));
 
         h = 0f;
+        if (showBlade || ctx == ItemDisplayContext.NONE) {
+            pose.pushPose();
+            pose.translate(0, emitterTop(lower), 0);
+            renderBlade(lowerStack, stack, buffer, pose, 0, true);
+            pose.popPose();
+        }
         h = renderPart(lower.hilt(),   h, (byte) 1, ctx, pose, buffer, light);
         h = renderPart(lower.switch_(), h, (byte) 1, ctx, pose, buffer, light);
         h = renderPart(lower.emitter(), h, (byte) 1, ctx, pose, buffer, light);
 
+
         pose.popPose();
 
-        if (showBlade || ctx == ItemDisplayContext.NONE) {
-
-            // UPPER BLADE
-            PoseStack bladePose = new PoseStack();
-            bladePose.last().pose().mul(pose.last().pose());
-            bladePose.translate(0, emitterTop(upper), 0);
-            renderBlade(upperStack, stack, buffer, bladePose, 0, false);
-
-            // LOWER BLADE
-            PoseStack bladePose2 = new PoseStack();
-            bladePose2.last().pose().mul(pose.last().pose());
-            bladePose2.mulPose(Axis.ZN.rotationDegrees(180));
-            bladePose2.translate(0, emitterTop(lower), 0);
-            renderBlade(lowerStack, stack, buffer, bladePose2, 0, true);
         }
-    }
 
 
     public void renderSingle(ItemDisplayContext ctx,
@@ -173,8 +174,7 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
         boolean showBlade = false;
 
         // ⭐ Save item transform BEFORE part transforms
-        Matrix4f itemTransform = new Matrix4f();
-        itemTransform.set(pose.last().pose());
+
 
         pose.pushPose();
 
@@ -208,20 +208,22 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
         }
 
         float h = 0f;
+
         h = renderPart(data.pomel(),  h, (byte) 1, ctx, pose, buffer, light);
         h = renderPart(data.hilt(),   h, (byte) 1, ctx, pose, buffer, light);
         h = renderPart(data.switch_(),h, (byte) 1, ctx, pose, buffer, light);
         h = renderPart(data.emitter(),h, (byte) 1, ctx, pose, buffer, light);
 
-        pose.popPose();
-
         // ⭐ Render blade using the ORIGINAL item transform
         if (showBlade || ctx == ItemDisplayContext.NONE) {
-            PoseStack bladePose = new PoseStack();
-            bladePose.last().pose().set(itemTransform);
-            bladePose.translate(0, emitterTop(data), 0);
-            renderBlade(stack, stack, buffer, bladePose, 0, false);
+            pose.pushPose();
+            pose.translate(0, emitterTop(data), 0);
+            renderBlade(stack, stack, buffer, pose, 0, false);
+            pose.popPose();
         }
+        pose.popPose();
+
+
     }
 
 
@@ -268,38 +270,31 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
 
         float[] rgb = crystal.getCrystalColor().getRGB();
 
-        // Outer blade
+        // ------------------------------------------------------------
+        // SHARED FLICKER SOURCE (syncs core + bloom)
+        // ------------------------------------------------------------
+        float partial = Minecraft.getInstance().getTimer().getGameTimeDeltaTicks();
+        float t = Minecraft.getInstance().level.getGameTime() + partial;
+        Random flickerRand = new Random((long)(t * 1000));
+
         ModelLightsaberBlade.renderOuter(
                 rgb,
-                buffer.getBuffer(RenderType.entityTranslucentEmissive(
-                        ResourceLocation.fromNamespaceAndPath(Lightsabers.MODID, "textures/item/lightsaber/blade")
-                )),
-                false,
+                buffer.getBuffer(ModelRenderTypes.SABER_OUTER),
                 pose,
-                0xF000F0,
-                c1,
-                c2,
-                length
+                length * 1.1f
         );
 
-        // Inner blade
         ModelLightsaberBlade.renderInner(
                 rgb,
-                buffer.getBuffer(RenderType.solid()),
-                false,
+                buffer.getBuffer(ModelRenderTypes.SABER_INNER),
                 pose,
-                0xF000F0,
-                c1,
-                c2,
-                length
+                length,
+                flickerRand
         );
 
-        // Cracked lightning
         ModelLightsaberBlade.renderCrackedLightning(
                 rgb,
-                buffer.getBuffer(RenderType.entityTranslucentEmissive(
-                        ResourceLocation.fromNamespaceAndPath(Lightsabers.MODID, "textures/item/lightsaber/blade")
-                )),
+                buffer.getBuffer(ModelRenderTypes.SABER_INNER),
                 pose,
                 length,
                 c1,
@@ -307,9 +302,7 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
         );
     }
 
-    // ------------------------------------------------------------
-    // PART RENDERING — bottom‑up deterministic stack
-    // ------------------------------------------------------------
+
 
     private float renderPart(String idStr,
                              float height,
@@ -348,4 +341,6 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
         pose.popPose();
         return height + partHeight;
     }
+
+
 }

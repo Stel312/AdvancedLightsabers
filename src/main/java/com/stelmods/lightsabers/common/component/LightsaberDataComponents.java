@@ -30,7 +30,7 @@ public class LightsaberDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<String>> CROSSGUARD_LIGHTSABER =
             COMPONENTS.registerComponentType("crossguard_lightsaber", builder -> builder.persistent(Codec.STRING).networkSynchronized(ByteBufCodecs.STRING_UTF8));
 
-    public record LightsaberData(String hilt, String pomel, String emitter, String switch_, String focus1, String focus2, String kyber) {
+    public record LightsaberData(String pomel, String hilt, String switch_, String emitter, String focus1, String focus2, String kyber) {
         public static final Codec<LightsaberData> CODEC = RecordCodecBuilder.create((builder) -> builder.group(
             Codec.STRING.fieldOf("pomel").forGetter(LightsaberData::pomel),
             Codec.STRING.fieldOf("hilt").forGetter(LightsaberData::hilt),

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import com.stelmods.lightsabers.common.lightsaber.FocusingCrystal;
 import net.minecraft.client.Minecraft;
+import org.joml.Matrix4f;
 
 import java.util.Random;
 
@@ -12,124 +13,94 @@ public class ModelLightsaberBlade {
 
     private ModelLightsaberBlade() {}
 
-    // ============================================================
-    // INNER BLADE — pure white emissive, thinner, longer
-    // ============================================================
-    public static void renderInner(
-            float[] rgb,
-            VertexConsumer vc,
-            boolean isCrossguard,
-            PoseStack pose,
-            int light,
-            FocusingCrystal c1,
-            FocusingCrystal c2,
-            float length
-    ) {
-        pose.pushPose();
+    // ------------------------------------------------------------
+    // INNER CORE (now flickers with the bloom)
+    // ------------------------------------------------------------
+    public static void renderInner(float[] rgb, VertexConsumer vc, PoseStack pose, float length, Random flickerRand) {
 
-        // Thinner inner core
-        float radius = 0.045f;
+        // ANH-style micro jitter
+        float jitter = 0.97f + flickerRand.nextFloat() * 0.06f; // 0.97–1.03
+        float radius = 0.01f * jitter;
 
-        // Slight length extension (OT style)
-        float finalLength = length * 1.05f;
+        // brightness flicker
+        float alpha = 0.92f + flickerRand.nextFloat() * 0.08f; // 0.92–1.00
 
-        // Pure white emissive inner core
-        float[] white = new float[]{1f, 1f, 1f};
-
-        drawCylinder(vc, pose, white, radius, finalLength, 1f, 0xF000F0);
-
-        pose.popPose();
+        drawCylinder(vc, pose, new float[]{1f, 1f, 1f}, radius, length * 1.05f, alpha);
     }
 
-    // ============================================================
-    // OUTER BLADE — RGB bloom, thinner, ANH micro‑jitter
-    // ============================================================
-    public static void renderOuter(
-            float[] rgb,
-            VertexConsumer vc,
-            boolean isCrossguard,
-            PoseStack pose,
-            int light,
-            FocusingCrystal c1,
-            FocusingCrystal c2,
-            float length
-    ) {
-        pose.pushPose();
-
-        // Thinner outer glow
-        float baseRadius = 0.09f;
-
-        // Slight length extension
-        float finalLength = length * 1.05f;
-
-        // Smooth partial ticks (1.21+)
+    // ------------------------------------------------------------
+    // OUTER GLOW (already flickering)
+    // ------------------------------------------------------------
+    public static void renderOuter  (float[] rgb, VertexConsumer vc, PoseStack pose, float length) {
+        float baseRadius = 0.03f;
         float partial = Minecraft.getInstance().getTimer().getGameTimeDeltaTicks();
         float t = Minecraft.getInstance().level.getGameTime() + partial;
-
-        // ANH micro‑jitter: random, subtle, fast, non‑rhythmic
         Random flickerRand = new Random((long)(t * 1000));
 
         for (int i = 0; i < 4; i++) {
-            float jitter = 0.97f + flickerRand.nextFloat() * 0.06f; // ±3%
-            float radius = baseRadius * (1f + i * 0.12f) * jitter;
-            float alpha = 0.30f / (i + 1);
+            float jitter = 0.96f + flickerRand.nextFloat() * 0.08f;
+            float radius = baseRadius * (1f + i * 0.15f) * jitter;
 
-            pose.pushPose();
-            drawCylinder(vc, pose, rgb, radius, finalLength, alpha, 0xF000F0);
-            pose.popPose();
+            // subtle bloom flicker
+            radius *= (0.98f + flickerRand.nextFloat() * 0.04f);
+
+            float alpha = 0.25f / (i + 1);
+            drawCylinder(vc, pose, rgb, radius, length, alpha);
         }
-
-        pose.popPose();
     }
 
-    // ============================================================
-    // CRACKED BLADE LIGHTNING — unchanged
-    // ============================================================
-    public static void renderCrackedLightning(
-            float[] rgb,
-            VertexConsumer vc,
-            PoseStack pose,
-            float bladeLength,
-            FocusingCrystal c1,
-            FocusingCrystal c2
-    ) {
-        if (c1 != FocusingCrystal.CRACKED && c2 != FocusingCrystal.CRACKED)
-            return;
-
+    // ------------------------------------------------------------
+    // CRACKED LIGHTNING
+    // ------------------------------------------------------------
+    public static void renderCrackedLightning(float[] rgb, VertexConsumer vc, PoseStack pose, float bladeLength, FocusingCrystal c1, FocusingCrystal c2) {
+        if (c1 != FocusingCrystal.CRACKED && c2 != FocusingCrystal.CRACKED) return;
         Random rand = new Random(Minecraft.getInstance().level.getGameTime());
-        int shardCount = 3 + rand.nextInt(2);
-
-        for (int i = 0; i < shardCount; i++) {
+        for (int i = 0; i < 6; i++) {
             pose.pushPose();
-
-            float y = rand.nextFloat() * bladeLength;
-            float shardLen = 0.15f + rand.nextFloat() * 0.30f;
-            float radius = rand.nextBoolean() ? 0.02f : 0.05f;
-            float alpha = 0.6f + rand.nextFloat() * 0.3f;
-
+            pose.translate(0, rand.nextFloat() * bladeLength, 0);
             pose.mulPose(Axis.YP.rotationDegrees(rand.nextFloat() * 360f));
-            pose.mulPose(Axis.XP.rotationDegrees(rand.nextFloat() * 360f));
-            pose.translate(0, y, 0);
-
-            drawCylinder(vc, pose, rgb, radius, shardLen, alpha, 0xF000F0);
-
+            pose.mulPose(Axis.ZP.rotationDegrees(rand.nextFloat() * 15f));
+            drawCylinder(vc, pose, rgb, 0.015f, 0.25f, 0.8f);
             pose.popPose();
         }
     }
 
-    // ============================================================
-    // CYLINDER DRAWING — 8‑sided prism
-    // ============================================================
-    private static void drawCylinder(
-            VertexConsumer vc,
-            PoseStack pose,
-            float[] rgb,
-            float radius,
-            float height,
-            float alpha,
-            int light
-    ) {
+    // ------------------------------------------------------------
+    // CYLINDER + CAP + POINTED TIP
+    // ------------------------------------------------------------
+    private static void drawCylinder(VertexConsumer vc, PoseStack pose, float[] rgb, float radius, float height, float alpha) {
         int segments = 8;
+        Matrix4f mat = pose.last().pose();
+
+        // side wall
+        for (int i = 0; i < segments; i++) {
+            float a1 = (float)(2 * Math.PI * i / segments);
+            float a2 = (float)(2 * Math.PI * (i + 1) / segments);
+
+            float x1 = radius * (float)Math.cos(a1);
+            float z1 = radius * (float)Math.sin(a1);
+            float x2 = radius * (float)Math.cos(a2);
+            float z2 = radius * (float)Math.sin(a2);
+
+            vc.addVertex(mat, x1, 0f, z1).setColor(rgb[0], rgb[1], rgb[2], alpha);
+            vc.addVertex(mat, x1, height, z1).setColor(rgb[0], rgb[1], rgb[2], alpha);
+            vc.addVertex(mat, x2, height, z2).setColor(rgb[0], rgb[1], rgb[2], alpha);
+            vc.addVertex(mat, x2, 0f, z2).setColor(rgb[0], rgb[1], rgb[2], alpha);
+        }
+
+        // top cap
+        //drawCap(vc, pose, rgb, radius, height, alpha);
+
+        // pointed tip
+        drawTip(vc, pose, segments, rgb, radius, height, alpha);
+    }
+
+    // ------------------------------------------------------------
+    // TOP CAP (prevents disappearing when viewed straight-on)
+    // ------------------------------------------------------------
+    private static void drawCap(VertexConsumer vc, PoseStack pose, int segment, float[] rgb, float radius, float height, float alpha) {
+        int segments = 4;
+        Matrix4f mat = pose.last().pose();
 
         for (int i = 0; i < segments; i++) {
             float a1 = (float)(2 * Math.PI * i / segments);
@@ -140,61 +111,33 @@ public class ModelLightsaberBlade {
             float x2 = radius * (float)Math.cos(a2);
             float z2 = radius * (float)Math.sin(a2);
 
-            float nx = (float)Math.cos((a1 + a2) * 0.5f);
-            float nz = (float)Math.sin((a1 + a2) * 0.5f);
-
-            cylinderFace(vc, pose, rgb, x1, 0f, z1, x2, height, z2, nx, nz, alpha, light);
+            vc.addVertex(mat, 0f, height, 0f).setColor(rgb[0], rgb[1], rgb[2], alpha);
+            vc.addVertex(mat, x1, height, z1).setColor(rgb[0], rgb[1], rgb[2], alpha);
+            vc.addVertex(mat, x2, height, z2).setColor(rgb[0], rgb[1], rgb[2], alpha);
         }
     }
 
-    // ============================================================
-    // CYLINDER FACE (quad)
-    // ============================================================
-    private static void cylinderFace(
-            VertexConsumer vc,
-            PoseStack pose,
-            float[] rgb,
-            float x1, float y1, float z1,
-            float x2, float y2, float z2,
-            float nx, float nz,
-            float alpha,
-            int light
-    ) {
-        var m = pose.last().pose();
-        float ny = 0f;
+    // ------------------------------------------------------------
+    // POINTED TIP (cone)
+    // ------------------------------------------------------------
+    private static void drawTip(VertexConsumer vc, PoseStack pose, int segments, float[] rgb, float radius, float height, float alpha) {
 
-        int u1 = light & 0xFFFF;
-        int v1 = (light >> 16) & 0xFFFF;
+        Matrix4f mat = pose.last().pose();
 
-        int u2 = 0;
-        int v2 = 10; // OverlayTexture.NO_OVERLAY
+        float tipHeight = height + 0.05f; // small point extension
 
-        vc.addVertex(m, x1, y1, z1)
-                .setColor(rgb[0], rgb[1], rgb[2], alpha)
-                .setUv(0f, 0f)
-                .setUv1(u1, v1)
-                .setUv2(u2, v2)
-                .setNormal(nx, ny, nz);
+        for (int i = 0; i < segments; i++) {
+            float a1 = (float)(2 * Math.PI * i / segments);
+            float a2 = (float)(2 * Math.PI * (i + 1) / segments);
 
-        vc.addVertex(m, x2, y1, z2)
-                .setColor(rgb[0], rgb[1], rgb[2], alpha)
-                .setUv(1f, 0f)
-                .setUv1(u1, v1)
-                .setUv2(u2, v2)
-                .setNormal(nx, ny, nz);
+            float x1 = radius * (float)Math.cos(a1);
+            float z1 = radius * (float)Math.sin(a1);
+            float x2 = radius * (float)Math.cos(a2);
+            float z2 = radius * (float)Math.sin(a2);
 
-        vc.addVertex(m, x2, y2, z2)
-                .setColor(rgb[0], rgb[1], rgb[2], alpha)
-                .setUv(1f, 1f)
-                .setUv1(u1, v1)
-                .setUv2(u2, v2)
-                .setNormal(nx, ny, nz);
-
-        vc.addVertex(m, x1, y2, z1)
-                .setColor(rgb[0], rgb[1], rgb[2], alpha)
-                .setUv(0f, 1f)
-                .setUv1(u1, v1)
-                .setUv2(u2, v2)
-                .setNormal(nx, ny, nz);
+            vc.addVertex(mat, x1, height, z1).setColor(rgb[0], rgb[1], rgb[2], alpha);
+            vc.addVertex(mat, x2, height, z2).setColor(rgb[0], rgb[1], rgb[2], alpha);
+            vc.addVertex(mat, 0f, tipHeight, 0f).setColor(rgb[0], rgb[1], rgb[2], alpha);
+        }
     }
 }
