@@ -20,7 +20,7 @@ import java.util.List;
 
 public class CommonEvents {
     @SubscribeEvent
-    public void onPlayerTick(PlayerTickEvent event) {
+    public void onPlayerTick(PlayerTickEvent.Pre event) {
         Player player = event.getEntity();
         PlayerCapabilities playerData = PlayerCapabilities.get(player);
         if(playerData.isLightningMode()){

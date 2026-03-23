@@ -1,6 +1,9 @@
 package com.stelmods.lightsabers;
 
 import com.google.common.base.Suppliers;
+import com.stelmods.lightsabers.capabilities.ModCapabilities;
+import com.stelmods.lightsabers.client.ClientEvents;
+import com.stelmods.lightsabers.common.CommonEvents;
 import com.stelmods.lightsabers.common.block.BlockCrystal;
 import com.stelmods.lightsabers.common.block.ModBlocks;
 import com.stelmods.lightsabers.common.component.LightsaberDataComponents;
@@ -22,6 +25,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -178,6 +182,9 @@ public class Lightsabers {
         LightsaberDataComponents.COMPONENTS.register(bus);
         ModEntities.TILE_ENTITIES.register(bus);
         ModContainers.CONTAINERS.register(bus);
+        ModCapabilities.ATTACHMENT_TYPES.register(bus);
+        NeoForge.EVENT_BUS.register(new CommonEvents());
+
         TABS.register(bus);
         if (FMLEnvironment.dist.isClient()) {
             bus.addListener(ModContainers::registerGUIFactories);

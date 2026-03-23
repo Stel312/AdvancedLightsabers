@@ -114,7 +114,7 @@ public class ClientEvents {
             if(e instanceof Player player){
                 PlayerCapabilities playerData = PlayerCapabilities.get(player);
                 if (playerData.isLightningMode()) {
-                    System.out.println(player.getDisplayName().getString()+" "+playerData.isLightningMode());
+                    //System.out.println(player.getDisplayName().getString()+" "+playerData.isLightningMode());
 
                     MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 

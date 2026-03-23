@@ -38,7 +38,6 @@ public class InputHandler {
                 } else if (event.getKey() == ClientSetup.Keybinds.FORCE_LIGHTNING.getKeybind().getKey().getValue()) {
                     //Turn force lightning on
                     PacketHandler.sendToServer(new CSShootLightning(true));
-
                 }
             }
 
