@@ -1,6 +1,7 @@
 package com.stelmods.lightsabers.client.render.item;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import com.stelmods.lightsabers.Lightsabers;
 import com.stelmods.lightsabers.client.model.ModelLightsaberBlade;
@@ -63,7 +64,6 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
             renderDouble(ctx, pose, buffer, light, stack);
         }
     }
-
 
     private float heightOf(String id) {
         if (id == null || id.isEmpty()) return 0f;
@@ -128,16 +128,16 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
 
         pose.pushPose();
         float h = 0f;
+
+        h = renderPart(upper.hilt(),   h, (byte) 1, ctx, pose, buffer, light);
+        h = renderPart(upper.switch_(), h, (byte) 1, ctx, pose, buffer, light);
+        h = renderPart(upper.emitter(), h, (byte) 1, ctx, pose, buffer, light);
         if (showBlade || ctx == ItemDisplayContext.NONE) {
             pose.pushPose();
             pose.translate(0, emitterTop(upper), 0);
             renderBlade(upperStack, stack, buffer, pose, 0, false);
             pose.popPose();
         }
-        h = renderPart(upper.hilt(),   h, (byte) 1, ctx, pose, buffer, light);
-        h = renderPart(upper.switch_(), h, (byte) 1, ctx, pose, buffer, light);
-        h = renderPart(upper.emitter(), h, (byte) 1, ctx, pose, buffer, light);
-
 
         pose.popPose();
 
@@ -270,36 +270,45 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
 
         float[] rgb = crystal.getCrystalColor().getRGB();
 
-        // ------------------------------------------------------------
-        // SHARED FLICKER SOURCE (syncs core + bloom)
-        // ------------------------------------------------------------
         float partial = Minecraft.getInstance().getTimer().getGameTimeDeltaTicks();
         float t = Minecraft.getInstance().level.getGameTime() + partial;
         Random flickerRand = new Random((long)(t * 1000));
-
-        ModelLightsaberBlade.renderOuter(
-                rgb,
-                buffer.getBuffer(ModelRenderTypes.SABER_OUTER),
-                pose,
-                length * 1.1f
+        //rgb = new float[]{1f, 0, 0};
+        VertexConsumer vc = buffer.getBuffer(
+                RenderType.LIGHTNING
         );
-
+        float[] innerRgb = rgb;
+        if (c1 != FocusingCrystal.INVERTING && c2 != FocusingCrystal.INVERTING)
+            innerRgb = new float[] {1f, 1f, 1f};
+        else
+            rgb = new float[] {0f, 0f, 0f};
         ModelLightsaberBlade.renderInner(
-                rgb,
+                innerRgb,
                 buffer.getBuffer(ModelRenderTypes.SABER_INNER),
+                //vc,
                 pose,
                 length,
                 flickerRand
         );
 
         ModelLightsaberBlade.renderCrackedLightning(
-                rgb,
+                innerRgb,
                 buffer.getBuffer(ModelRenderTypes.SABER_INNER),
+                //vc,
                 pose,
                 length,
                 c1,
                 c2
         );
+        ModelLightsaberBlade.renderOuter(
+                rgb,
+                buffer.getBuffer(ModelRenderTypes.SABER_OUTER),
+                //vc,
+                pose,
+                length * 1.1f,
+                flickerRand
+        );
+
     }
 
 

@@ -3,14 +3,17 @@ package com.stelmods.lightsabers.common.item;
 import com.stelmods.lightsabers.client.render.item.RenderItemLightsaber;
 import com.stelmods.lightsabers.common.component.LightsaberDataComponents;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import org.checkerframework.checker.units.qual.C;
+
+import java.util.List;
 
 public class LightsaberItem extends SwordItem implements IClientItemExtensions {
 
@@ -34,11 +37,11 @@ public class LightsaberItem extends SwordItem implements IClientItemExtensions {
         if(!stack.get(LightsaberDataComponents.LIGHTSABER_ACTIVE))
         {
             if(len > 0){
-                stack.set(LightsaberDataComponents.LIGHTSABER_LENGTH, Math.max(len - 0.2f, 0));
+                stack.set(LightsaberDataComponents.LIGHTSABER_LENGTH, Math.max(len - 0.1f, 0));
             }
         }else{
             if(len < 1){
-                stack.set(LightsaberDataComponents.LIGHTSABER_LENGTH, Math.min(len + 0.3f, 1));
+                stack.set(LightsaberDataComponents.LIGHTSABER_LENGTH, Math.min(len + 0.2f, 1));
             }
         }
         super.inventoryTick(stack, level, entity, slotId, isSelected);
@@ -52,5 +55,23 @@ public class LightsaberItem extends SwordItem implements IClientItemExtensions {
             stack.set(LightsaberDataComponents.LIGHTSABER_LENGTH, 0f);
         }
         return super.onEntityItemUpdate(stack, entity);
+    }
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tooltip, TooltipFlag flag) {
+        var data = stack.get(LightsaberDataComponents.LIGHTSABER.get());
+        if (data == null) return;
+
+        var block = BuiltInRegistries.BLOCK.get(ResourceLocation.tryParse(data.kyber()));
+        var item = block.asItem();
+        int color = item.getDefaultInstance().getBarColor();
+
+        String name = block.getName().getString();
+
+        tooltip.add(Component.literal(name).withStyle(s -> s.withColor(color)));
+    }
+    @Override
+    public Component getDescription() {
+        var data = this.components().get(LightsaberDataComponents.LIGHTSABER.get());
+        return Component.translatable(data.kyber().toString());
     }
 }

@@ -173,8 +173,6 @@ public class Lightsabers {
 
     public Lightsabers(IEventBus bus, ModContainer modContainer) {
         instance = this;
-
-
         ModItems.ITEM.register(bus);
         ModBlocks.BLOCKS.register(bus);
         LightsaberDataComponents.COMPONENTS.register(bus);

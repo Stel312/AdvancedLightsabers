@@ -18,15 +18,15 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class LightsaberForgeBlockEntity extends BlockEntity implements MenuProvider {
 
-    private final ItemStackHandler itemStackHandler = new ItemStackHandler(10) {
+    private final ItemStackHandler itemStackHandler = new ItemStackHandler(12) {
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             return true;
         }
         @Override
         protected void onContentsChanged(int slot) {
-            setChanged();
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
+            LightsaberForgeBlockEntity.super.setChanged();
+            //level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
         }
     };
 
