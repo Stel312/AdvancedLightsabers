@@ -47,6 +47,7 @@ public class PlayerCapabilities implements INBTSerializable<CompoundTag> {
 
 
     boolean lightningMode;
+    int grabbedID;
 
     public boolean isLightningMode() {
         return lightningMode;
@@ -54,5 +55,13 @@ public class PlayerCapabilities implements INBTSerializable<CompoundTag> {
 
     public void setLightningMode(boolean enabled) {
         this.lightningMode = enabled;
+    }
+
+    public int getGrabbedID() {
+        return grabbedID;
+    }
+
+    public void setGrabbedID(int grabbedID) {
+        this.grabbedID = grabbedID;
     }
 }

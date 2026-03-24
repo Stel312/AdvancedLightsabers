@@ -1,6 +1,7 @@
 package com.stelmods.lightsabers.network.cts;
 
 import com.stelmods.lightsabers.Lightsabers;
+import com.stelmods.lightsabers.capabilities.PlayerCapabilities;
 import com.stelmods.lightsabers.network.Packet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -33,12 +34,21 @@ public record CSForcePush() implements Packet {
                 Math.max(boxStart.x, boxEnd.x), Math.max(boxStart.y, boxEnd.y), Math.max(boxStart.z, boxEnd.z)
         );
 
+        PlayerCapabilities playerData = PlayerCapabilities.get(senderPlayer);
+
         for (Entity entity : world.getEntities(senderPlayer, boundingBox)) {
+            if(playerData.getGrabbedID() == entity.getId()){
+                playerData.setGrabbedID(-1);
+            }
+
             double distance = playerPos.distanceTo(entity.position());
-            double strength = 5 / distance;
+            //double strength = 5 / distance;
+            double strength = 3;
             Vec3 pushDirection = entity.position().subtract(playerPos).normalize();
             pushDirection = pushDirection.scale(strength);
             entity.addDeltaMovement(pushDirection);
+
+
 ;        }
     }
 

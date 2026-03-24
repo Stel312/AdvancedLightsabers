@@ -31,6 +31,7 @@ public class PacketHandler {
         server(CSForcePull.TYPE, CSForcePull.STREAM_CODEC);
         server(CSInteractWithBlock.TYPE, CSInteractWithBlock.STREAM_CODEC);
         server(CSShootLightning.TYPE, CSShootLightning.STREAM_CODEC);
+        server(CSGrabEntity.TYPE, CSGrabEntity.STREAM_CODEC);
 
         client(SCSyncCapabilityPacket.TYPE, SCSyncCapabilityPacket.STREAM_CODEC);
         client(SCSendLightningData.TYPE, SCSendLightningData.STREAM_CODEC);

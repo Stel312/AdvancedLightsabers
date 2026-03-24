@@ -19,7 +19,8 @@ public class ClientSetup {
         FORCE_PULL("key." + Lightsabers.MODID + ".force.pull", GLFW.GLFW_KEY_H),
         FORCE_PICKUP("key." + Lightsabers.MODID + ".force.pickup",GLFW.GLFW_KEY_Y),
         FORCE_ACTIVATE("key." + Lightsabers.MODID + ".force.activate", GLFW.GLFW_KEY_U),
-        FORCE_LIGHTNING("key." + Lightsabers.MODID + ".force.lightning",GLFW.GLFW_KEY_L);
+        FORCE_LIGHTNING("key." + Lightsabers.MODID + ".force.lightning",GLFW.GLFW_KEY_L),
+        FORCE_GRAB("key." + Lightsabers.MODID + ".force.grab", GLFW.GLFW_KEY_N);
 
         public final KeyMapping keybinding;
         public final String translationKey;
