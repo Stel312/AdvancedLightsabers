@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.stelmods.lightsabers.Lightsabers;
+import com.stelmods.lightsabers.client.render.ModelRenderTypes;
 import com.stelmods.lightsabers.client.render.item.RenderItemLightsaber;
 import com.stelmods.lightsabers.common.container.LightsaberForgeContainer;
 import com.stelmods.lightsabers.common.item.LightsaberDoubleItem;
@@ -164,6 +165,7 @@ public class LightsaberForgeScreen extends AbstractContainerScreen<LightsaberFor
 
             Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
             RenderItemLightsaber.BEWLR.renderDouble(ItemDisplayContext.NONE, pose, gui.bufferSource(), 0xFFFFFF, out);
+            gui.bufferSource().endBatch(ModelRenderTypes.SABER_GUI);
             RenderSystem.disableCull();
             gui.disableScissor();
 
@@ -176,6 +178,7 @@ public class LightsaberForgeScreen extends AbstractContainerScreen<LightsaberFor
             gui.enableScissor(leftPos + 42, topPos + 20, leftPos + 156, topPos + 64);
 
             RenderItemLightsaber.BEWLR.renderSingle(ItemDisplayContext.NONE, pose, gui.bufferSource(), 0xFFFFFF, out);
+            gui.bufferSource().endBatch(ModelRenderTypes.SABER_GUI);
             RenderSystem.disableCull();
             gui.disableScissor();
         }

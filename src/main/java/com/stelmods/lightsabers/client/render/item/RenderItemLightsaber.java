@@ -1,7 +1,6 @@
 package com.stelmods.lightsabers.client.render.item;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import com.stelmods.lightsabers.Lightsabers;
 import com.stelmods.lightsabers.client.model.ModelLightsaberBlade;
@@ -16,7 +15,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -135,7 +133,7 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
         if (showBlade || ctx == ItemDisplayContext.NONE) {
             pose.pushPose();
             pose.translate(0, emitterTop(upper), 0);
-            renderBlade(upperStack, stack, buffer, pose, 0, false);
+            renderBlade(upperStack, stack, buffer, pose, 0, false, ctx == ItemDisplayContext.NONE);
             pose.popPose();
         }
 
@@ -148,7 +146,7 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
         if (showBlade || ctx == ItemDisplayContext.NONE) {
             pose.pushPose();
             pose.translate(0, emitterTop(lower), 0);
-            renderBlade(lowerStack, stack, buffer, pose, 0, true);
+            renderBlade(lowerStack, stack, buffer, pose, 0, true, ctx == ItemDisplayContext.NONE);
             pose.popPose();
         }
         h = renderPart(lower.hilt(),   h, (byte) 1, ctx, pose, buffer, light);
@@ -218,7 +216,7 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
         if (showBlade || ctx == ItemDisplayContext.NONE) {
             pose.pushPose();
             pose.translate(0, emitterTop(data), 0);
-            renderBlade(stack, stack, buffer, pose, 0, false);
+            renderBlade(stack, stack, buffer, pose, 0, false, ctx == ItemDisplayContext.NONE);
             pose.popPose();
         }
         pose.popPose();
@@ -232,15 +230,17 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
                              MultiBufferSource buffer,
                              PoseStack pose,
                              float ignoredHeight,
-                             boolean isLowerHalf) {
+                             boolean isLowerHalf,
+                             boolean isGuiPreview) {
 
         var data = bladeStack.get(LightsaberDataComponents.LIGHTSABER);
         if (data == null) return;
 
         boolean active = Boolean.TRUE.equals(parentStack.get(LightsaberDataComponents.LIGHTSABER_ACTIVE));
-        if (!active) return;
+        if (!active && !isGuiPreview) return;
 
         float baseLength = parentStack.getOrDefault(LightsaberDataComponents.LIGHTSABER_LENGTH, 1.0F);
+        if (isGuiPreview && baseLength <= 0.1F) baseLength = 1.0F;
         float length = isLowerHalf ? baseLength * 1.05f : baseLength;
 
         if (length <= 0.1F) return;
@@ -273,42 +273,23 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
         float partial = Minecraft.getInstance().getTimer().getGameTimeDeltaTicks();
         float t = Minecraft.getInstance().level.getGameTime() + partial;
         Random flickerRand = new Random((long)(t * 1000));
-        //rgb = new float[]{1f, 0, 0};
-        VertexConsumer vc = buffer.getBuffer(
-                RenderType.LIGHTNING
-        );
+
         float[] innerRgb = rgb;
         if (c1 != FocusingCrystal.INVERTING && c2 != FocusingCrystal.INVERTING)
             innerRgb = new float[] {1f, 1f, 1f};
         else
             rgb = new float[] {0f, 0f, 0f};
-        ModelLightsaberBlade.renderInner(
-                innerRgb,
-                buffer.getBuffer(ModelRenderTypes.SABER_INNER),
-                //vc,
-                pose,
-                length,
-                flickerRand
-        );
 
-        ModelLightsaberBlade.renderCrackedLightning(
-                innerRgb,
-                buffer.getBuffer(ModelRenderTypes.SABER_INNER),
-                //vc,
-                pose,
-                length,
-                c1,
-                c2
-        );
-        ModelLightsaberBlade.renderOuter(
-                rgb,
-                buffer.getBuffer(ModelRenderTypes.SABER_OUTER),
-                //vc,
-                pose,
-                length * 1.1f,
-                flickerRand
-        );
-
+        if (isGuiPreview) {
+            ModelLightsaberBlade.renderInner(innerRgb, buffer.getBuffer(ModelRenderTypes.SABER_GUI), pose, length, flickerRand);
+            ModelLightsaberBlade.renderCrackedLightning(innerRgb, buffer.getBuffer(ModelRenderTypes.SABER_GUI), pose, length, c1, c2);
+            ModelLightsaberBlade.renderOuter(rgb, buffer.getBuffer(ModelRenderTypes.SABER_GUI), pose, length * 1.1f, flickerRand);
+            ModelLightsaberBlade.renderGuiBloom(rgb, buffer.getBuffer(ModelRenderTypes.SABER_GUI), pose, length * 1.1f);
+        } else {
+            ModelLightsaberBlade.renderInner(innerRgb, buffer.getBuffer(ModelRenderTypes.SABER_INNER), pose, length, flickerRand);
+            ModelLightsaberBlade.renderCrackedLightning(innerRgb, buffer.getBuffer(ModelRenderTypes.SABER_INNER), pose, length, c1, c2);
+            ModelLightsaberBlade.renderOuter(rgb, buffer.getBuffer(ModelRenderTypes.SABER_OUTER), pose, length * 1.1f, flickerRand);
+        }
     }
 
 
