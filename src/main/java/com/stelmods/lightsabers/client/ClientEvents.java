@@ -32,6 +32,7 @@ import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.HashMap;
@@ -86,12 +87,12 @@ public class ClientEvents {
 
     @SubscribeEvent
     public void onRenderOverlay(RenderGuiLayerEvent.Post event) {
-        if (InputHandler.forceSense){// && event.getLayer() == VanillaGuiLayers.CROSSHAIR.gettype()) {
+        if (InputHandler.forceSense && event.getName().equals(VanillaGuiLayers.CROSSHAIR)) {
             Minecraft mc = Minecraft.getInstance();
             int width = mc.getWindow().getGuiScaledWidth();
             int height = mc.getWindow().getGuiScaledHeight();
 
-            event.getGuiGraphics().fill(0, 0, width, height, 0x6b8ba9FF); // Azul translúcido
+            event.getGuiGraphics().fill(0, 0, width, height, 0x6b8ba9FF);
         }
     }
 
