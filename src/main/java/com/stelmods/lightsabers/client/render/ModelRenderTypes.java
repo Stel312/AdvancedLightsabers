@@ -44,4 +44,20 @@ public class ModelRenderTypes {
                     .setOutputState(PARTICLES_TARGET)
                     .createCompositeState(false)
     );
+
+    public static final RenderType SABER_GUI = RenderType.create(
+            "saber_gui",
+            DefaultVertexFormat.POSITION_COLOR,
+            VertexFormat.Mode.QUADS,
+            4096,
+            false,
+            false,
+            RenderType.CompositeState.builder()
+                    .setShaderState(RENDERTYPE_LIGHTNING_SHADER)
+                    .setWriteMaskState(COLOR_DEPTH_WRITE)
+                    .setTransparencyState(LIGHTNING_TRANSPARENCY)
+                    .setCullState(NO_CULL)
+                    .setOutputState(MAIN_TARGET)
+                    .createCompositeState(false)
+    );
 }

@@ -52,6 +52,15 @@ public class ModelLightsaberBlade {
         }
     }
 
+    public static void renderGuiBloom(float[] rgb, VertexConsumer vc, PoseStack pose, float length) {
+        float[] radii  = { 0.035f, 0.055f, 0.080f, 0.110f, 0.150f, 0.200f };
+        float[] alphas = { 0.22f,  0.14f,  0.08f,  0.05f,  0.03f,  0.015f };
+
+        for (int i = 0; i < radii.length; i++) {
+            drawCylinder(vc, pose, rgb, radii[i], length, alphas[i]);
+        }
+    }
+
     public static void renderCrackedLightning(float[] rgb, VertexConsumer vc, PoseStack pose,
                                               float bladeLength, FocusingCrystal c1, FocusingCrystal c2) {
 
