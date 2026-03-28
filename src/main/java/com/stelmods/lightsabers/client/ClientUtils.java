@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.math.Axis;
 import com.stelmods.lightsabers.Lightsabers;
 import com.stelmods.lightsabers.capabilities.PlayerCapabilities;
 import com.stelmods.lightsabers.network.stc.SCSyncCapabilityPacket;
@@ -15,8 +14,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
@@ -25,7 +22,7 @@ import java.util.List;
 import java.util.Random;
 
 public class ClientUtils {
-    public static final RenderType LOCK_ON_INDICATOR = RenderType.create(Lightsabers.MODID + ":force_sense_indicator", DefaultVertexFormat.POSITION_TEX, VertexFormat.Mode.QUADS, 256, false, false,
+    public static final RenderType FORCE_SENSE_INDICATOR = RenderType.create(Lightsabers.MODID + ":force_sense_indicator", DefaultVertexFormat.POSITION_TEX, VertexFormat.Mode.QUADS, 256, false, false,
             RenderType.CompositeState.builder().setShaderState(RenderStateShard.POSITION_TEX_SHADER).setTextureState(new RenderStateShard.TextureStateShard(ResourceLocation.fromNamespaceAndPath(Lightsabers.MODID, "textures/gui/force_sense.png"),
                             false, false)).setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY).setDepthTestState(RenderStateShard.NO_DEPTH_TEST).setWriteMaskState(RenderStateShard.COLOR_WRITE).setLightmapState(RenderStateShard.NO_LIGHTMAP)
                     .setOverlayState(RenderStateShard.NO_OVERLAY).createCompositeState(true));
@@ -33,14 +30,11 @@ public class ClientUtils {
     public static void syncCapability(SCSyncCapabilityPacket message) {
         PlayerCapabilities.get(message.data(), (Player) Minecraft.getInstance().level.getEntity(message.player()));
     }
+
     static Random random = new Random();
 
     public static void drawLockOnIndicator(Vec3 pos, PoseStack poseStack, MultiBufferSource buffer, float partialTicks) {
         Minecraft mc = Minecraft.getInstance();
-
-       /* double x = Mth.lerp(partialTicks, target.xOld, target.getX());
-        double y = Mth.lerp(partialTicks, target.yOld, target.getY());
-        double z = Mth.lerp(partialTicks, target.zOld, target.getZ());*/
 
         double x = pos.x;
         double y = pos.y;
@@ -56,7 +50,7 @@ public class ClientUtils {
 
             float size = 0.5f;
             Matrix4f mat = poseStack.last().pose();
-            ClientUtils.drawTexturedModalRect2DPlane(mat, buffer.getBuffer(LOCK_ON_INDICATOR), -size, -size, size, size, 0, 0, 256, 256);
+            ClientUtils.drawTexturedModalRect2DPlane(mat, buffer.getBuffer(FORCE_SENSE_INDICATOR), -size, -size, size, size, 0, 0, 256, 256);
         }
         poseStack.popPose();
     }

@@ -1,7 +1,6 @@
 package com.stelmods.lightsabers.datagen;
 
 import com.stelmods.lightsabers.datagen.init.ItemModels;
-import com.stelmods.lightsabers.datagen.init.LootTables;
 import com.stelmods.lightsabers.datagen.init.Recipes;
 import com.stelmods.lightsabers.datagen.provider.BaseLootTableProvider;
 import net.minecraft.data.DataGenerator;
@@ -9,8 +8,6 @@ import net.minecraft.data.PackOutput;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-
-import java.util.Collections;
 
 
 public class DataGeneration {

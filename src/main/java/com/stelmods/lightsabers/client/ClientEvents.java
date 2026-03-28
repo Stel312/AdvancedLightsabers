@@ -15,9 +15,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
@@ -136,13 +134,10 @@ public class ClientEvents {
         if(mc.level == null)
             return;
 
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
+        if (InputHandler.forceSense && event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
             Player player = mc.player;
 
             if (player == null)
-                return;
-
-            if(!InputHandler.forceSense)
                 return;
 
             PoseStack poseStack = event.getPoseStack();
