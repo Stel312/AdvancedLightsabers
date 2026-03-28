@@ -34,7 +34,7 @@ public class InputHandler {
                     PacketHandler.sendToServer(new CSForcePull());
                 } else if (event.getKey() == ClientSetup.Keybinds.TOGGLE_LIGHTSABER.getKeybind().getKey().getValue()) {
                     PacketHandler.sendToServer(new CSToggleLightsaber());
-                } else if (event.getKey() == ClientSetup.Keybinds.FORCE_ACTIVATE.getKeybind().getKey().getValue()) {
+                } else if (event.getKey() == ClientSetup.Keybinds.FORCE_SENSE.getKeybind().getKey().getValue()) {
                     forceSense = !forceSense;
                 } else if (event.getKey() == ClientSetup.Keybinds.FORCE_LIGHTNING.getKeybind().getKey().getValue()) {
                     //Turn force lightning on

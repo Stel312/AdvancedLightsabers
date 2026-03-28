@@ -1,33 +1,79 @@
 package com.stelmods.lightsabers.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.math.Axis;
+import com.stelmods.lightsabers.Lightsabers;
 import com.stelmods.lightsabers.capabilities.PlayerCapabilities;
 import com.stelmods.lightsabers.network.stc.SCSyncCapabilityPacket;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 
 import java.util.List;
 import java.util.Random;
 
 public class ClientUtils {
-    /*
-    public static DistExecutor.SafeRunnable syncCapability(SCSyncCapabilityPacket message) {
-        return new DistExecutor.SafeRunnable() {
-            @Override
-            public void run() {
-                IPlayerCapabilities playerData = ModCapabilities.getPlayer(Minecraft.getInstance().player);
-                playerData.setLightningMode(message.lightningMode);
-            }
-        };
-    }*/
+    public static final RenderType LOCK_ON_INDICATOR = RenderType.create(Lightsabers.MODID + ":force_sense_indicator", DefaultVertexFormat.POSITION_TEX, VertexFormat.Mode.QUADS, 256, false, false,
+            RenderType.CompositeState.builder().setShaderState(RenderStateShard.POSITION_TEX_SHADER).setTextureState(new RenderStateShard.TextureStateShard(ResourceLocation.fromNamespaceAndPath(Lightsabers.MODID, "textures/gui/force_sense.png"),
+                            false, false)).setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY).setDepthTestState(RenderStateShard.NO_DEPTH_TEST).setWriteMaskState(RenderStateShard.COLOR_WRITE).setLightmapState(RenderStateShard.NO_LIGHTMAP)
+                    .setOverlayState(RenderStateShard.NO_OVERLAY).createCompositeState(true));
+
     public static void syncCapability(SCSyncCapabilityPacket message) {
         PlayerCapabilities.get(message.data(), (Player) Minecraft.getInstance().level.getEntity(message.player()));
     }
     static Random random = new Random();
+
+    public static void drawLockOnIndicator(Vec3 pos, PoseStack poseStack, MultiBufferSource buffer, float partialTicks) {
+        Minecraft mc = Minecraft.getInstance();
+
+       /* double x = Mth.lerp(partialTicks, target.xOld, target.getX());
+        double y = Mth.lerp(partialTicks, target.yOld, target.getY());
+        double z = Mth.lerp(partialTicks, target.zOld, target.getZ());*/
+
+        double x = pos.x;
+        double y = pos.y;
+        double z = pos.z;
+
+        Camera camera = mc.gameRenderer.getMainCamera();
+        Vec3 camPos = camera.getPosition();
+
+        poseStack.pushPose();
+        {
+            poseStack.translate(x - camPos.x, y - camPos.y, z - camPos.z);
+            poseStack.mulPose(mc.getEntityRenderDispatcher().cameraOrientation());
+
+            float size = 0.5f;
+            Matrix4f mat = poseStack.last().pose();
+            ClientUtils.drawTexturedModalRect2DPlane(mat, buffer.getBuffer(LOCK_ON_INDICATOR), -size, -size, size, size, 0, 0, 256, 256);
+        }
+        poseStack.popPose();
+    }
+
+    public static void drawTexturedModalRect2DPlane(Matrix4f matrix, VertexConsumer vertexBuilder, float minX, float minY, float maxX, float maxY, float minTexU, float minTexV, float maxTexU, float maxTexV) {
+        RenderSystem.depthMask(false);
+        drawTexturedModalRect3DPlane(matrix, vertexBuilder, minX, minY, 0, maxX, maxY, 0, minTexU, minTexV, maxTexU, maxTexV);
+        RenderSystem.depthMask(true);
+    }
+
+    public static void drawTexturedModalRect3DPlane(Matrix4f matrix, VertexConsumer vertexBuilder, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, float minTexU, float minTexV, float maxTexU, float maxTexV) {
+        float cor = 0.00390625F;
+        vertexBuilder.addVertex(matrix, minX, minY, maxZ).setUv((minTexU * cor), (maxTexV) * cor);
+        vertexBuilder.addVertex(matrix, maxX, minY, maxZ).setUv((maxTexU * cor), (maxTexV) * cor);
+        vertexBuilder.addVertex(matrix, maxX, maxY, minZ).setUv((maxTexU * cor), (minTexV) * cor);
+        vertexBuilder.addVertex(matrix, minX, maxY, minZ).setUv((minTexU * cor), (minTexV) * cor);
+    }
 
     public static void renderLightningBeam(PoseStack poseStack, MultiBufferSource bufferSource, Vec3 start, Vec3 end, int segments, float thickness) {
         VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.LINES);
