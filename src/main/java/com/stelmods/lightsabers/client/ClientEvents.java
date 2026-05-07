@@ -109,11 +109,11 @@ public class ClientEvents {
             return;
 
       //  System.out.println(lightningMap);
-        for (Map.Entry<Integer, List<Integer>> entry : lightningMap.entrySet()) {
-            Entity e = mc.level.getEntity(entry.getKey());
-            if(e instanceof Player player){
-                PlayerCapabilities playerData = PlayerCapabilities.get(player);
-                if (playerData.isLightningMode()) {
+         for (Map.Entry<Integer, List<Integer>> entry : lightningMap.entrySet()) {
+             Entity e = mc.level.getEntity(entry.getKey());
+             if(e instanceof Player player){
+                 PlayerCapabilities playerData = PlayerCapabilities.get(player);
+                 if (playerData != null && playerData.isLightningMode()) {
                     //System.out.println(player.getDisplayName().getString()+" "+playerData.isLightningMode());
 
                     MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();

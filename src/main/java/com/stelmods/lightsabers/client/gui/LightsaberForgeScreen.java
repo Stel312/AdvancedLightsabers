@@ -155,34 +155,40 @@ public class LightsaberForgeScreen extends AbstractContainerScreen<LightsaberFor
         PoseStack pose = gui.pose();
         pose.pushPose();
 
-        if (isDouble) {
-            pose.translate(leftPos + 90, topPos + 36, 0);
-            pose.mulPose(Axis.ZP.rotationDegrees(90));
-            pose.mulPose(Axis.YP.rotationDegrees(rotate = (rotate % 360) + 2f));
-            pose.scale(85, 85, 85);
+        try {
+            if (isDouble) {
+                pose.translate(leftPos + 90, topPos + 36, 0);
+                pose.mulPose(Axis.ZP.rotationDegrees(90));
+                pose.mulPose(Axis.YP.rotationDegrees(rotate = (rotate % 360) + 2f));
+                pose.scale(85, 85, 85);
 
-            gui.enableScissor(leftPos + 12, topPos + 16, leftPos + 157, topPos + 63);
+                gui.enableScissor(leftPos + 12, topPos + 16, leftPos + 157, topPos + 63);
+                try {
+                    Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
+                    RenderItemLightsaber.BEWLR.renderDouble(ItemDisplayContext.NONE, pose, gui.bufferSource(), 0xFFFFFF, out);
+                    gui.bufferSource().endBatch(ModelRenderTypes.SABER_GUI);
+                    RenderSystem.disableCull();
+                } finally {
+                    gui.disableScissor();
+                }
 
-            Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
-            RenderItemLightsaber.BEWLR.renderDouble(ItemDisplayContext.NONE, pose, gui.bufferSource(), 0xFFFFFF, out);
-            gui.bufferSource().endBatch(ModelRenderTypes.SABER_GUI);
-            RenderSystem.disableCull();
-            gui.disableScissor();
+            } else if (out.getItem() instanceof LightsaberItem) {
+                pose.translate(leftPos + 150, topPos + 36, 0);
+                pose.mulPose(Axis.ZP.rotationDegrees(90));
+                pose.mulPose(Axis.YP.rotationDegrees(rotate = (rotate % 360) + 2f));
+                pose.scale(110, 110, 110);
 
-        } else if (out.getItem() instanceof LightsaberItem) {
-            pose.translate(leftPos + 150, topPos + 36, 0);
-            pose.mulPose(Axis.ZP.rotationDegrees(90));
-            pose.mulPose(Axis.YP.rotationDegrees(rotate = (rotate % 360) + 2f));
-            pose.scale(110, 110, 110);
-
-            gui.enableScissor(leftPos + 42, topPos + 20, leftPos + 156, topPos + 64);
-
-            RenderItemLightsaber.BEWLR.renderSingle(ItemDisplayContext.NONE, pose, gui.bufferSource(), 0xFFFFFF, out);
-            gui.bufferSource().endBatch(ModelRenderTypes.SABER_GUI);
-            RenderSystem.disableCull();
-            gui.disableScissor();
+                gui.enableScissor(leftPos + 42, topPos + 20, leftPos + 156, topPos + 64);
+                try {
+                    RenderItemLightsaber.BEWLR.renderSingle(ItemDisplayContext.NONE, pose, gui.bufferSource(), 0xFFFFFF, out);
+                    gui.bufferSource().endBatch(ModelRenderTypes.SABER_GUI);
+                    RenderSystem.disableCull();
+                } finally {
+                    gui.disableScissor();
+                }
+            }
+        } finally {
+            pose.popPose();
         }
-
-        pose.popPose();
     }
 }

@@ -53,8 +53,14 @@ public class ModelLightsaberBlade {
     }
 
     public static void renderGuiBloom(float[] rgb, VertexConsumer vc, PoseStack pose, float length) {
-        float[] radii  = { 0.035f, 0.055f, 0.080f, 0.110f, 0.150f, 0.200f };
-        float[] alphas = { 0.22f,  0.14f,  0.08f,  0.05f,  0.03f,  0.015f };
+        //float[] radii  = { 0.035f, 0.055f, 0.080f, 0.110f, 0.150f, 0.200f }; // 1
+        //float[] radii = { 0.0117f, 0.0183f, 0.0267f, 0.0367f, 0.0500f, 0.0667f }; // 1/3
+        //float[] radii = { 0.00875f, 0.01375f, 0.02000f, 0.02750f, 0.03750f, 0.05000f }; // 1/4
+        float[] radii = { 0.007f, 0.011f, 0.016f, 0.022f, 0.030f, 0.040f }; // 1/5
+        //float[] radii = { 0.0035f, 0.0055f, 0.0080f, 0.0110f, 0.0150f, 0.0200f }; // 1/10
+        //float[] alphas = { 0.22f,  0.14f,  0.08f,  0.05f,  0.03f,  0.015f };// 1
+        //float[] alphas = { 0.044f, 0.028f, 0.016f, 0.010f, 0.006f, 0.003f }; // 1/5 linear
+        float[] alphas = { 0.044f, 0.020f, 0.009f, 0.004f, 0.002f, 0.001f }; // 1/5 sharper falloff
 
         for (int i = 0; i < radii.length; i++) {
             drawCylinder(vc, pose, rgb, radii[i], length, alphas[i]);

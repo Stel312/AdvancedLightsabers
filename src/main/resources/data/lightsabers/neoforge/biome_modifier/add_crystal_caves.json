@@ -1,0 +1,8 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": [
+    "lightsabers:crystal_cave"
+  ],
+  "step": "underground_ores"
+}

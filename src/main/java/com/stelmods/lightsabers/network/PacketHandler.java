@@ -32,6 +32,7 @@ public class PacketHandler {
         server(CSInteractWithBlock.TYPE, CSInteractWithBlock.STREAM_CODEC);
         server(CSShootLightning.TYPE, CSShootLightning.STREAM_CODEC);
         server(CSGrabEntity.TYPE, CSGrabEntity.STREAM_CODEC);
+        server(CSGrabBlock.TYPE, CSGrabBlock.STREAM_CODEC); // Register the new CSGrabBlock packet
 
         client(SCSyncCapabilityPacket.TYPE, SCSyncCapabilityPacket.STREAM_CODEC);
         client(SCSendLightningData.TYPE, SCSendLightningData.STREAM_CODEC);

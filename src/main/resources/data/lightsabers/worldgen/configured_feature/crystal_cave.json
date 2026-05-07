@@ -1,0 +1,63 @@
+{
+  "type": "lightsabers:crystal_cave",
+  "config": {
+    "attempts": 1,
+    "horizontal_radius": 16,
+    "vertical_radius": 12,
+    "require_exposed_air": true,
+    "targets": [
+      {
+        "target": {
+          "predicate_type": "minecraft:tag_match",
+          "tag": "minecraft:stone_ore_replaceables"
+        },
+        "states": [
+          { "Name": "lightsabers:deep_blue_crystal" },
+          { "Name": "lightsabers:medium_blue_crystal" },
+          { "Name": "lightsabers:light_blue_crystal" },
+          { "Name": "lightsabers:artic_blue_crystal" },
+          { "Name": "lightsabers:cyan_crystal" },
+          { "Name": "lightsabers:white_crystal" },
+          { "Name": "lightsabers:green_crystal" },
+          { "Name": "lightsabers:lime_green_crystal" },
+          { "Name": "lightsabers:mint_green_crystal" },
+          { "Name": "lightsabers:blood_orange_crystal" },
+          { "Name": "lightsabers:pink_crystal" },
+          { "Name": "lightsabers:purple_crystal" },
+          { "Name": "lightsabers:magenta_crystal" },
+          { "Name": "lightsabers:indigo_crystal" },
+          { "Name": "lightsabers:yellow_crystal" },
+          { "Name": "lightsabers:gold_crystal" },
+          { "Name": "lightsabers:amber_crystal" }
+        ],
+        "weights": [10, 10, 10, 8, 8, 5, 10, 8, 6, 3, 6, 6, 6, 6, 8, 3, 6]
+      },
+      {
+        "target": {
+          "predicate_type": "minecraft:tag_match",
+          "tag": "minecraft:deepslate_ore_replaceables"
+        },
+        "states": [
+          { "Name": "lightsabers:deep_blue_crystal" },
+          { "Name": "lightsabers:medium_blue_crystal" },
+          { "Name": "lightsabers:light_blue_crystal" },
+          { "Name": "lightsabers:artic_blue_crystal" },
+          { "Name": "lightsabers:cyan_crystal" },
+          { "Name": "lightsabers:white_crystal" },
+          { "Name": "lightsabers:green_crystal" },
+          { "Name": "lightsabers:lime_green_crystal" },
+          { "Name": "lightsabers:mint_green_crystal" },
+          { "Name": "lightsabers:blood_orange_crystal" },
+          { "Name": "lightsabers:pink_crystal" },
+          { "Name": "lightsabers:purple_crystal" },
+          { "Name": "lightsabers:magenta_crystal" },
+          { "Name": "lightsabers:indigo_crystal" },
+          { "Name": "lightsabers:yellow_crystal" },
+          { "Name": "lightsabers:gold_crystal" },
+          { "Name": "lightsabers:amber_crystal" }
+        ],
+        "weights": [10, 10, 10, 8, 8, 5, 10, 8, 6, 3, 6, 6, 6, 6, 8, 3, 6]
+      }
+    ]
+  }
+}

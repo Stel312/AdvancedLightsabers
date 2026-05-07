@@ -14,6 +14,7 @@ import com.stelmods.lightsabers.common.item.LightsaberItem;
 import com.stelmods.lightsabers.common.item.LightsaberPart;
 import com.stelmods.lightsabers.common.item.ModItems;
 import com.stelmods.lightsabers.lib.Strings;
+import com.stelmods.lightsabers.common.worldgen.ModFeatures;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -179,6 +180,7 @@ public class Lightsabers {
         instance = this;
         ModItems.ITEM.register(bus);
         ModBlocks.BLOCKS.register(bus);
+        ModFeatures.FEATURES.register(bus);
         LightsaberDataComponents.COMPONENTS.register(bus);
         ModEntities.TILE_ENTITIES.register(bus);
         ModContainers.CONTAINERS.register(bus);

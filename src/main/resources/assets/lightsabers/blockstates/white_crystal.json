@@ -1,7 +1,36 @@
 {
   "variants": {
-    "": {
-      "model": "lightsabers:block/crystal"
+    "facing=down": {
+      "model": "lightsabers:block/crystal",
+      "x": 180,
+      "uvlock": true
+    },
+    "facing=up": {
+      "model": "lightsabers:block/crystal",
+      "uvlock": true
+    },
+    "facing=north": {
+      "model": "lightsabers:block/crystal",
+      "x": 90,
+      "uvlock": true
+    },
+    "facing=south": {
+      "model": "lightsabers:block/crystal",
+      "x": 90,
+      "y": 180,
+      "uvlock": true
+    },
+    "facing=west": {
+      "model": "lightsabers:block/crystal",
+      "x": 90,
+      "y": 270,
+      "uvlock": true
+    },
+    "facing=east": {
+      "model": "lightsabers:block/crystal",
+      "x": 90,
+      "y": 90,
+      "uvlock": true
     }
   }
 }
