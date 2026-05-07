@@ -2,9 +2,7 @@ package com.stelmods.lightsabers.client.render;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.realmsclient.dto.RealmsNews;
 import com.stelmods.lightsabers.Lightsabers;
-import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 

@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import com.stelmods.lightsabers.common.lightsaber.FocusingCrystal;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import org.joml.Matrix4f;
 
 import java.util.Random;

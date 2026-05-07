@@ -46,11 +46,12 @@ public class CommonEvents {
         handleStickyForcePushedBlocks(player);
     }
 
+
     private void handleGrab(Player player, int id) {
         Entity entity = player.level().getEntity(id);
         if(entity != null) {
             Lightsabers.LOGGER.debug("Moving {}", entity.getDisplayName().getString());
-            double distance = 4.0;
+            double distance = (player.getInventory().selected+1)*4;
 
             //Player camera angle
             Vec3 eyePos = player.getEyePosition();

@@ -2,7 +2,6 @@ package com.stelmods.lightsabers;
 
 import com.google.common.base.Suppliers;
 import com.stelmods.lightsabers.capabilities.ModCapabilities;
-import com.stelmods.lightsabers.client.ClientEvents;
 import com.stelmods.lightsabers.common.CommonEvents;
 import com.stelmods.lightsabers.common.block.BlockCrystal;
 import com.stelmods.lightsabers.common.block.ModBlocks;

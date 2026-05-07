@@ -11,7 +11,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import org.checkerframework.checker.units.qual.C;
 
 import java.util.List;
 

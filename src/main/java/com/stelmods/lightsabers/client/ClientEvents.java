@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
@@ -22,6 +23,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -32,6 +34,7 @@ import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.HashMap;
@@ -86,12 +89,12 @@ public class ClientEvents {
 
     @SubscribeEvent
     public void onRenderOverlay(RenderGuiLayerEvent.Post event) {
-        if (InputHandler.forceSense){// && event.getLayer() == VanillaGuiLayers.CROSSHAIR.gettype()) {
+        if (InputHandler.forceSense && event.getName().equals(VanillaGuiLayers.CROSSHAIR)) {
             Minecraft mc = Minecraft.getInstance();
             int width = mc.getWindow().getGuiScaledWidth();
             int height = mc.getWindow().getGuiScaledHeight();
 
-            event.getGuiGraphics().fill(0, 0, width, height, 0x6b8ba9FF); // Azul translúcido
+            event.getGuiGraphics().fill(0, 0, width, height, 0x6b8ba9FF);
         }
     }
 
@@ -102,20 +105,104 @@ public class ClientEvents {
      * Maybe add a requirement for a specific force sense level
      * @param event
      */
+
+   /* @SubscribeEvent
+    public void onRenderLevel(RenderLevelStageEvent event) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_ENTITIES)
+            return;
+
+        Minecraft mc = Minecraft.getInstance();
+        Player player = mc.player;
+        if (player == null)
+            return;
+
+        PoseStack poseStack = event.getPoseStack();
+        MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
+
+        float partialTicks = mc.getTimer().getGameTimeDeltaPartialTick(false);
+        // Lock on
+        if (ModConfigs.SERVER.softLockOnMode.get() && InputHandler.lockOn != null) {
+            ClientUtils.drawLockOnIndicator(InputHandler.lockOn.getId(), poseStack, buffer, partialTicks);
+        }
+
+
+        buffer.endBatch();
+    }*/
     @SubscribeEvent
     public void onRenderWorld(RenderLevelStageEvent event) {
         Minecraft mc = Minecraft.getInstance();
         if(mc.level == null)
             return;
 
-      //  System.out.println(lightningMap);
-         for (Map.Entry<Integer, List<Integer>> entry : lightningMap.entrySet()) {
-             Entity e = mc.level.getEntity(entry.getKey());
-             if(e instanceof Player player){
-                 PlayerCapabilities playerData = PlayerCapabilities.get(player);
-                 if (playerData != null && playerData.isLightningMode()) {
-                    //System.out.println(player.getDisplayName().getString()+" "+playerData.isLightningMode());
+        if (InputHandler.forceSense && event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
+            Player player = mc.player;
 
+            if (player == null)
+                return;
+
+            PoseStack poseStack = event.getPoseStack();
+            MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
+            float partialTicks = mc.getTimer().getGameTimeDeltaPartialTick(false);
+
+            Level level = player.level();
+
+            Vec3 eyePos = player.getEyePosition();
+            Vec3 look = player.getLookAngle().normalize();
+
+            BlockPos center = player.blockPosition();
+            int radius = 20;
+            int maxDistance = 20;
+            double maxDistSqr = maxDistance * maxDistance;
+
+            poseStack.pushPose();
+            {
+                for (int x = -radius; x <= radius; x++) {
+                    for (int y = -2; y <= 2; y++) {
+                        for (int z = -radius; z <= radius; z++) {
+                            BlockPos pos = center.offset(x, y, z);
+                            BlockState state = level.getBlockState(pos);
+
+                            if (state.isAir())
+                                continue;
+
+                            if (!Utils.isBlockStateInteractable(state))
+                                continue;
+
+                            Vec3 blockCenter = Vec3.atCenterOf(pos);
+                            Vec3 toBlockVec = blockCenter.subtract(eyePos);
+
+                            if (toBlockVec.lengthSqr() > maxDistSqr)
+                                continue;
+
+                            Vec3 toBlock = toBlockVec.normalize();
+                            double dot = look.dot(toBlock);
+
+                            if (dot < 0.6)
+                                continue;
+
+                            HitResult hit = level.clip(new ClipContext(eyePos, blockCenter, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
+
+                            if (hit.getType() == HitResult.Type.BLOCK && !((BlockHitResult) hit).getBlockPos().equals(pos)) {
+                                continue;
+                            }
+
+                            ClientUtils.drawLockOnIndicator(blockCenter, poseStack, buffer, partialTicks);
+                        }
+                    }
+                }
+            }
+            poseStack.popPose();
+
+            buffer.endBatch();
+        }
+
+
+        // Force lightning rendering
+        for (Map.Entry<Integer, List<Integer>> entry : lightningMap.entrySet()) {
+            Entity e = mc.level.getEntity(entry.getKey());
+            if(e instanceof Player player){
+                PlayerCapabilities playerData = PlayerCapabilities.get(player);
+                if (playerData != null && playerData.isLightningMode()) {
                     MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 
                     PoseStack poseStack = event.getPoseStack();
@@ -139,21 +226,22 @@ public class ClientEvents {
                         }
                         poseStack.popPose();
                     } else {
+                        float thickness = Mth.clamp(0.5F / (float)Math.sqrt(entry.getValue().size()), 0.08F, 0.4F);
+
                         for(int tID : entry.getValue()){
-                            Entity target = mc.level.getEntity(tID);
-                            if(target != null) {
-                                poseStack.pushPose();
-                                {
-                                    Vec3 cameraPos = mc.gameRenderer.getMainCamera().getPosition();
-                                    poseStack.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
+                           Entity target = mc.level.getEntity(tID);
+                           if (target != null) {
+                               poseStack.pushPose();
+                               {
+                                   Vec3 cameraPos = mc.gameRenderer.getMainCamera().getPosition();
+                                   poseStack.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
 
-                                    ClientUtils.renderLightningBeam(poseStack, bufferSource, player.getEyePosition().add(0, -0.2, 0), target.position().add(random.nextFloat(target.getBbWidth())-0.5F, random.nextFloat(target.getBbHeight()), random.nextFloat(target.getBbWidth())-0.5F), 20, 0.2F*entry.getValue().size());
-                                }
-                                poseStack.popPose();
-                            }
-                        }
+                                   ClientUtils.renderLightningBeam(poseStack, bufferSource, player.getEyePosition().add(0, -0.2, 0), target.position().add(random.nextFloat(target.getBbWidth()) - 0.5F, random.nextFloat(target.getBbHeight()), random.nextFloat(target.getBbWidth()) - 0.5F), 20, thickness);
+                               }
+                               poseStack.popPose();
+                           }
+                       }
                     }
-
 
                 }
             }

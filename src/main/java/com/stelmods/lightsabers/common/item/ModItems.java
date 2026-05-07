@@ -32,7 +32,7 @@ public class ModItems {
             revanPommel = registerPommel("revan_pommel", 0.041906f);
 
     public static final Supplier<Item>
-        stelEmitter = registerEmitter("stel_emitter", .175f);
+        stelEmitter = registerEmitter("stel_emitter", .2f);
 
     public static final Supplier<Item> lightsaber = ITEM.register("lightsaber", LightsaberItem::new);
     public static final Supplier<Item> doubleLightsaber = ITEM.register("lightsaber_double", LightsaberDoubleItem::new);

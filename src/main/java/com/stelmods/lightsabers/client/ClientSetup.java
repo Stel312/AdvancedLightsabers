@@ -17,8 +17,7 @@ public class ClientSetup {
         TOGGLE_LIGHTSABER("key." + Lightsabers.MODID + ".toggle_lightsaber", GLFW.GLFW_KEY_G),
         FORCE_PUSH("key." + Lightsabers.MODID + ".force.push",GLFW.GLFW_KEY_K),
         FORCE_PULL("key." + Lightsabers.MODID + ".force.pull", GLFW.GLFW_KEY_H),
-        FORCE_PICKUP("key." + Lightsabers.MODID + ".force.pickup",GLFW.GLFW_KEY_Y),
-        FORCE_ACTIVATE("key." + Lightsabers.MODID + ".force.activate", GLFW.GLFW_KEY_U),
+        FORCE_SENSE("key." + Lightsabers.MODID + ".force.activate", GLFW.GLFW_KEY_U),
         FORCE_LIGHTNING("key." + Lightsabers.MODID + ".force.lightning",GLFW.GLFW_KEY_L),
         FORCE_GRAB("key." + Lightsabers.MODID + ".force.grab", GLFW.GLFW_KEY_N);
 

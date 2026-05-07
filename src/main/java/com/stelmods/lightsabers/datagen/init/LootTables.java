@@ -2,12 +2,9 @@ package com.stelmods.lightsabers.datagen.init;
 
 import com.stelmods.lightsabers.common.block.BlockCrystal;
 import com.stelmods.lightsabers.common.block.ModBlocks;
-import com.stelmods.lightsabers.datagen.provider.BaseLootTableProvider;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
@@ -15,7 +12,6 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 

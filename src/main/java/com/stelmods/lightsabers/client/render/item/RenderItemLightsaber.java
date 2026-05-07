@@ -2,7 +2,6 @@ package com.stelmods.lightsabers.client.render.item;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import com.stelmods.lightsabers.Lightsabers;
 import com.stelmods.lightsabers.client.model.ModelLightsaberBlade;
 import com.stelmods.lightsabers.client.render.ModelRenderTypes;
 import com.stelmods.lightsabers.common.block.BlockCrystal;
@@ -25,7 +24,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import org.joml.Matrix4f;
 
 import java.util.Random;
 
