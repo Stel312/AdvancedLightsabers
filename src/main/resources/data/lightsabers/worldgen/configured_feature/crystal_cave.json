@@ -17,7 +17,6 @@
           { "Name": "lightsabers:light_blue_crystal" },
           { "Name": "lightsabers:artic_blue_crystal" },
           { "Name": "lightsabers:cyan_crystal" },
-          { "Name": "lightsabers:white_crystal" },
           { "Name": "lightsabers:green_crystal" },
           { "Name": "lightsabers:lime_green_crystal" },
           { "Name": "lightsabers:mint_green_crystal" },
@@ -30,7 +29,7 @@
           { "Name": "lightsabers:gold_crystal" },
           { "Name": "lightsabers:amber_crystal" }
         ],
-        "weights": [10, 10, 10, 8, 8, 5, 10, 8, 6, 3, 6, 6, 6, 6, 8, 3, 6]
+        "weights": [10, 10, 10, 8, 8, 10, 8, 6, 3, 6, 6, 6, 6, 8, 3, 6]
       },
       {
         "target": {
@@ -43,7 +42,6 @@
           { "Name": "lightsabers:light_blue_crystal" },
           { "Name": "lightsabers:artic_blue_crystal" },
           { "Name": "lightsabers:cyan_crystal" },
-          { "Name": "lightsabers:white_crystal" },
           { "Name": "lightsabers:green_crystal" },
           { "Name": "lightsabers:lime_green_crystal" },
           { "Name": "lightsabers:mint_green_crystal" },
@@ -56,7 +54,7 @@
           { "Name": "lightsabers:gold_crystal" },
           { "Name": "lightsabers:amber_crystal" }
         ],
-        "weights": [10, 10, 10, 8, 8, 5, 10, 8, 6, 3, 6, 6, 6, 6, 8, 3, 6]
+        "weights": [10, 10, 10, 8, 8, 10, 8, 6, 3, 6, 6, 6, 6, 8, 3, 6]
       }
     ]
   }

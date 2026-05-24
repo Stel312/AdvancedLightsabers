@@ -2,6 +2,9 @@ package com.stelmods.lightsabers.network.cts;
 
 import com.stelmods.lightsabers.Lightsabers;
 import com.stelmods.lightsabers.capabilities.PlayerCapabilities;
+import com.stelmods.lightsabers.common.block.BlockCrystal;
+import com.stelmods.lightsabers.common.block.ModBlocks;
+import com.stelmods.lightsabers.common.lightsaber.CrystalColor;
 import com.stelmods.lightsabers.network.Packet;
 import com.stelmods.lightsabers.network.PacketHandler; // Import PacketHandler for syncing
 import net.minecraft.core.BlockPos;
@@ -78,7 +81,14 @@ public record CSGrabBlock(@Nullable BlockPos blockPos) implements Packet {
                 // Store block data in capabilities
                 playerData.setGrabbedBlockPos(blockPos);
                 playerData.setGrabbedBlockId(BuiltInRegistries.BLOCK.getKey(blockState.getBlock()));
-                playerData.setGrabbedBlockStateNBT(NbtUtils.writeBlockState(blockState));
+                
+                // Apply crystal bleed mechanic if grabbing a crystal
+                BlockState displayBlockState = blockState;
+                if (blockState.getBlock() instanceof BlockCrystal crystal) {
+                    displayBlockState = applyCrystalBleed(crystal, blockState, playerData);
+                }
+                
+                playerData.setGrabbedBlockStateNBT(NbtUtils.writeBlockState(displayBlockState));
 
                 // Remove the block from the world
                 level.removeBlock(blockPos, false);
@@ -93,7 +103,7 @@ public record CSGrabBlock(@Nullable BlockPos blockPos) implements Packet {
                 }
                 Display.BlockDisplay blockDisplay = new Display.BlockDisplay(EntityType.BLOCK_DISPLAY, level);
                 blockDisplay.setPos(holdPos.x - 0.5, holdPos.y - 0.5, holdPos.z - 0.5);
-                blockDisplay.setBlockState(blockState);
+                blockDisplay.setBlockState(displayBlockState);
                 blockDisplay.setNoGravity(true);
                 level.addFreshEntity(blockDisplay);
 
@@ -113,6 +123,50 @@ public record CSGrabBlock(@Nullable BlockPos blockPos) implements Packet {
 
         // Synchronize capabilities to client
         PacketHandler.syncToAllAround(senderPlayer, playerData);
+    }
+
+    /**
+     * Applies crystal bleed mechanic when grabbing a crystal:
+     * - Dark alignment (-50 or lower) converts non-red crystals to red
+     * - Light alignment (+50 or higher) converts red crystals to white
+     */
+    private BlockState applyCrystalBleed(BlockCrystal crystal, BlockState originalState, PlayerCapabilities playerData) {
+        CrystalColor currentColor = crystal.getCrystalColor();
+        int alignment = playerData.getAlignment();
+        CrystalColor newColor = currentColor;
+        
+        // Dark side bleed: convert to red if alignment is dark enough
+        if (alignment <= -50 && currentColor != CrystalColor.RED) {
+            newColor = CrystalColor.RED;
+            Lightsabers.LOGGER.info("Crystal bled to RED due to dark alignment ({})", alignment);
+        }
+        // Light side bleed: convert to white if alignment is light enough and crystal is red
+        else if (alignment >= 50 && currentColor == CrystalColor.RED) {
+            newColor = CrystalColor.WHITE;
+            Lightsabers.LOGGER.info("Crystal purified to WHITE due to light alignment ({})", alignment);
+        }
+        
+        // If color changed, get the new crystal block variant
+        if (newColor != currentColor) {
+            BlockState newBlockState = getRedeemedCrystalBlockState(newColor, originalState);
+            if (newBlockState != null) {
+                return newBlockState;
+            }
+        }
+        
+        return originalState;
+    }
+
+    /**
+     * Gets the BlockState for the redeemed/bled crystal color
+     */
+    @Nullable
+    private BlockState getRedeemedCrystalBlockState(CrystalColor color, BlockState originalState) {
+        return switch (color) {
+            case RED -> ModBlocks.redCrystal.get().defaultBlockState().setValue(BlockCrystal.FACING, originalState.getValue(BlockCrystal.FACING));
+            case WHITE -> ModBlocks.whiteCrystal.get().defaultBlockState().setValue(BlockCrystal.FACING, originalState.getValue(BlockCrystal.FACING));
+            default -> null;
+        };
     }
 
     private void releaseGrabbedBlock(ServerLevel level, Player player, PlayerCapabilities playerData) {

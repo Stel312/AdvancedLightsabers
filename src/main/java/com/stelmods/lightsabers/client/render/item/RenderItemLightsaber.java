@@ -14,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -71,7 +72,8 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
     }
 
     private float emitterTop(LightsaberDataComponents.LightsaberData d) {
-        return heightOf(d.hilt()) +
+        return heightOf(d.pomel()) +
+                heightOf(d.hilt()) +
                 heightOf(d.switch_()) +
                 heightOf(d.emitter());
     }
@@ -93,14 +95,17 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
 
         switch (ctx) {
             case THIRD_PERSON_LEFT_HAND, THIRD_PERSON_RIGHT_HAND -> {
-                pose.translate(0.5, 0.5, 0.55);
+                pose.translate(0.5, 0.40, 0.55);
                 showBlade = true;
             }
             case FIRST_PERSON_RIGHT_HAND -> {
-                pose.translate(1, 0.1, 0);
+                pose.translate(0.75, 0.03, 0);
                 showBlade = true;
             }
-            case FIRST_PERSON_LEFT_HAND -> showBlade = true;
+            case FIRST_PERSON_LEFT_HAND -> {
+                pose.translate(-0.75, 0.03, 0);
+                showBlade = true;
+            }
             case GUI -> {
                 pose.translate(0.5, 0.5, 0);
                 pose.mulPose(Axis.ZN.rotationDegrees(-45));
@@ -176,17 +181,18 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
 
         switch (ctx) {
             case THIRD_PERSON_LEFT_HAND, THIRD_PERSON_RIGHT_HAND -> {
-                float midOffset =
-                        heightOf(data.pomel()) +
-                                heightOf(data.hilt()) / 2f;
+                float midOffset = heightOf(data.hilt()) / 2f;
                 pose.translate(0.5, 0.53 - midOffset, 0.55);
                 showBlade = active;
             }
             case FIRST_PERSON_RIGHT_HAND -> {
-                pose.translate(1, 0.1, 0);
+                pose.translate(0.75, 0.15, 0);
                 showBlade = active;
             }
-            case FIRST_PERSON_LEFT_HAND -> showBlade = active;
+            case FIRST_PERSON_LEFT_HAND -> {
+                pose.translate(-0.75, 0.15, 0);
+                showBlade = active;
+            }
             case GUI -> {
                 pose.mulPose(Axis.ZN.rotationDegrees(45));
                 pose.scale(1.9f, 1.9f, 1.9f);
@@ -243,21 +249,7 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
 
         if (length <= 0.1F) return;
 
-        // Focusing crystals
-        FocusingCrystal c1 = FocusingCrystal.NONE;
-        FocusingCrystal c2 = FocusingCrystal.NONE;
-
-        ResourceLocation f1 = ResourceLocation.tryParse(data.focus1());
-        if (f1 != null) {
-            Item item = BuiltInRegistries.ITEM.get(f1);
-            if (item instanceof ItemFocusingCrystal fc) c1 = fc.getFocusingCrystal();
-        }
-
-        ResourceLocation f2 = ResourceLocation.tryParse(data.focus2());
-        if (f2 != null) {
-            Item item = BuiltInRegistries.ITEM.get(f2);
-            if (item instanceof ItemFocusingCrystal fc) c2 = fc.getFocusingCrystal();
-        }
+        FocusCrystalState crystals = resolveFocusCrystals(data);
 
         // Kyber color
         ResourceLocation kyberId = ResourceLocation.tryParse(data.kyber());
@@ -269,24 +261,47 @@ public class RenderItemLightsaber extends BlockEntityWithoutLevelRenderer {
         float[] rgb = crystal.getCrystalColor().getRGB();
 
         float partial = Minecraft.getInstance().getTimer().getGameTimeDeltaTicks();
-        float t = Minecraft.getInstance().level.getGameTime() + partial;
+        long gameTime = Minecraft.getInstance().level != null ? Minecraft.getInstance().level.getGameTime() : 0L;
+        float t = gameTime + partial;
         Random flickerRand = new Random((long)(t * 1000));
 
-        float[] innerRgb = rgb;
-        if (c1 != FocusingCrystal.INVERTING && c2 != FocusingCrystal.INVERTING)
-            innerRgb = new float[] {1f, 1f, 1f};
-        else
-            rgb = new float[] {0f, 0f, 0f};
+        // Default blade: white core, kyber-colored outer glow.
+        boolean hasPrismatic = crystals.prismatic();
+        boolean hasInverting = crystals.inverting();
+        float[] innerRgb = hasPrismatic ? rgb : new float[]{1f, 1f, 1f};
+        float[] outerRgb = rgb;
+
+        RenderType innerType = hasInverting ? ModelRenderTypes.SABER_INNER_SOLID : ModelRenderTypes.SABER_INNER;
+        RenderType outerType = isGuiPreview ? ModelRenderTypes.SABER_GUI : ModelRenderTypes.SABER_OUTER;
+
+        ModelLightsaberBlade.renderInner(innerRgb, buffer.getBuffer(innerType), pose, length, flickerRand, crystals.c1(), crystals.c2());
+        ModelLightsaberBlade.renderCrackedLightning(innerRgb, buffer.getBuffer(innerType), pose, length, crystals.c1(), crystals.c2());
+        ModelLightsaberBlade.renderOuter(outerRgb, buffer.getBuffer(outerType), pose, length * 1.1f, flickerRand, crystals.c1(), crystals.c2());
 
         if (isGuiPreview) {
-            ModelLightsaberBlade.renderInner(innerRgb, buffer.getBuffer(ModelRenderTypes.SABER_GUI), pose, length, flickerRand);
-            ModelLightsaberBlade.renderCrackedLightning(innerRgb, buffer.getBuffer(ModelRenderTypes.SABER_GUI), pose, length, c1, c2);
-            ModelLightsaberBlade.renderOuter(rgb, buffer.getBuffer(ModelRenderTypes.SABER_GUI), pose, length * 1.1f, flickerRand);
-            ModelLightsaberBlade.renderGuiBloom(rgb, buffer.getBuffer(ModelRenderTypes.SABER_GUI), pose, length * 1.1f);
-        } else {
-            ModelLightsaberBlade.renderInner(innerRgb, buffer.getBuffer(ModelRenderTypes.SABER_INNER), pose, length, flickerRand);
-            ModelLightsaberBlade.renderCrackedLightning(innerRgb, buffer.getBuffer(ModelRenderTypes.SABER_INNER), pose, length, c1, c2);
-            ModelLightsaberBlade.renderOuter(rgb, buffer.getBuffer(ModelRenderTypes.SABER_OUTER), pose, length * 1.1f, flickerRand);
+            ModelLightsaberBlade.renderGuiBloom(outerRgb, buffer.getBuffer(outerType), pose, length * 1.1f, crystals.c1(), crystals.c2());
+        }
+    }
+
+    private static FocusCrystalState resolveFocusCrystals(LightsaberDataComponents.LightsaberData data) {
+        return new FocusCrystalState(resolveCrystal(data.focus1()), resolveCrystal(data.focus2()));
+    }
+
+    private static FocusingCrystal resolveCrystal(String id) {
+        ResourceLocation rl = ResourceLocation.tryParse(id);
+        if (rl == null) return FocusingCrystal.NONE;
+
+        Item item = BuiltInRegistries.ITEM.get(rl);
+        return item instanceof ItemFocusingCrystal fc ? fc.getFocusingCrystal() : FocusingCrystal.NONE;
+    }
+
+    private record FocusCrystalState(FocusingCrystal c1, FocusingCrystal c2) {
+        boolean prismatic() {
+            return c1 == FocusingCrystal.PRISMATIC || c2 == FocusingCrystal.PRISMATIC;
+        }
+
+        boolean inverting() {
+            return c1 == FocusingCrystal.INVERTING || c2 == FocusingCrystal.INVERTING;
         }
     }
 

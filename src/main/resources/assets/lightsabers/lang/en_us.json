@@ -1,5 +1,4 @@
 {
-
   "item.lightsabers.lightsaber": "Lightsaber",
   "item.lightsabers.lightsaber_double": "Double Lightsaber",
 
@@ -21,8 +20,45 @@
   "item.lightsabers.revan_pommel": "Lightsaber Pommel",
   "item.lightsabers.revan2_pommel.desc": "Revan",
 
+  "item.lightsabers.stel_emitter": "Lightsaber Emitter",
+  "item.lightsabers.stel_emitter.desc": "Stel",
+
+  "item.lightsabers.focusing_crystal_cracked": "Cracked Focusing Crystal",
+  "item.lightsabers.focusing_crystal_compressed": "Compressed Focusing Crystal",
+  "item.lightsabers.focusing_crystal_fine_cut": "Fine Cut Focusing Crystal",
+  "item.lightsabers.focusing_crystal_inverting": "Inverting Focusing Crystal",
+  "item.lightsabers.focusing_crystal_prismatic": "Prismatic Focusing Crystal",
+
+  "block.lightsabers.lightsaber_forge": "Lightsaber Forge",
+  "block.lightsabers.deep_blue_crystal": "Deep Blue Kyber Crystal",
+  "block.lightsabers.medium_blue_crystal": "Medium Blue Kyber Crystal",
+  "block.lightsabers.light_blue_crystal": "Light Blue Kyber Crystal",
+  "block.lightsabers.artic_blue_crystal": "Arctic Blue Kyber Crystal",
+  "block.lightsabers.cyan_crystal": "Cyan Kyber Crystal",
+  "block.lightsabers.white_crystal": "White Kyber Crystal",
+  "block.lightsabers.green_crystal": "Green Kyber Crystal",
+  "block.lightsabers.lime_green_crystal": "Lime Green Kyber Crystal",
+  "block.lightsabers.mint_green_crystal": "Mint Green Kyber Crystal",
+  "block.lightsabers.blood_orange_crystal": "Blood Orange Kyber Crystal",
+  "block.lightsabers.red_crystal": "Red Kyber Crystal",
+  "block.lightsabers.pink_crystal": "Pink Kyber Crystal",
+  "block.lightsabers.purple_crystal": "Purple Kyber Crystal",
+  "block.lightsabers.magenta_crystal": "Magenta Kyber Crystal",
+  "block.lightsabers.indigo_crystal": "Indigo Kyber Crystal",
+  "block.lightsabers.yellow_crystal": "Yellow Kyber Crystal",
+  "block.lightsabers.gold_crystal": "Gold Kyber Crystal",
+  "block.lightsabers.amber_crystal": "Amber Kyber Crystal",
+
   "gui.lightsabers.lightsaber_creative": "Lightsabers",
   "gui.lightsabers.lightsaber_crystals": "Crystals",
-  "gui.lightsabers.lightsaber_parts": "Parts"
+  "gui.lightsabers.lightsaber_parts": "Parts",
 
+  "container.lightsabers.lightsaber_forge": "Lightsaber Forge",
+
+  "lightsaber.focusingCrystal.compressed": "Compressed",
+  "lightsaber.focusingCrystal.cracked": "Cracked",
+  "lightsaber.focusingCrystal.inverting": "Inverting",
+  "lightsaber.focusingCrystal.fine_cut": "Fine Cut",
+  "lightsaber.focusingCrystal.prismatic": "Prismatic",
+  "lightsaber.focusingCrystal.none": "None"
 }

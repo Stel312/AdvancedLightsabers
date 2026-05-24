@@ -44,13 +44,43 @@ public class LightsaberForgeScreen extends AbstractContainerScreen<LightsaberFor
     }
 
     // ------------------------------------------------------------
-    // Dynamic Mode Label
+    // Dynamic Mode Determination
     // ------------------------------------------------------------
-    private Component getModeLabel() {
-        ItemStack out = menu.getOutputSlot().getItem();
-        ItemStack s1 = menu.focusCrystal1.getItem();
-        ItemStack s2 = menu.focusCrystal2.getItem();
+    /**
+     * Determines if we're in double-saber assembly mode based on inputs.
+     * Returns true if we're combining two single sabers OR if we have a double saber output.
+     */
+    private boolean isDoubleMode() {
+        ItemStack out = this.menu.getOutputSlot().getItem();
+        
+        // If output exists, check its type
+        if (!out.isEmpty()) {
+            return out.getItem() instanceof LightsaberDoubleItem;
+        }
+        
+        // Check input slots to determine intended mode
+        ItemStack s1 = this.menu.focusCrystal1.getItem();
+        ItemStack s2 = this.menu.focusCrystal2.getItem();
+        
+        // Combining mode: two single sabers in slots
+        if (s1.getItem() instanceof LightsaberItem && !(s1.getItem() instanceof LightsaberDoubleItem) &&
+            s2.getItem() instanceof LightsaberItem && !(s2.getItem() instanceof LightsaberDoubleItem)) {
+            return true;
+        }
+        
+        // Splitting mode: double saber in slot 1 (show single mode for output preview)
+        if (s1.getItem() instanceof LightsaberDoubleItem && s2.isEmpty()) {
+            return false;
+        }
+        
+        // Default: single saber mode
+        return false;
+    }
 
+    private Component getModeLabel() {
+        ItemStack out = this.menu.getOutputSlot().getItem();
+        
+        // Show output status if item is ready
         if (!out.isEmpty()) {
             if (out.getItem() instanceof LightsaberDoubleItem)
                 return Component.literal("Ready: Double Saber");
@@ -58,10 +88,15 @@ public class LightsaberForgeScreen extends AbstractContainerScreen<LightsaberFor
                 return Component.literal("Ready: Single Saber");
         }
 
-        if (s1.getItem() instanceof LightsaberItem && s2.getItem() instanceof LightsaberItem)
+        // Show current assembly mode based on inputs
+        ItemStack s1 = this.menu.focusCrystal1.getItem();
+        ItemStack s2 = this.menu.focusCrystal2.getItem();
+        
+        if (s1.getItem() instanceof LightsaberItem && !(s1.getItem() instanceof LightsaberDoubleItem) &&
+            s2.getItem() instanceof LightsaberItem && !(s2.getItem() instanceof LightsaberDoubleItem))
             return Component.literal("Combine Mode");
 
-        if (s1.getItem() instanceof LightsaberDoubleItem)
+        if (s1.getItem() instanceof LightsaberDoubleItem && s2.isEmpty())
             return Component.literal("Split Mode");
 
         return Component.literal("Single Saber Mode");
@@ -82,10 +117,10 @@ public class LightsaberForgeScreen extends AbstractContainerScreen<LightsaberFor
 
     @Override
     protected void renderBg(GuiGraphics gui, float partialTicks, int mouseX, int mouseY) {
-
-        ItemStack out = this.menu.getOutputSlot().getItem();
-        boolean isDouble = out.getItem() instanceof LightsaberDoubleItem;
-
+        // Determine if we're in double-saber mode based on current inputs
+        boolean isDouble = isDoubleMode();
+        
+        // Select appropriate texture based on mode
         ResourceLocation tex = isDouble ? DOUBLE_GUI : SINGLE_GUI;
 
         this.minecraft.getTextureManager().bindForSetup(tex);
@@ -95,6 +130,9 @@ public class LightsaberForgeScreen extends AbstractContainerScreen<LightsaberFor
 
         drawGhosts(gui, isDouble);
         drawArrows(gui, isDouble);
+        
+        // Show preview of what will be created (output)
+        ItemStack out = this.menu.getOutputSlot().getItem();
         drawPreview(gui, out, isDouble);
     }
 
@@ -166,6 +204,9 @@ public class LightsaberForgeScreen extends AbstractContainerScreen<LightsaberFor
                 try {
                     Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
                     RenderItemLightsaber.BEWLR.renderDouble(ItemDisplayContext.NONE, pose, gui.bufferSource(), 0xFFFFFF, out);
+                    gui.bufferSource().endBatch(ModelRenderTypes.SABER_INNER);
+                    gui.bufferSource().endBatch(ModelRenderTypes.SABER_INNER_SOLID);
+                    gui.bufferSource().endBatch(ModelRenderTypes.SABER_OUTER);
                     gui.bufferSource().endBatch(ModelRenderTypes.SABER_GUI);
                     RenderSystem.disableCull();
                 } finally {
@@ -181,6 +222,9 @@ public class LightsaberForgeScreen extends AbstractContainerScreen<LightsaberFor
                 gui.enableScissor(leftPos + 42, topPos + 20, leftPos + 156, topPos + 64);
                 try {
                     RenderItemLightsaber.BEWLR.renderSingle(ItemDisplayContext.NONE, pose, gui.bufferSource(), 0xFFFFFF, out);
+                    gui.bufferSource().endBatch(ModelRenderTypes.SABER_INNER);
+                    gui.bufferSource().endBatch(ModelRenderTypes.SABER_INNER_SOLID);
+                    gui.bufferSource().endBatch(ModelRenderTypes.SABER_OUTER);
                     gui.bufferSource().endBatch(ModelRenderTypes.SABER_GUI);
                     RenderSystem.disableCull();
                 } finally {

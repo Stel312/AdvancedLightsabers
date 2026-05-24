@@ -11,6 +11,10 @@ import java.util.Random;
 
 public class ModelLightsaberBlade {
 
+    private static final float FINE_CUT_OUTER_WIDTH = 0.04f;
+    private static final float FINE_CUT_OUTER_DEPTH = 0.005f;
+    private static final float FINE_CUT_INNER_WIDTH = 0.013f;
+    private static final float FINE_CUT_INNER_DEPTH = 0.0022f;
     private ModelLightsaberBlade() {}
 
     private static void v(VertexConsumer vc, Matrix4f mat,
@@ -26,69 +30,259 @@ public class ModelLightsaberBlade {
                 .setLight(0xF000F0);
     }
 
-    public static void renderInner(float[] rgb, VertexConsumer vc, PoseStack pose, float length, Random flickerRand) {
-
-        float jitter = 0.94f + flickerRand.nextFloat() * 0.06f;
-        float radius = 0.01f * jitter;
-
-        float alpha = 0.92f + flickerRand.nextFloat() * 0.08f;
-
-        drawCylinder(vc, pose, rgb, radius, length * 1.05f, alpha);
+    private static boolean hasCrystal(FocusingCrystal c1, FocusingCrystal c2, FocusingCrystal crystal) {
+        return c1 == crystal || c2 == crystal;
     }
 
-    public static void renderOuter(float[] rgb, VertexConsumer vc, PoseStack pose, float length, Random flickerRand) {
+    public static void renderInner(float[] rgb, VertexConsumer vc, PoseStack pose, float length, Random flickerRand, FocusingCrystal c1, FocusingCrystal c2) {
+        // INVERTING swaps colors: black inner with white outer.
+        float[] innerRgb = rgb;
+        if (hasCrystal(c1, c2, FocusingCrystal.INVERTING)) {
+            innerRgb = new float[]{0f, 0f, 0f}; // Black inner
+        } else if (hasCrystal(c1, c2, FocusingCrystal.PRISMATIC)) {
+            // Prismatic uses a hue-shifted inner core.
+            float prismaticPhase = 0.33f + (flickerRand.nextFloat() - 0.5f) * 0.08f;
+            innerRgb = getPrismaticColor(rgb, prismaticPhase);
+        }
+
+        float jitter = 0.94f + flickerRand.nextFloat() * 0.06f;
+        float radiusMultiplier = hasCrystal(c1, c2, FocusingCrystal.COMPRESSED) ? 0.5f : 1.0f;
+        float radius = 0.01f * jitter * radiusMultiplier;
+
+        float alpha = hasCrystal(c1, c2, FocusingCrystal.INVERTING) ? 1.0f : 0.92f + flickerRand.nextFloat() * 0.08f;
+
+        // Keep fine-cut as a flat core too, otherwise the inner cylinder clips outside the darksaber-like shell.
+        if (hasCrystal(c1, c2, FocusingCrystal.FINE_CUT)) {
+            renderFineCutCore(vc, pose, innerRgb, length * 1.05f, flickerRand, radiusMultiplier, alpha);
+            return;
+        }
+
+        drawCylinder(vc, pose, innerRgb, radius, length * 1.05f, alpha, c1, c2);
+    }
+
+    private static float[] getPrismaticColor(float[] baseRgb, float phase) {
+        float hue = (float) (Math.atan2(baseRgb[2] - baseRgb[1], 2f * baseRgb[0] - baseRgb[1] - baseRgb[2]) / (2 * Math.PI));
+        hue = (hue + phase) % 1f;
+
+        float h = hue * 6f;
+        int i = (int) Math.floor(h);
+        float f = h - i;
+        float p = 0f;
+        float q = 1f - f;
+
+        float r;
+        float g;
+        float b;
+        switch (i % 6) {
+            case 0: r = 1f; g = f; b = p; break;
+            case 1: r = q; g = 1f; b = p; break;
+            case 2: r = p; g = 1f; b = f; break;
+            case 3: r = p; g = q; b = 1f; break;
+            case 4: r = f; g = p; b = 1f; break;
+            default: r = 1f; g = p; b = q; break;
+        }
+
+        return new float[]{r, g, b};
+    }
+
+    public static void renderOuter(float[] rgb, VertexConsumer vc, PoseStack pose, float length, Random flickerRand, FocusingCrystal c1, FocusingCrystal c2) {
+        // INVERTING swaps colors: white outer.
+        float[] outerRgb = rgb;
+        if (hasCrystal(c1, c2, FocusingCrystal.INVERTING)) {
+            outerRgb = new float[]{1f, 1f, 1f};
+        }
 
         float baseRadius = 0.02f;
+        float radiusMultiplier = hasCrystal(c1, c2, FocusingCrystal.COMPRESSED) ? 0.7f : 1.0f;
+
+        // FINE_CUT creates a flat sword-like blade instead of cylindrical
+        if (hasCrystal(c1, c2, FocusingCrystal.FINE_CUT)) {
+            renderFineCutBlade(vc, pose, outerRgb, length, flickerRand);
+            return;
+        }
 
         for (int i = 0; i < 4; i++) {
             float jitter = 0.96f + flickerRand.nextFloat() * 0.08f;
-            float radius = baseRadius * (1f + i * 0.2f) * jitter;
+            float radius = baseRadius * (1f + i * 0.2f) * jitter * radiusMultiplier;
 
             radius *= (0.98f + flickerRand.nextFloat() * 0.04f);
 
             float alpha = 0.2f / (i + 1);
-            drawCylinder(vc, pose, rgb, radius, length, alpha);
+            drawCylinder(vc, pose, outerRgb, radius, length, alpha, c1, c2);
         }
     }
 
-    public static void renderGuiBloom(float[] rgb, VertexConsumer vc, PoseStack pose, float length) {
-        //float[] radii  = { 0.035f, 0.055f, 0.080f, 0.110f, 0.150f, 0.200f }; // 1
-        //float[] radii = { 0.0117f, 0.0183f, 0.0267f, 0.0367f, 0.0500f, 0.0667f }; // 1/3
-        //float[] radii = { 0.00875f, 0.01375f, 0.02000f, 0.02750f, 0.03750f, 0.05000f }; // 1/4
-        float[] radii = { 0.007f, 0.011f, 0.016f, 0.022f, 0.030f, 0.040f }; // 1/5
-        //float[] radii = { 0.0035f, 0.0055f, 0.0080f, 0.0110f, 0.0150f, 0.0200f }; // 1/10
-        //float[] alphas = { 0.22f,  0.14f,  0.08f,  0.05f,  0.03f,  0.015f };// 1
-        //float[] alphas = { 0.044f, 0.028f, 0.016f, 0.010f, 0.006f, 0.003f }; // 1/5 linear
-        float[] alphas = { 0.044f, 0.020f, 0.009f, 0.004f, 0.002f, 0.001f }; // 1/5 sharper falloff
+    public static void renderGuiBloom(float[] rgb, VertexConsumer vc, PoseStack pose, float length, FocusingCrystal c1, FocusingCrystal c2) {
+        float[] bloomRgb = rgb;
+        if (hasCrystal(c1, c2, FocusingCrystal.INVERTING)) {
+            bloomRgb = new float[]{1f, 1f, 1f}; // White bloom
+        }
+
+        float[] radii = { 0.007f, 0.011f, 0.016f, 0.022f, 0.030f, 0.040f };
+        float[] alphas = { 0.044f, 0.020f, 0.009f, 0.004f, 0.002f, 0.001f };
 
         for (int i = 0; i < radii.length; i++) {
-            drawCylinder(vc, pose, rgb, radii[i], length, alphas[i]);
+            drawCylinder(vc, pose, bloomRgb, radii[i], length, alphas[i], c1, c2);
         }
     }
 
     public static void renderCrackedLightning(float[] rgb, VertexConsumer vc, PoseStack pose,
                                               float bladeLength, FocusingCrystal c1, FocusingCrystal c2) {
 
-        if (c1 != FocusingCrystal.CRACKED && c2 != FocusingCrystal.CRACKED) return;
+        if (!hasCrystal(c1, c2, FocusingCrystal.CRACKED)) return;
 
-        Random rand = new Random(Minecraft.getInstance().level.getGameTime());
+        long gameTime = Minecraft.getInstance().level != null ? Minecraft.getInstance().level.getGameTime() : 0L;
+        Random rand = new Random(gameTime / 3L);
 
-        for (int i = 0; i < 6; i++) {
+        // Cracked nubs: many tiny pyramid bursts that barely leave the blade edge.
+        int nubCount = 10 + rand.nextInt(5);
+        float spawnRadius = hasCrystal(c1, c2, FocusingCrystal.COMPRESSED) ? 0.014f : 0.021f;
+        for (int i = 0; i < nubCount; i++) {
+            float y = bladeLength * (0.08f + rand.nextFloat() * 0.84f);
+            float outward = rand.nextFloat() * (float) (Math.PI * 2.0);
+            float yaw = (float) Math.toDegrees(outward) + (rand.nextFloat() - 0.5f) * 26f;
+            float pitch = 78f + rand.nextFloat() * 18f;
+            float nubLength = 0.015f + rand.nextFloat() * 0.02f;
+            float nubRadius = 0.0025f + rand.nextFloat() * 0.002f;
+            float nubAlpha = 0.62f + rand.nextFloat() * 0.2f;
+
+            float x = (float) Math.cos(outward) * spawnRadius;
+            float z = (float) Math.sin(outward) * spawnRadius;
+
             pose.pushPose();
-            pose.translate(0, rand.nextFloat() * bladeLength, 0);
-            pose.mulPose(Axis.YP.rotationDegrees(rand.nextFloat() * 360f));
-            pose.mulPose(Axis.ZP.rotationDegrees(rand.nextFloat() * 15f));
-
-            drawCylinder(vc, pose, rgb, 0.015f, 0.25f, 0.8f);
-
+            pose.translate(x, y, z);
+            pose.mulPose(Axis.YP.rotationDegrees(yaw));
+            pose.mulPose(Axis.ZP.rotationDegrees(pitch));
+            drawPyramidNub(vc, pose, rgb, nubRadius, nubLength, nubAlpha);
             pose.popPose();
         }
     }
 
-    private static void drawCylinder(VertexConsumer vc, PoseStack pose,
-                                     float[] rgb, float radius, float height, float alpha) {
+    private static void drawPyramidNub(VertexConsumer vc, PoseStack pose,
+                                       float[] rgb, float baseRadius, float length, float alpha) {
+        Matrix4f mat = pose.last().pose();
 
-        int segments = 8;
+        // Legacy quad order preserved exactly.
+        v(vc, mat, baseRadius, 0f, 0f, rgb[0], rgb[1], rgb[2], alpha);
+        v(vc, mat, 0f, 0f, baseRadius, rgb[0], rgb[1], rgb[2], alpha);
+        v(vc, mat, 0f, length, 0f, rgb[0], rgb[1], rgb[2], alpha);
+        v(vc, mat, 0f, length, 0f, rgb[0], rgb[1], rgb[2], alpha);
+
+        v(vc, mat, 0f, 0f, baseRadius, rgb[0], rgb[1], rgb[2], alpha);
+        v(vc, mat, -baseRadius, 0f, 0f, rgb[0], rgb[1], rgb[2], alpha);
+        v(vc, mat, 0f, length, 0f, rgb[0], rgb[1], rgb[2], alpha);
+        v(vc, mat, 0f, length, 0f, rgb[0], rgb[1], rgb[2], alpha);
+
+        v(vc, mat, -baseRadius, 0f, 0f, rgb[0], rgb[1], rgb[2], alpha);
+        v(vc, mat, 0f, 0f, -baseRadius, rgb[0], rgb[1], rgb[2], alpha);
+        v(vc, mat, 0f, length, 0f, rgb[0], rgb[1], rgb[2], alpha);
+        v(vc, mat, 0f, length, 0f, rgb[0], rgb[1], rgb[2], alpha);
+
+        v(vc, mat, 0f, 0f, -baseRadius, rgb[0], rgb[1], rgb[2], alpha);
+        v(vc, mat, baseRadius, 0f, 0f, rgb[0], rgb[1], rgb[2], alpha);
+        v(vc, mat, 0f, length, 0f, rgb[0], rgb[1], rgb[2], alpha);
+        v(vc, mat, 0f, length, 0f, rgb[0], rgb[1], rgb[2], alpha);
+    }
+
+    private static void renderFineCutCore(VertexConsumer vc, PoseStack pose,
+                                           float[] rgb, float height, Random flickerRand,
+                                           float radiusMultiplier, float alpha) {
+        float jitter = 0.99f + flickerRand.nextFloat() * 0.08f;
+        float xScale = (FINE_CUT_INNER_WIDTH * jitter * radiusMultiplier) / 0.013f;
+        float zScale = (FINE_CUT_INNER_DEPTH * jitter * radiusMultiplier) / 0.0022f;
+
+        pose.pushPose();
+        pose.translate(0f, height, 0f);
+        renderLegacyFineCutMesh(vc, pose, rgb, height / 0.0625f, xScale, zScale, alpha, alpha * 0.92f, alpha * 0.75f, alpha);
+        pose.popPose();
+    }
+
+    /**
+     * Renders a flat sword-like blade (FINE_CUT style - dark saber)
+     */
+    private static void renderFineCutBlade(VertexConsumer vc, PoseStack pose,
+                                          float[] rgb, float height, Random flickerRand) {
+
+        float jitter = 1.0f + flickerRand.nextFloat() * 0.10f;
+        float xScale = (FINE_CUT_OUTER_WIDTH * jitter) / 0.04f;
+        float zScale = (FINE_CUT_OUTER_DEPTH * jitter) / 0.005f;
+
+        pose.pushPose();
+        pose.translate(0f, height, 0f);
+        renderLegacyFineCutMesh(vc, pose, rgb, height / 0.0625f, xScale, zScale, 0.9f, 0.7f, 0.5f, 0.8f);
+        pose.popPose();
+    }
+
+    private static void renderLegacyFineCutMesh(VertexConsumer vc, PoseStack pose,
+                                                float[] rgb, float bladeLength,
+                                                float xScale, float zScale,
+                                                float frontAlpha, float backAlpha, float edgeAlpha, float tipAlpha) {
+
+        Matrix4f mat = pose.last().pose();
+        float f = 0.0625f;
+        float length = f * bladeLength * 0.7F;
+        float edge = f * 1.5F;
+        float edgeAngle = -f * 1.5F;
+        float length1 = f * bladeLength * 0.3F;
+        float edge1 = f / 2F;
+        float tip = f * 1.5F;
+
+        float xHalf = (f / 2F) * xScale;
+        float zHalf = (f / 2F) * zScale;
+        float zEdge = edge * zScale;
+        float zEdge1 = edge1 * zScale;
+
+        v(vc, mat, -xHalf, -length, zHalf, rgb[0], rgb[1], rgb[2], frontAlpha);
+        v(vc, mat, 0f, -length, zEdge, rgb[0], rgb[1], rgb[2], frontAlpha);
+        v(vc, mat, 0f, edgeAngle, zEdge, rgb[0], rgb[1], rgb[2], frontAlpha);
+        v(vc, mat, -xHalf, -f, zHalf, rgb[0], rgb[1], rgb[2], frontAlpha);
+
+        v(vc, mat, xHalf, -length, zHalf, rgb[0], rgb[1], rgb[2], frontAlpha);
+        v(vc, mat, 0f, -length, zEdge, rgb[0], rgb[1], rgb[2], frontAlpha);
+        v(vc, mat, 0f, edgeAngle, zEdge, rgb[0], rgb[1], rgb[2], frontAlpha);
+        v(vc, mat, xHalf, -f, zHalf, rgb[0], rgb[1], rgb[2], frontAlpha);
+
+        v(vc, mat, xHalf, -f, zHalf, rgb[0], rgb[1], rgb[2], backAlpha);
+        v(vc, mat, 0f, edgeAngle, zEdge, rgb[0], rgb[1], rgb[2], backAlpha);
+        v(vc, mat, 0f, edgeAngle, zEdge, rgb[0], rgb[1], rgb[2], backAlpha);
+        v(vc, mat, -xHalf, -f, zHalf, rgb[0], rgb[1], rgb[2], backAlpha);
+
+        v(vc, mat, -xHalf, -length, zHalf, rgb[0], rgb[1], rgb[2], edgeAlpha);
+        v(vc, mat, -xHalf, -length1 - length, zEdge1, rgb[0], rgb[1], rgb[2], edgeAlpha);
+        v(vc, mat, 0f, -length1 - length, zEdge1, rgb[0], rgb[1], rgb[2], edgeAlpha);
+        v(vc, mat, 0f, -length, zEdge, rgb[0], rgb[1], rgb[2], edgeAlpha);
+
+        v(vc, mat, xHalf, -length, zHalf, rgb[0], rgb[1], rgb[2], edgeAlpha);
+        v(vc, mat, xHalf, -length1 - length, zEdge1, rgb[0], rgb[1], rgb[2], edgeAlpha);
+        v(vc, mat, 0f, -length1 - length, zEdge1, rgb[0], rgb[1], rgb[2], edgeAlpha);
+        v(vc, mat, 0f, -length, zEdge, rgb[0], rgb[1], rgb[2], edgeAlpha);
+
+        v(vc, mat, -xHalf, -f * bladeLength, zHalf, rgb[0], rgb[1], rgb[2], tipAlpha);
+        v(vc, mat, 0f, -tip - f * bladeLength, -zHalf, rgb[0], rgb[1], rgb[2], tipAlpha);
+        v(vc, mat, 0f, -tip - f * bladeLength, -zHalf, rgb[0], rgb[1], rgb[2], tipAlpha);
+        v(vc, mat, -xHalf, -f * bladeLength, -zHalf, rgb[0], rgb[1], rgb[2], tipAlpha);
+
+        v(vc, mat, xHalf, -f * bladeLength, zHalf, rgb[0], rgb[1], rgb[2], tipAlpha);
+        v(vc, mat, 0f, -tip - f * bladeLength, -zHalf, rgb[0], rgb[1], rgb[2], tipAlpha);
+        v(vc, mat, 0f, -tip - f * bladeLength, -zHalf, rgb[0], rgb[1], rgb[2], tipAlpha);
+        v(vc, mat, xHalf, -f * bladeLength, -zHalf, rgb[0], rgb[1], rgb[2], tipAlpha);
+
+        v(vc, mat, -xHalf, -f * bladeLength, -zHalf, rgb[0], rgb[1], rgb[2], tipAlpha);
+        v(vc, mat, 0f, -tip - f * bladeLength, -zHalf, rgb[0], rgb[1], rgb[2], tipAlpha);
+        v(vc, mat, 0f, -tip - f * bladeLength, -zHalf, rgb[0], rgb[1], rgb[2], tipAlpha);
+        v(vc, mat, xHalf, -f * bladeLength, -zHalf, rgb[0], rgb[1], rgb[2], tipAlpha);
+
+        v(vc, mat, -xHalf, -f * bladeLength, zHalf, rgb[0], rgb[1], rgb[2], tipAlpha);
+        v(vc, mat, 0f, -tip - f * bladeLength, -zHalf, rgb[0], rgb[1], rgb[2], tipAlpha);
+        v(vc, mat, 0f, -tip - f * bladeLength, -zHalf, rgb[0], rgb[1], rgb[2], tipAlpha);
+        v(vc, mat, xHalf, -f * bladeLength, zHalf, rgb[0], rgb[1], rgb[2], tipAlpha);
+    }
+
+
+    private static void drawCylinder(VertexConsumer vc, PoseStack pose,
+                                     float[] rgb, float radius, float height, float alpha, FocusingCrystal c1, FocusingCrystal c2) {
+
+        int segments = hasCrystal(c1, c2, FocusingCrystal.CRACKED) ? 6 : 8; // Fewer segments for cracked look
         Matrix4f mat = pose.last().pose();
 
         for (int i = 0; i < segments; i++) {

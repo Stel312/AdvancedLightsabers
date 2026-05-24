@@ -13,6 +13,6 @@ public class Strings {
     prismaticFocusingCrystal = "focusing_crystal_prismatic",
     fineCutFocusingCrystal = "focusing_crystal_fine_cut",
     compressedFocusingCrystal = "focusing_crystal_compressed",
-    chargedFocusingCrystal = "focusing_crystal_compressed";
+    chargedFocusingCrystal = "focusing_crystal_charged";
 
 }

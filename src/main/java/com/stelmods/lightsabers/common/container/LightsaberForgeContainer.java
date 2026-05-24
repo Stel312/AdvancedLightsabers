@@ -35,6 +35,7 @@ public class LightsaberForgeContainer extends AbstractContainerMenu {
 
     private Slot outputSlot, bodySlot, switchSlot, emitterSlot, pommelSlot, crystalSlot;
     public Slot focusCrystal1, focusCrystal2;
+    public Slot combineSaber1, combineSaber2;
 
     private boolean internalUpdate = false;
 
@@ -61,8 +62,12 @@ public class LightsaberForgeContainer extends AbstractContainerMenu {
 
         crystalSlot = addSlot(new CrystalSlot(iih, 3, 66, 71));
 
-        focusCrystal1 = addSlot(new FocusSlot(iih, 9, 89, 71));
-        focusCrystal2 = addSlot(new FocusSlot(iih, 8, 107, 71));
+        // Dual-purpose slots: accept both single sabers AND focusing crystals
+        // Used for combining sabers OR adding focus crystals
+        combineSaber1 = addSlot(new FlexibleSlot(iih, 9, 89, 71));
+        combineSaber2 = addSlot(new FlexibleSlot(iih, 8, 107, 71));
+        focusCrystal1 = combineSaber1;
+        focusCrystal2 = combineSaber2;
 
         outputSlot = addSlot(new OutputSlot(iih, 10, 136, 87));
 
@@ -133,7 +138,7 @@ public class LightsaberForgeContainer extends AbstractContainerMenu {
             }
         }
 
-        if (stack.getItem() instanceof LightsaberItem) {
+        if (stack.getItem() instanceof ItemFocusingCrystal) {
             if (moveItemStackTo(stack, focusCrystal1.index, focusCrystal1.index + 1, false)
                     || moveItemStackTo(stack, focusCrystal2.index, focusCrystal2.index + 1, false)) {
                 slot.setChanged();
@@ -141,9 +146,10 @@ public class LightsaberForgeContainer extends AbstractContainerMenu {
             }
         }
 
-        if (stack.getItem() instanceof ItemFocusingCrystal) {
-            if (moveItemStackTo(stack, focusCrystal1.index, focusCrystal1.index + 1, false)
-                    || moveItemStackTo(stack, focusCrystal2.index, focusCrystal2.index + 1, false)) {
+        // Handle single lightsabers for combining
+        if (stack.getItem() instanceof LightsaberItem && !(stack.getItem() instanceof LightsaberDoubleItem)) {
+            if (moveItemStackTo(stack, combineSaber1.index, combineSaber1.index + 1, false)
+                    || moveItemStackTo(stack, combineSaber2.index, combineSaber2.index + 1, false)) {
                 slot.setChanged();
                 return original;
             }
@@ -396,8 +402,28 @@ public class LightsaberForgeContainer extends AbstractContainerMenu {
 
         @Override
         public boolean mayPlace(ItemStack stack) {
-            return stack.getItem() instanceof ItemFocusingCrystal
-                    || stack.getItem() instanceof LightsaberItem;
+            return stack.getItem() instanceof ItemFocusingCrystal;
+        }
+
+        @Override
+        public void setChanged() {
+            if (!internalUpdate) {
+                updateOutput();
+            }
+            super.setChanged();
+        }
+    }
+
+    private class FlexibleSlot extends SlotItemHandler {
+        public FlexibleSlot(IItemHandler iih, int id, int x, int y) {
+            super(iih, id, x, y);
+        }
+
+        @Override
+        public boolean mayPlace(ItemStack stack) {
+            // Accept both single sabers (for combining) and focusing crystals
+            return (stack.getItem() instanceof LightsaberItem && !(stack.getItem() instanceof LightsaberDoubleItem))
+                    || stack.getItem() instanceof ItemFocusingCrystal;
         }
 
         @Override

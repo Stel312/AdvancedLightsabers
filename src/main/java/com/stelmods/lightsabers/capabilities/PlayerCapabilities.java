@@ -46,6 +46,7 @@ public class PlayerCapabilities implements INBTSerializable<CompoundTag> {
         CompoundTag storage = new CompoundTag();
         storage.putBoolean("lightning_mode", this.isLightningMode());
         storage.putInt("grabbed_entity_id", this.getGrabbedID());
+        storage.putInt("alignment", this.getAlignment());
 
         if (this.grabbedBlockPos != null) {
             // Corrected usage: NbtUtils.writeBlockPos returns an IntArrayTag.
@@ -68,6 +69,7 @@ public class PlayerCapabilities implements INBTSerializable<CompoundTag> {
     public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         this.setLightningMode(nbt.getBoolean("lightning_mode"));
         this.setGrabbedID(nbt.contains("grabbed_entity_id") ? nbt.getInt("grabbed_entity_id") : -1);
+        this.setAlignment(nbt.contains("alignment") ? nbt.getInt("alignment") : 0);
 
         if (nbt.contains("grabbed_block_pos")) {
             Optional<BlockPos> optionalBlockPos = NbtUtils.readBlockPos(nbt, "grabbed_block_pos");
@@ -91,6 +93,7 @@ public class PlayerCapabilities implements INBTSerializable<CompoundTag> {
 
     boolean lightningMode;
     int grabbedID = -1; // For entities — -1 means nothing held
+    int alignment = 0; // Range: -100 (Dark Side) to +100 (Light Side), 0 is neutral
     
     // For blocks
     private BlockPos grabbedBlockPos;
@@ -112,6 +115,32 @@ public class PlayerCapabilities implements INBTSerializable<CompoundTag> {
 
     public void setGrabbedID(int grabbedID) {
         this.grabbedID = grabbedID;
+    }
+
+    public int getAlignment() {
+        return alignment;
+    }
+
+    public void setAlignment(int alignment) {
+        // Clamp alignment to -100 to +100 range
+        this.alignment = Math.max(-100, Math.min(100, alignment));
+    }
+
+    /**
+     * Adds to the player's alignment.
+     * Positive values increase Light Side alignment, negative values increase Dark Side.
+     * Result is clamped to -100 to +100.
+     */
+    public void addAlignment(int delta) {
+        setAlignment(this.alignment + delta);
+    }
+
+    /**
+     * Gets the alignment as a normalized value (0.0 to 1.0)
+     * where 0.0 = dark (-100), 0.5 = neutral (0), 1.0 = light (+100)
+     */
+    public float getNormalizedAlignment() {
+        return (this.alignment + 100) / 200f;
     }
 
     public BlockPos getGrabbedBlockPos() {

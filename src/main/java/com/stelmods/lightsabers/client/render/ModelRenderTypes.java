@@ -29,7 +29,7 @@ public class ModelRenderTypes {
     );
 
     public static final RenderType SABER_INNER = RenderType.create(
-            "saber_outer",
+            "saber_inner",
             DefaultVertexFormat.POSITION_COLOR,
             VertexFormat.Mode.QUADS,
             1536,
@@ -38,8 +38,27 @@ public class ModelRenderTypes {
             RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_LIGHTNING_SHADER)
                     .setWriteMaskState(COLOR_DEPTH_WRITE)
-                    .setTransparencyState(LIGHTNING_TRANSPARENCY)
-                    .setOutputState(PARTICLES_TARGET)
+                    .setDepthTestState(LEQUAL_DEPTH_TEST)
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .setCullState(NO_CULL)
+                    .setOutputState(MAIN_TARGET)
+                    .createCompositeState(false)
+    );
+
+    public static final RenderType SABER_INNER_SOLID = RenderType.create(
+            "saber_inner_solid",
+            DefaultVertexFormat.POSITION_COLOR,
+            VertexFormat.Mode.QUADS,
+            1536,
+            false,
+            true,
+            RenderType.CompositeState.builder()
+                    .setShaderState(RENDERTYPE_LIGHTNING_SHADER)
+                    .setWriteMaskState(COLOR_DEPTH_WRITE)
+                    .setDepthTestState(LEQUAL_DEPTH_TEST)
+                    .setTransparencyState(NO_TRANSPARENCY)
+                    .setCullState(NO_CULL)
+                    .setOutputState(MAIN_TARGET)
                     .createCompositeState(false)
     );
 
